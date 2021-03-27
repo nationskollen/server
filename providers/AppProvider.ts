@@ -14,7 +14,15 @@ export default class AppProvider {
     }
 
     public async ready() {
-        // App is ready
+        // Must import inline since the application is not ready
+        // until this callback is executed.
+        const App = await import('@ioc:Adonis/Core/Application')
+
+        // Only import socket file, when environment is `web`. In other
+        // words do not import during ace commands.
+        if (App.default.environment === 'web') {
+            await import('../start/socket')
+        }
     }
 
     public async shutdown() {
