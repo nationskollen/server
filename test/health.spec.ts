@@ -10,7 +10,7 @@ interface HealthReport {
 }
 
 test.group('Health', () => {
-    test('assert health report', async (assert) => {
+    test('ensure system health', async (assert) => {
         const { text } = await supertest(BASE_URL).get('/health').expect(200)
         const data = JSON.parse(text)
 
