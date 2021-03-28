@@ -19,30 +19,30 @@ import { HashConfig } from '@ioc:Adonis/Core/Hash'
 */
 const hashConfig: HashConfig = {
     /*
-  |--------------------------------------------------------------------------
-  | Default hasher
-  |--------------------------------------------------------------------------
-  |
-  | By default we make use of the bcrypt hasher to hash values. However, feel
-  | free to change the default value
-  |
-  */
+    |--------------------------------------------------------------------------
+    | Default hasher
+    |--------------------------------------------------------------------------
+    |
+    | By default we make use of the bcrypt hasher to hash values. However, feel
+    | free to change the default value
+    |
+    */
     default: Env.get('HASH_DRIVER', 'argon'),
 
     list: {
         /*
-    |--------------------------------------------------------------------------
-    | Argon
-    |--------------------------------------------------------------------------
-    |
-    | Argon mapping uses the `argon2` driver to hash values.
-    |
-    | Make sure you install the underlying dependency for this driver to work.
-    | https://www.npmjs.com/package/phc-argon2.
-    |
-    | npm install phc-argon2
-    |
-    */
+        |--------------------------------------------------------------------------
+        | Argon
+        |--------------------------------------------------------------------------
+        |
+        | Argon mapping uses the `argon2` driver to hash values.
+        |
+        | Make sure you install the underlying dependency for this driver to work.
+        | https://www.npmjs.com/package/phc-argon2.
+        |
+        | npm install phc-argon2
+        |
+        */
         argon: {
             driver: 'argon2',
             variant: 'id',
@@ -53,18 +53,18 @@ const hashConfig: HashConfig = {
         },
 
         /*
-    |--------------------------------------------------------------------------
-    | Bcrypt
-    |--------------------------------------------------------------------------
-    |
-    | Bcrypt mapping uses the `bcrypt` driver to hash values.
-    |
-    | Make sure you install the underlying dependency for this driver to work.
-    | https://www.npmjs.com/package/phc-bcrypt.
-    |
-    | npm install phc-bcrypt
-    |
-    */
+        |--------------------------------------------------------------------------
+        | Bcrypt
+        |--------------------------------------------------------------------------
+        |
+        | Bcrypt mapping uses the `bcrypt` driver to hash values.
+        |
+        | Make sure you install the underlying dependency for this driver to work.
+        | https://www.npmjs.com/package/phc-bcrypt.
+        |
+        | npm install phc-bcrypt
+        |
+        */
         bcrypt: {
             driver: 'bcrypt',
             rounds: 10,
