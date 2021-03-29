@@ -1,4 +1,3 @@
-import User from 'App/Models/User'
 import UserValidator from 'App/Validators/UserValidator'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
