@@ -3,9 +3,10 @@ import BaseSchema from '@ioc:Adonis/Lucid/Schema'
 export default class Nations extends BaseSchema {
     protected tableName = 'nations'
 
-    public async up () {
+    public async up() {
         this.schema.createTable(this.tableName, (table) => {
             table.increments('id')
+            table.integer('oid').unique().notNullable()
             table.string('name').unique().notNullable()
             table.string('short_name')
             table.string('description')
@@ -20,7 +21,7 @@ export default class Nations extends BaseSchema {
         })
     }
 
-    public async down () {
+    public async down() {
         this.schema.dropTable(this.tableName)
     }
 }
