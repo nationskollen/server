@@ -3,4 +3,4 @@ build
 coverage
 .vscode
 .DS_STORE
-tmp/*.sqlite3
+tmp/db.sqlite3

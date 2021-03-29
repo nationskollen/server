@@ -21,12 +21,15 @@
 import Route from '@ioc:Adonis/Core/Route'
 import HealthCheck from '@ioc:Adonis/Core/HealthCheck'
 
-Route.group(() => {
-    Route.post('/user/login', 'AuthController.login')
-}).prefix('/api/v1')
-
 Route.get('health', async ({ response }) => {
     const report = await HealthCheck.getReport()
-
     return report.healthy ? response.ok(report) : response.badRequest(report)
 })
+
+Route.group(() => {
+    // Authentication
+    Route.post('/user/login', 'AuthController.login')
+
+    // Student nations
+    Route.get('/nations', 'NationsController.all')
+}).prefix('/api/v1')
