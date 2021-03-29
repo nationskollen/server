@@ -21,11 +21,9 @@
 import Route from '@ioc:Adonis/Core/Route'
 import HealthCheck from '@ioc:Adonis/Core/HealthCheck'
 
-Route.get('/', async () => {
-    return { hello: 'world' }
-})
-
-Route.post('/login', 'AuthController.login')
+Route.group(() => {
+    Route.post('/user/login', 'AuthController.login')
+}).prefix('/api/v1')
 
 Route.get('health', async ({ response }) => {
     const report = await HealthCheck.getReport()
