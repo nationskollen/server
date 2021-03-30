@@ -11,5 +11,5 @@ Route.group(() => {
 
     Route.get('/nations', 'NationsController.index')
     Route.get('/nations/:id', 'NationsController.show').middleware('nation')
-    Route.put('/nations/:id', 'NationsController.update').middleware(['auth', 'nation'])
+    Route.put('/nations/:id', 'NationsController.update').middleware(['auth', 'nation:admin'])
 }).prefix('/api/v1')

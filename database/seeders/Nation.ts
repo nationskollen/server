@@ -1,14 +1,27 @@
+import User from 'App/Models/User'
 import Nation, { ActivityLevel } from 'App/Models/Nation'
 import BaseSeeder from '@ioc:Adonis/Lucid/Seeder'
-import { NationFactory } from 'Database/factories'
 
 export default class NationSeeder extends BaseSeeder {
     public static developmentOnly = true
 
     public async run() {
-        const uniqueKey = 'name'
+        const users = await User.updateOrCreateMany('email', [
+            {
+                email: 'admin@vdala.se',
+                password: 'vdalaadmin',
+            },
+            {
+                email: 'admin@stocken.se',
+                password: 'stockenadmin',
+            },
+            {
+                email: 'admin@norrlands.se',
+                password: 'norrlandsadmin',
+            },
+        ])
 
-        await Nation.updateOrCreateMany(uniqueKey, [
+        await Nation.updateOrCreateMany('name', [
             {
                 oid: 400,
                 name: 'Västmanlands-Dala nation',
@@ -19,6 +32,7 @@ export default class NationSeeder extends BaseSeeder {
                 estimatedPeopleCount: 100,
                 activityLevel: ActivityLevel.Medium,
                 accentColor: '#0053a4',
+                adminUserId: users[0].id,
             },
             {
                 oid: 394,
@@ -30,6 +44,7 @@ export default class NationSeeder extends BaseSeeder {
                 estimatedPeopleCount: 0,
                 activityLevel: ActivityLevel.Closed,
                 accentColor: '#0073bc',
+                adminUserId: users[1].id,
             },
             {
                 oid: 405,
@@ -41,6 +56,7 @@ export default class NationSeeder extends BaseSeeder {
                 estimatedPeopleCount: 130,
                 activityLevel: ActivityLevel.High,
                 accentColor: '#e20e17',
+                adminUserId: users[2].id,
             },
         ])
     }

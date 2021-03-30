@@ -7,7 +7,14 @@ function randomNumber(max: number, min: number) {
     return Math.floor(Math.random() * max) + min
 }
 
-export const NationFactory = Factory.define(Nation, ({ faker }) => {
+export const UserFactory = Factory.define(User, ({ faker }) => {
+    return {
+        email: faker.internet.email(),
+        password: faker.internet.password(),
+    }
+}).build()
+
+export const NationFactory = Factory.define(Nation, async ({ faker }) => {
     const maxCapacity = randomNumber(500, 25)
     const maxActivityLevel = Object.keys(ActivityLevel).length - 1
 
@@ -34,10 +41,3 @@ export const NationFactory = Factory.define(Nation, ({ faker }) => {
         model.oid = randomNumber(100000, 0)
     })
     .build()
-
-export const UserFactory = Factory.define(User, ({ faker }) => {
-    return {
-        email: faker.internet.email(),
-        password: faker.internet.password(),
-    }
-}).build()

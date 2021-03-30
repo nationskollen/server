@@ -7,20 +7,31 @@ import { BASE_URL } from 'App/Utils/Constants'
 
 const INVALID_NATION_OID = 9999999999
 
-async function getToken() {
-    // Create new user
-    const password = 'password123'
-    const user = await UserFactory.merge({ password }).create()
+async function createNation(adminUserId?: number) {
+    if (adminUserId) {
+        return await NationFactory.merge({ adminUserId }).create()
+    }
+
+    return NationFactory.create()
+}
+
+async function createAdmin() {
+    const password = 'admintest'
+    const { id, email } = await UserFactory.merge({ password }).create()
 
     const { text } = await supertest(BASE_URL)
         .post(`/user/login`)
-        .send({
-            email: user.email,
-            password,
-        })
+        .send({ email, password })
         .expect(200)
 
-    return JSON.parse(text).token
+    const { token } = JSON.parse(text)
+
+    return {
+        id,
+        email,
+        password,
+        token,
+    }
 }
 
 test.group('Nation', () => {
@@ -29,7 +40,6 @@ test.group('Nation', () => {
         await NationFactory.createMany(count)
 
         const { text } = await supertest(BASE_URL).get('/nations').expect(200)
-
         const data = JSON.parse(text)
 
         assert.isArray(data)
@@ -39,7 +49,6 @@ test.group('Nation', () => {
 
     test('ensure that fetching a nation using an invalid oid gives an error', async (assert) => {
         const { text } = await supertest(BASE_URL).get(`/nations/${INVALID_NATION_OID}`).expect(404)
-
         const data = JSON.parse(text)
 
         assert.equal(data.status, 404)
@@ -49,7 +58,7 @@ test.group('Nation', () => {
     })
 
     test('ensure that fetching a nation using a valid oid returns the nation', async (assert) => {
-        const nation = await NationFactory.create()
+        const nation = await createNation()
         const { text } = await supertest(BASE_URL).get(`/nations/${nation.oid}`).expect(200)
 
         const data = JSON.parse(text)
@@ -61,10 +70,9 @@ test.group('Nation', () => {
     })
 
     test('ensure that updating a nation requires a valid token', async (assert) => {
-        const nation = await NationFactory.create()
-
+        const { oid } = await createNation()
         const { text } = await supertest(BASE_URL)
-            .put(`/nations/${nation.oid}`)
+            .put(`/nations/${oid}`)
             .set('Authorization', 'Bearer ' + 'invalidToken')
             .expect(401)
 
@@ -73,11 +81,33 @@ test.group('Nation', () => {
         assert.isNotEmpty(data.errors)
     })
 
-    test('ensure that updating a nation requires a valid oid', async (assert) => {
-        const token = await getToken()
+    test('ensure that updating a non-existant nation with a valid token fails', async () => {
+        const { token } = await createAdmin()
+
         await supertest(BASE_URL)
             .put(`/nations/${INVALID_NATION_OID}`)
             .set('Authorization', 'Bearer ' + token)
             .expect(404)
+    })
+
+    test('ensure that updating a nation with a non-admin token fails', async () => {
+        const { token } = await createAdmin()
+        const { oid } = await createNation()
+
+        await supertest(BASE_URL)
+            .put(`/nations/${oid}`)
+            .set('Authorization', 'Bearer ' + token)
+            .expect(401)
+    })
+
+    test('ensure that updating a nation requires a valid oid with admin permissions', async () => {
+        const { id, token } = await createAdmin()
+        // Add the admin user id as argument to set the admin user in the created nation
+        const { oid } = await createNation(id)
+
+        await supertest(BASE_URL)
+            .put(`/nations/${oid}`)
+            .set('Authorization', 'Bearer ' + token)
+            .expect(200)
     })
 })
