@@ -3,6 +3,7 @@ import Logger from '@ioc:Adonis/Core/Logger'
 import NotFoundException from 'App/Exceptions/NotFoundException'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { AuthenticationException } from '@adonisjs/auth/build/standalone'
+import InternalErrorException from 'App/Exceptions/InternalErrorException'
 
 export enum NationOwnerScopes {
     Guest = 'guest',
@@ -16,6 +17,10 @@ export default class NationMiddleware {
         throw new AuthenticationException('Unauthorized access', 'E_UNAUTHORIZED_ACCESS')
     }
 
+    private invalidScope() {
+        throw new InternalErrorException('Could not verify authentication scopes')
+    }
+
     private verifyAuthenticationScope(scopes: string[], adminUserId: number, userId?: number) {
         if (scopes.length == 0) {
             return
@@ -23,7 +28,7 @@ export default class NationMiddleware {
 
         if (scopes.length > 1) {
             Logger.error('Nation middleware only allows a single scope')
-            return
+            this.invalidScope()
         }
 
         // We are missing the 'auth' middleware, but we have defined a scope.
@@ -42,20 +47,20 @@ export default class NationMiddleware {
                 break
             default:
                 Logger.error(`Invalid scope in "nation" middleware: ${scope}`)
-                break
+                this.invalidScope()
         }
     }
 
     public async handle(
-        { request, response, params, auth }: HttpContextContract,
+        { request, params, auth }: HttpContextContract,
         next: () => Promise<void>,
         scopes: string[]
     ) {
         // Make sure that auth middleware is active if we have specified
         // authentication scope
         if (!auth && scopes.length > 0) {
-            Logger.error('')
-            response.abort({}, 500)
+            Logger.error('"nation" must be preceeded by the "auth" middleware')
+            this.invalidScope()
         }
 
         const nation = await Nation.findBy('oid', params.id)
