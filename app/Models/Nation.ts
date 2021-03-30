@@ -12,7 +12,7 @@ export type HexColor = string
 export type ImageSrc = string
 
 export default class Nation extends BaseModel {
-    @column()
+    @column({ isPrimary: true })
     public id: number
 
     // Unique id for every student nation.
@@ -22,7 +22,7 @@ export default class Nation extends BaseModel {
     // This id can be seen on nationsguiden.se by navigating
     // to a specific student nation, e.g:
     // https://nationsguiden.se/nation/?oid=400 for V-dala.
-    @column({ isPrimary: true })
+    @column()
     public oid: number
 
     // Full student nation name, e.g. Västmanlands-Dala nation
@@ -59,9 +59,9 @@ export default class Nation extends BaseModel {
     @column()
     public accentColor: HexColor
 
-    @column.dateTime({ autoCreate: true })
+    @column.dateTime({ autoCreate: true, serializeAs: null })
     public createdAt: DateTime
 
-    @column.dateTime({ autoCreate: true, autoUpdate: true })
+    @column.dateTime({ autoCreate: true, autoUpdate: true, serializeAs: null })
     public updatedAt: DateTime
 }

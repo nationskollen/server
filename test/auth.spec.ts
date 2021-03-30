@@ -1,8 +1,9 @@
 import test from 'japa'
 import supertest from 'supertest'
 import User from 'App/Models/User'
+import { BASE_URL } from 'App/Utils/Constants'
 
-const BASE_URL = `http://${process.env.HOST}:${process.env.PORT}/api/v1`
+// TODO: Add user factory
 
 test.group('Auth', () => {
     test('ensure user can login', async (assert) => {
@@ -22,7 +23,7 @@ test.group('Auth', () => {
     })
 
     test('ensure email is validated', async (assert) => {
-        const { text } = await supertest(BASE_URL)
+        await supertest(BASE_URL)
             .post('/user/login')
             .expect('Content-Type', /json/)
             .send({
@@ -33,7 +34,7 @@ test.group('Auth', () => {
     })
 
     test('ensure password is validated', async (assert) => {
-        const { text } = await supertest(BASE_URL)
+        await supertest(BASE_URL)
             .post('/user/login')
             .expect('Content-Type', /json/)
             .send({
