@@ -1,4 +1,5 @@
 import Nation from 'App/Models/Nation'
+import Logger from '@ioc:Adonis/Core/Logger'
 import NotFoundException from 'App/Exceptions/NotFoundException'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { AuthenticationException } from '@adonisjs/auth/build/standalone'
@@ -11,12 +12,51 @@ export enum NationOwnerScopes {
 
 // Verifies that the id param of a route is a valid oid of a student nation
 export default class NationMiddleware {
+    private unauthorized() {
+        throw new AuthenticationException('Unauthorized access', 'E_UNAUTHORIZED_ACCESS')
+    }
+
+    private verifyAuthenticationScope(scopes: string[], adminUserId: number, userId?: number) {
+        if (scopes.length == 0) {
+            return
+        }
+
+        if (scopes.length > 1) {
+            Logger.error('Nation middleware only allows a single scope')
+            return
+        }
+
+        // We are missing the 'auth' middleware, but we have defined a scope.
+        // This is an error and must return an Unauthorized error, since we
+        // can not verify the scope of a non-authenticated request.
+        if (!userId) {
+            this.unauthorized()
+        }
+
+        // Get the selected scope
+        const scope = scopes[0]
+
+        switch (scope) {
+            case NationOwnerScopes.Admin:
+                userId !== adminUserId && this.unauthorized()
+                break
+            default:
+                Logger.error(`Invalid scope in "nation" middleware: ${scope}`)
+                break
+        }
+    }
+
     public async handle(
-        { request, params, auth }: HttpContextContract,
+        { request, response, params, auth }: HttpContextContract,
         next: () => Promise<void>,
-        scope: string[]
+        scopes: string[]
     ) {
-        // TODO: Add check for valid scopes
+        // Make sure that auth middleware is active if we have specified
+        // authentication scope
+        if (!auth && scopes.length > 0) {
+            Logger.error('')
+            response.abort({}, 500)
+        }
 
         const nation = await Nation.findBy('oid', params.id)
 
@@ -26,11 +66,7 @@ export default class NationMiddleware {
 
         request.nation = nation
 
-        if (scope.includes(NationOwnerScopes.Admin)) {
-            if (auth?.user?.id !== nation.adminUserId) {
-                throw new AuthenticationException('Unauthorized access', 'E_UNAUTHORIZED_ACCESS')
-            }
-        }
+        this.verifyAuthenticationScope(scopes, nation.adminUserId, auth.user?.id)
 
         await next()
     }
