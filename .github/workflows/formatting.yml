@@ -1,4 +1,4 @@
-name: CI
+name: Formatting Code
 
 on:
   push:
@@ -22,4 +22,4 @@ jobs:
           sudo apt-get install nodejs
           
       - name: Formatting code
-        run: npm run lint
+        run: npm run format
