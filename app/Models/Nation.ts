@@ -1,5 +1,11 @@
-import { column, BaseModel } from '@ioc:Adonis/Lucid/Orm'
+import {
+    hasOne,
+    HasOne,
+    column,
+    BaseModel,
+} from '@ioc:Adonis/Lucid/Orm'
 import { DateTime } from 'luxon'
+import User from 'App/Models/User'
 
 export enum ActivityLevel {
     Closed,
@@ -12,7 +18,7 @@ export type HexColor = string
 export type ImageSrc = string
 
 export default class Nation extends BaseModel {
-    @column({ isPrimary: true })
+    @column({ isPrimary: true, serializeAs: null })
     public id: number
 
     // Unique id for every student nation.
@@ -24,6 +30,10 @@ export default class Nation extends BaseModel {
     // https://nationsguiden.se/nation/?oid=400 for V-dala.
     @column()
     public oid: number
+
+    // The id of the admin user (foreign key)
+    @column({ serializeAs: null })
+    public adminUserId: number
 
     // Full student nation name, e.g. Västmanlands-Dala nation
     @column()
@@ -64,4 +74,8 @@ export default class Nation extends BaseModel {
 
     @column.dateTime({ autoCreate: true, autoUpdate: true, serializeAs: null })
     public updatedAt: DateTime
+
+    // A nation can only have a single admin user
+    @hasOne(() => Nation, { foreignKey: 'adminUserId' })
+    public nation: HasOne<typeof Nation>
 }
