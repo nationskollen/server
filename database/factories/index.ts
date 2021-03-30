@@ -1,4 +1,6 @@
 import Factory from '@ioc:Adonis/Lucid/Factory'
+
+import User from 'App/Models/User'
 import Nation, { ActivityLevel } from 'App/Models/Nation'
 
 function randomNumber(max: number, min: number) {
@@ -32,3 +34,10 @@ export const NationFactory = Factory.define(Nation, ({ faker }) => {
         model.oid = randomNumber(100000, 0)
     })
     .build()
+
+export const UserFactory = Factory.define(User, ({ faker }) => {
+    return {
+        email: faker.internet.email(),
+        password: faker.internet.password(),
+    }
+}).build()

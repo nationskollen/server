@@ -1,17 +1,22 @@
 import test from 'japa'
 import supertest from 'supertest'
+import User from 'App/Models/User'
 import Nation from 'App/Models/Nation'
-import { NationFactory } from 'Database/factories/index'
+import { NationFactory, UserFactory } from 'Database/factories/index'
 import { BASE_URL } from 'App/Utils/Constants'
 
 const INVALID_NATION_OID = 9999999999
 
 async function getToken() {
+    // Create new user
+    const password = 'password123'
+    const user = await UserFactory.merge({ password }).create()
+
     const { text } = await supertest(BASE_URL)
         .post(`/user/login`)
         .send({
-            email: 'admin@test.com',
-            password: '12345678',
+            email: user.email,
+            password,
         })
         .expect(200)
 
