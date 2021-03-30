@@ -1,17 +1,21 @@
 import test from 'japa'
 import supertest from 'supertest'
 import User from 'App/Models/User'
-
-const BASE_URL = `http://${process.env.HOST}:${process.env.PORT}/api/v1`
+import { BASE_URL } from 'App/Utils/Constants'
+import { UserFactory } from 'Database/factories/index'
 
 test.group('Auth', () => {
     test('ensure user can login', async (assert) => {
+        // Create new user
+        const password = 'password123'
+        const user = await UserFactory.merge({ password }).create()
+
         const { text } = await supertest(BASE_URL)
             .post('/user/login')
             .expect('Content-Type', /json/)
             .send({
-                email: 'admin@test.com',
-                password: '12345678',
+                email: user.email,
+                password: password,
             })
             .expect(200)
 
@@ -22,7 +26,7 @@ test.group('Auth', () => {
     })
 
     test('ensure email is validated', async (assert) => {
-        const { text } = await supertest(BASE_URL)
+        await supertest(BASE_URL)
             .post('/user/login')
             .expect('Content-Type', /json/)
             .send({
@@ -33,11 +37,22 @@ test.group('Auth', () => {
     })
 
     test('ensure password is validated', async (assert) => {
-        const { text } = await supertest(BASE_URL)
+        await supertest(BASE_URL)
             .post('/user/login')
             .expect('Content-Type', /json/)
             .send({
                 email: 'admin@test.com',
+                password: '123',
+            })
+            .expect(422)
+    })
+
+    test('ensure both email and password is validated', async (assert) => {
+        await supertest(BASE_URL)
+            .post('/user/login')
+            .expect('Content-Type', /json/)
+            .send({
+                email: 'admin',
                 password: '123',
             })
             .expect(422)

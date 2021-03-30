@@ -1,7 +1,6 @@
 import test from 'japa'
 import supertest from 'supertest'
-
-const BASE_URL = `http://${process.env.HOST}:${process.env.PORT}`
+import { BASE_URL } from 'App/Utils/Constants'
 
 interface HealthReport {
     health: {
