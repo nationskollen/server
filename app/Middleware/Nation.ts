@@ -6,7 +6,6 @@ import { AuthenticationException } from '@adonisjs/auth/build/standalone'
 import InternalErrorException from 'App/Exceptions/InternalErrorException'
 
 export enum NationOwnerScopes {
-    Guest = 'guest',
     Staff = 'staff',
     Admin = 'admin',
 }
