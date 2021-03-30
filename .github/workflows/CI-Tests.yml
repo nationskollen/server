@@ -25,5 +25,5 @@ jobs:
         run: npm run setup
           
       - name: Running tests on API
-        run: npm run tests
+        run: npm run test
         
