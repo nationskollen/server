@@ -15,14 +15,15 @@ jobs:
       - name: Setting up dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install sqlite3 libsqlite3-dev
           sudo apt-get install nodejs
+      # sudo apt-get install sqlite3 libsqlite3-dev
           
       - name: Installing API
         run: npm install
         
-      - name: Setting up API
-        run: npm run setup
+      # Not needed since npm run test initiates the setup nonetheless   
+      #- name: Setting up API
+      # run: npm run setup
           
       - name: Running tests on API
         run: npm run test
