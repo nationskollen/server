@@ -23,11 +23,11 @@ export default class ExceptionHandler extends HttpExceptionHandler {
         super(Logger)
     }
 
-    public async report (error: Exception, ctx: HttpContextContract) {
+    public async report(error: Exception, ctx: HttpContextContract) {
         // Ignore all logging in tests. The test cases and their asserts is
         // more interesting than exceptions that has been thrown.
         if (process.env.NODE_ENV === 'testing') {
-            return;
+            return
         }
 
         super.report(error, ctx)

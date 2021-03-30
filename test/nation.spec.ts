@@ -4,14 +4,14 @@ import Nation from 'App/Models/Nation'
 import { NationFactory } from 'Database/factories/index'
 import { BASE_URL } from 'App/Utils/Constants'
 
-const INVALID_NATION_OID = 9999999999;
+const INVALID_NATION_OID = 9999999999
 
 async function getToken() {
     const { text } = await supertest(BASE_URL)
         .post(`/user/login`)
         .send({
             email: 'admin@test.com',
-            password: '12345678'
+            password: '12345678',
         })
         .expect(200)
 
@@ -23,9 +23,7 @@ test.group('Nation', () => {
         const count = 10
         await NationFactory.createMany(count)
 
-        const { text } = await supertest(BASE_URL)
-            .get('/nations')
-            .expect(200)
+        const { text } = await supertest(BASE_URL).get('/nations').expect(200)
 
         const data = JSON.parse(text)
 
@@ -35,9 +33,7 @@ test.group('Nation', () => {
     })
 
     test('ensure that fetching a nation using an invalid oid gives an error', async (assert) => {
-        const { text } = await supertest(BASE_URL)
-            .get(`/nations/${INVALID_NATION_OID}`)
-            .expect(404)
+        const { text } = await supertest(BASE_URL).get(`/nations/${INVALID_NATION_OID}`).expect(404)
 
         const data = JSON.parse(text)
 
@@ -49,9 +45,7 @@ test.group('Nation', () => {
 
     test('ensure that fetching a nation using a valid oid returns the nation', async (assert) => {
         const nation = await NationFactory.create()
-        const { text } = await supertest(BASE_URL)
-            .get(`/nations/${nation.oid}`)
-            .expect(200)
+        const { text } = await supertest(BASE_URL).get(`/nations/${nation.oid}`).expect(200)
 
         const data = JSON.parse(text)
         const serializedNation = nation.toJSON()
@@ -66,6 +60,7 @@ test.group('Nation', () => {
 
         const { text } = await supertest(BASE_URL)
             .put(`/nations/${nation.oid}`)
+            .set('Authorization', 'Bearer ' + 'invalidToken')
             .expect(401)
 
         const data = JSON.parse(text)
