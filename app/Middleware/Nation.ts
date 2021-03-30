@@ -14,7 +14,7 @@ export default class NationMiddleware {
     public async handle(
         { request, params, auth }: HttpContextContract,
         next: () => Promise<void>,
-        scope: string[],
+        scope: string[]
     ) {
         // TODO: Add check for valid scopes
 
@@ -25,17 +25,12 @@ export default class NationMiddleware {
         }
 
         request.nation = nation
-        console.log(scope)
 
         if (scope.includes(NationOwnerScopes.Admin)) {
-            if (auth?.user?.id != nation.adminUserId) {
-                throw new AuthenticationException(
-                    'Unauthorized access',
-                    'E_UNAUTHORIZED_ACCESS',
-                )
+            if (auth?.user?.id !== nation.adminUserId) {
+                throw new AuthenticationException('Unauthorized access', 'E_UNAUTHORIZED_ACCESS')
             }
         }
-
 
         await next()
     }

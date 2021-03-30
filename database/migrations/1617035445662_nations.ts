@@ -7,7 +7,7 @@ export default class Nations extends BaseSchema {
         this.schema.createTable(this.tableName, (table) => {
             table.increments('id')
             table.integer('oid').unique().notNullable()
-            table.integer('admin_user_id').unique().notNullable()
+            table.integer('admin_user_id').unique()
             table.string('name').unique().notNullable()
             table.string('short_name')
             table.string('description')

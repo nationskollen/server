@@ -12,7 +12,7 @@ export default class NationsController {
     }
 
     public async update({ request }: HttpContextContract) {
-        const { nation } = request;
+        const { nation } = request
 
         // TODO: Add validator for request data
         // TODO: Update nation

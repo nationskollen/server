@@ -1,9 +1,4 @@
-import {
-    hasOne,
-    HasOne,
-    column,
-    BaseModel,
-} from '@ioc:Adonis/Lucid/Orm'
+import { hasOne, HasOne, column, BaseModel } from '@ioc:Adonis/Lucid/Orm'
 import { DateTime } from 'luxon'
 import User from 'App/Models/User'
 
@@ -77,5 +72,5 @@ export default class Nation extends BaseModel {
 
     // A nation can only have a single admin user
     @hasOne(() => Nation, { foreignKey: 'adminUserId' })
-    public nation: HasOne<typeof Nation>
+    public owner: HasOne<typeof Nation>
 }
