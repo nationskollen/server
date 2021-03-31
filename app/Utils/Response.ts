@@ -2,7 +2,6 @@
 export function createErrorResponse(status: number, message: string) {
     return {
         status,
-        success: false,
-        message,
+        errors: [message],
     }
 }

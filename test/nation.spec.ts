@@ -24,9 +24,8 @@ test.group('Fetch nation', () => {
         const data = JSON.parse(text)
 
         assert.equal(data.status, 404)
-        assert.equal(data.success, false)
-        assert.exists(data.message)
-        assert.isNotEmpty(data.message)
+        assert.exists(data.errors)
+        assert.isNotEmpty(data.errors)
     })
 
     test('ensure that fetching a nation using a valid oid returns the nation', async (assert) => {
