@@ -1,6 +1,7 @@
 import User from 'App/Models/User'
-import Nation, { ActivityLevel } from 'App/Models/Nation'
+import Nation from 'App/Models/Nation'
 import BaseSeeder from '@ioc:Adonis/Lucid/Seeder'
+import { ActivityLevels } from 'App/Utils/Activity'
 
 export default class NationSeeder extends BaseSeeder {
     public static developmentOnly = true
@@ -15,7 +16,7 @@ export default class NationSeeder extends BaseSeeder {
                 address: 'S:t Larsgatan 13, 75311 Uppsala',
                 maxCapacity: 200,
                 estimatedPeopleCount: 100,
-                activityLevel: ActivityLevel.Medium,
+                activityLevel: ActivityLevels.Medium,
                 accentColor: '#0053a4',
             },
             {
@@ -26,7 +27,7 @@ export default class NationSeeder extends BaseSeeder {
                 address: 'Drottninggatan 11, 75310 Uppsala',
                 maxCapacity: 300,
                 estimatedPeopleCount: 0,
-                activityLevel: ActivityLevel.Closed,
+                activityLevel: ActivityLevels.Closed,
                 accentColor: '#0073bc',
             },
             {
@@ -37,7 +38,7 @@ export default class NationSeeder extends BaseSeeder {
                 address: 'Västra Ågatan 13, 75309 Uppsala',
                 maxCapacity: 150,
                 estimatedPeopleCount: 130,
-                activityLevel: ActivityLevel.High,
+                activityLevel: ActivityLevels.High,
                 accentColor: '#e20e17',
             },
         ])

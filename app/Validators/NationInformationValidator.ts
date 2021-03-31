@@ -7,13 +7,19 @@ export default class NationInformationValidator {
 
     public schema = schema.create({
         name: schema.string.optional({}, [
-            rules.alpha(),
+            rules.alpha({
+                allow: ['space', 'dash'],
+            }),
             rules.unique({
                 table: 'nations',
                 column: 'name',
             }),
         ]),
-        short_name: schema.string.optional({}, [rules.alpha()]),
+        short_name: schema.string.optional({}, [
+            rules.alpha({
+                allow: ['space', 'dash'],
+            }),
+        ]),
         description: schema.string.optional(),
         address: schema.string.optional(),
         max_capacity: schema.number.optional([rules.unsigned()]),

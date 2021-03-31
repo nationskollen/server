@@ -1,13 +1,14 @@
 import test from 'japa'
 import supertest from 'supertest'
 import Nation from 'App/Models/Nation'
-import { NationFactory } from 'Database/factories/index'
 import { BASE_URL } from 'App/Utils/Constants'
 import { createStaffUser } from 'App/Utils/Test'
+import { ActivityLevels } from 'App/Utils/Activity'
+import { NationFactory } from 'Database/factories/index'
 
 const INVALID_NATION_OID = 9999999999
 
-test.group('Nation', () => {
+test.group('Fetch nation', () => {
     test('ensure you can fetch all nations', async (assert) => {
         await NationFactory.createMany(5)
 
@@ -39,12 +40,15 @@ test.group('Nation', () => {
             assert.equal(serializedNation[key], data[key])
         }
     })
+})
 
+test.group('Update nation information', () => {
     test('ensure that updating a nation requires a valid token', async (assert) => {
         const { oid } = await NationFactory.create()
         const { text } = await supertest(BASE_URL)
             .put(`/nations/${oid}`)
             .set('Authorization', 'Bearer ' + 'invalidToken')
+            .send({ address: 'new address' })
             .expect(401)
 
         const data = JSON.parse(text)
@@ -59,6 +63,7 @@ test.group('Nation', () => {
         await supertest(BASE_URL)
             .put(`/nations/${INVALID_NATION_OID}`)
             .set('Authorization', 'Bearer ' + token)
+            .send({ address: 'new address' })
             .expect(404)
     })
 
@@ -69,20 +74,69 @@ test.group('Nation', () => {
         await supertest(BASE_URL)
             .put(`/nations/${oid}`)
             .set('Authorization', 'Bearer ' + token)
+            .send({ address: 'new address' })
             .expect(401)
     })
 
-    test('ensure that updating a nation with admin permission works', async () => {
-        // Add the admin user id as argument to set the admin user in the created nation
+    test('ensure that trying to update a nation with no request data fails', async () => {
         const { oid } = await NationFactory.create()
         const { token } = await createStaffUser(oid, true)
 
         await supertest(BASE_URL)
             .put(`/nations/${oid}`)
             .set('Authorization', 'Bearer ' + token)
-            .expect(200)
+            .expect(400)
     })
 
+    test('ensure that invalid properties are removed when updating a nation', async (assert) => {
+        const { oid } = await NationFactory.create()
+        const { token } = await createStaffUser(oid, true)
+
+        await supertest(BASE_URL)
+            .put(`/nations/${oid}`)
+            .set('Authorization', 'Bearer ' + token)
+            .send({
+                invalidKey: 'hello',
+                anotherInvalidKey: 'world',
+            })
+            .expect(400)
+    })
+
+    test('ensure that updating a nation updates the database', async (assert) => {
+        const originalNation = await NationFactory.create()
+        const newNationData = {
+            name: 'test-name',
+            short_name: 'test-short',
+            description: 'test-description',
+            address: 'test-address 123',
+            max_capacity: 100,
+            estimated_people_count: 100,
+            activity_level: ActivityLevels.VeryHigh,
+            accent_color: '#FFFFFF',
+        }
+
+        const { token } = await createStaffUser(originalNation.oid, true)
+
+        const { text } = await supertest(BASE_URL)
+            .put(`/nations/${originalNation.oid}`)
+            .set('Authorization', 'Bearer ' + token)
+            .send(newNationData)
+            .expect(200)
+
+        const data = JSON.parse(text)
+        const savedNation = await Nation.findByOrFail('oid', originalNation.oid)
+        const savedNationData = savedNation.toJSON()
+
+        // Make sure that the updated nation contains the same data
+        // as in newNationData. Also make sure that the database has been updated.
+        for (const [key, value] of Object.entries(newNationData)) {
+            assert.equal(data[key], value)
+            assert.equal(savedNationData[key], value)
+        }
+    })
+})
+
+test.group('Update nation activity', () => {
     test('ensure that updating a nation activity requires authorization', async () => {
         const { oid } = await NationFactory.create()
         // Create a user for another nation

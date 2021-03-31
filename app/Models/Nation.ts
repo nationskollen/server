@@ -1,13 +1,7 @@
-import { hasMany, HasMany, column, BaseModel } from '@ioc:Adonis/Lucid/Orm'
 import { DateTime } from 'luxon'
 import User from 'App/Models/User'
-
-export enum ActivityLevel {
-    Closed,
-    Low,
-    Medium,
-    High,
-}
+import { ActivityLevels } from 'App/Utils/Activity'
+import { hasMany, HasMany, column, BaseModel } from '@ioc:Adonis/Lucid/Orm'
 
 export default class Nation extends BaseModel {
     @column({ isPrimary: true, serializeAs: null })
@@ -46,7 +40,7 @@ export default class Nation extends BaseModel {
     public estimatedPeopleCount: number
 
     @column()
-    public activityLevel: ActivityLevel
+    public activityLevel: ActivityLevels
 
     @column()
     public iconImgSrc: string
@@ -64,6 +58,6 @@ export default class Nation extends BaseModel {
     public updatedAt: DateTime
 
     // A nation can have many staff users
-    @hasMany(() => User)
+    @hasMany(() => User, { localKey: 'oid' })
     public staff: HasMany<typeof User>
 }

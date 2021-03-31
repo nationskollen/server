@@ -26,22 +26,7 @@ export default class NationsController {
         }
 
         if (nation) {
-            // Extract the available properties that can be updated
-            const columns = nation.toJSON()
-
-            for (const [key, value] of Object.entries(changes)) {
-                // Make sure that the change is a valid column
-                if (!columns.hasOwnProperty(key)) {
-                    throw new InternalErrorException(
-                        'Invalid property received in NationInformationValidator'
-                    )
-                }
-
-                // Update the local model
-                nation[key] = value
-            }
-
-            // Save to database
+            nation.merge(changes)
             await nation.save()
         } else {
             throw new InternalErrorException('Could not find nation to update')
