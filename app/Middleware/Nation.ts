@@ -1,3 +1,4 @@
+import User from 'App/Models/User'
 import Nation from 'App/Models/Nation'
 import Logger from '@ioc:Adonis/Core/Logger'
 import NotFoundException from 'App/Exceptions/NotFoundException'
@@ -12,41 +13,36 @@ export enum NationOwnerScopes {
 
 // Verifies that the id param of a route is a valid oid of a student nation
 export default class NationMiddleware {
-    private unauthorized() {
+    private throwUnauthorized() {
         throw new AuthenticationException('Unauthorized access', 'E_UNAUTHORIZED_ACCESS')
     }
 
-    private invalidScope() {
+    private throwInvalidScope() {
         throw new InternalErrorException('Could not verify authentication scopes')
     }
 
-    private verifyAuthenticationScope(scopes: string[], adminUserId: number, userId?: number) {
-        if (scopes.length == 0) {
-            return
-        }
+    private isStaff({ oid }: Nation, { nationId }: User) {
+        return oid === nationId
+    }
 
-        if (scopes.length > 1) {
-            Logger.error('Nation middleware only allows a single scope')
-            this.invalidScope()
-        }
+    private isAdmin(nation: Nation, user: User) {
+        return this.isStaff(nation, user) && user.nationAdmin
+    }
 
-        // We are missing the 'auth' middleware, but we have defined a scope.
-        // This is an error and must return an Unauthorized error, since we
-        // can not verify the scope of a non-authenticated request.
-        if (!userId) {
-            this.unauthorized()
-        }
-
+    private async verifyAuthenticationScope(nation: Nation, user: User, scopes: string[]) {
         // Get the selected scope
         const scope = scopes[0]
 
         switch (scope) {
             case NationOwnerScopes.Admin:
-                userId !== adminUserId && this.unauthorized()
+                !this.isAdmin(nation, user) && this.throwUnauthorized()
+                break
+            case NationOwnerScopes.Staff:
+                !this.isStaff(nation, user) && this.throwUnauthorized()
                 break
             default:
                 Logger.error(`Invalid scope in "nation" middleware: ${scope}`)
-                this.invalidScope()
+                this.throwInvalidScope()
         }
     }
 
@@ -55,13 +51,6 @@ export default class NationMiddleware {
         next: () => Promise<void>,
         scopes: string[]
     ) {
-        // Make sure that auth middleware is active if we have specified
-        // authentication scope
-        if (!auth && scopes.length > 0) {
-            Logger.error('"nation" must be preceeded by the "auth" middleware')
-            this.invalidScope()
-        }
-
         const nation = await Nation.findBy('oid', params.id)
 
         if (!nation) {
@@ -70,7 +59,20 @@ export default class NationMiddleware {
 
         request.nation = nation
 
-        this.verifyAuthenticationScope(scopes, nation.adminUserId, auth.user?.id)
+        // We are missing the 'auth' middleware, but we have defined a scope.
+        // This is an error and must return an Unauthorized error, since we
+        // can not verify the scope of a non-authenticated request.
+        if (scopes.length > 0) {
+            if (auth.user) {
+                await this.verifyAuthenticationScope(nation, auth.user, scopes)
+            } else {
+                Logger.error('"nation" must be preceeded by the "auth" middleware')
+                this.throwInvalidScope()
+            }
+        } else if (scopes.length > 1) {
+            Logger.error('Nation middleware only allows a single scope')
+            this.throwInvalidScope()
+        }
 
         await next()
     }

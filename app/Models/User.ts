@@ -12,6 +12,14 @@ export default class User extends BaseModel {
     @column({ serializeAs: null })
     public password: string
 
+    // The nation that this user is a part of
+    @column({ serializeAs: null })
+    public nationId: number
+
+    // If the user is a nation admin
+    @column({ serializeAs: null })
+    public nationAdmin: boolean
+
     @column()
     public rememberMeToken?: string
 

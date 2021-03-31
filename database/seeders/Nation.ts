@@ -6,22 +6,7 @@ export default class NationSeeder extends BaseSeeder {
     public static developmentOnly = true
 
     public async run() {
-        const users = await User.updateOrCreateMany('email', [
-            {
-                email: 'admin@vdala.se',
-                password: 'vdalaadmin',
-            },
-            {
-                email: 'admin@stocken.se',
-                password: 'stockenadmin',
-            },
-            {
-                email: 'admin@norrlands.se',
-                password: 'norrlandsadmin',
-            },
-        ])
-
-        await Nation.updateOrCreateMany('name', [
+        const nations = await Nation.updateOrCreateMany('name', [
             {
                 oid: 400,
                 name: 'Västmanlands-Dala nation',
@@ -32,7 +17,6 @@ export default class NationSeeder extends BaseSeeder {
                 estimatedPeopleCount: 100,
                 activityLevel: ActivityLevel.Medium,
                 accentColor: '#0053a4',
-                adminUserId: users[0].id,
             },
             {
                 oid: 394,
@@ -44,7 +28,6 @@ export default class NationSeeder extends BaseSeeder {
                 estimatedPeopleCount: 0,
                 activityLevel: ActivityLevel.Closed,
                 accentColor: '#0073bc',
-                adminUserId: users[1].id,
             },
             {
                 oid: 405,
@@ -56,7 +39,27 @@ export default class NationSeeder extends BaseSeeder {
                 estimatedPeopleCount: 130,
                 activityLevel: ActivityLevel.High,
                 accentColor: '#e20e17',
-                adminUserId: users[2].id,
+            },
+        ])
+
+        await User.updateOrCreateMany('email', [
+            {
+                email: 'admin@vdala.se',
+                password: 'vdalaadmin',
+                nationId: nations[0].oid,
+                nationAdmin: true,
+            },
+            {
+                email: 'admin@stocken.se',
+                password: 'stockenadmin',
+                nationId: nations[1].oid,
+                nationAdmin: true,
+            },
+            {
+                email: 'admin@norrlands.se',
+                password: 'norrlandsadmin',
+                nationId: nations[2].oid,
+                nationAdmin: true,
             },
         ])
     }
