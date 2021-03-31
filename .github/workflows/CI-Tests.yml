@@ -4,27 +4,27 @@ on:
   push:
     branches: [ main ]
     paths:
-    - 'app/**'
-    - 'database/**'
-    - 'test/'
-    - 'start/**'
-    - 'providers/**'
-    - 'contracts/**'
-    - 'config/**'
-    - 'contracts/**'
-    - 'commands/**'
+    - 'app/**/*'
+    - 'database/**/*'
+    - 'test/**/*'
+    - 'start/**/*'
+    - 'providers/**/*'
+    - 'contracts/**/*'
+    - 'config/**/*'
+    - 'contracts/**/*'
+    - 'commands/**/*'
   pull_request:
     branches: [ main ]
     paths:
-    - 'app/**'
-    - 'database/**'
-    - 'test/'
-    - 'start/**'
-    - 'providers/**'
-    - 'contracts/**'
-    - 'config/**'
-    - 'contracts/**'
-    - 'commands/**'
+    - 'app/**/*'
+    - 'database/**/*'
+    - 'test/**/*'
+    - 'start/**/*'
+    - 'providers/**/*'
+    - 'contracts/**/*'
+    - 'config/**/*'
+    - 'contracts/**/*'
+    - 'commands/**/*'
 
 jobs:
   build:
