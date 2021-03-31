@@ -102,9 +102,30 @@ test.group('Nation', () => {
             .expect(200)
     })
 
-    test('ensure that updating a nation activity requires staff permissions', async () => {
+    test('ensure that updating a nation activity requires authorization', async () => {
+        const { oid } = await NationFactory.create()
+        // Create a user for another nation
+        const { token } = await createStaffUser(oid + 1, false)
+
+        await supertest(BASE_URL)
+            .put(`/nations/${oid}/activity`)
+            .set('Authorization', 'Bearer ' + token)
+            .expect(401)
+    })
+
+    test('ensure that updating a nation activity works with staff permissions', async () => {
         const { oid } = await NationFactory.create()
         const { token } = await createStaffUser(oid, false)
+
+        await supertest(BASE_URL)
+            .put(`/nations/${oid}/activity`)
+            .set('Authorization', 'Bearer ' + token)
+            .expect(200)
+    })
+
+    test('ensure that updating a nation activity works with admin permissions', async () => {
+        const { oid } = await NationFactory.create()
+        const { token } = await createStaffUser(oid, true)
 
         await supertest(BASE_URL)
             .put(`/nations/${oid}/activity`)

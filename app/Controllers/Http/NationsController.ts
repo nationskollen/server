@@ -21,13 +21,12 @@ export default class NationsController {
     }
 
     public async updateActivity({ request }: HttpContextContract) {
-      const { nation } = request
+        const { nation } = request
 
-      // TODO: Add validator for request data
-      // TODO: Update nation activity
-      // TODO: Return updated nation
+        // TODO: Add validator for request data
+        // TODO: Update nation activity
+        // TODO: Return updated nation
 
-      return nation
-
+        return nation
     }
 }
