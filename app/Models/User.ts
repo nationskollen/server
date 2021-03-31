@@ -13,7 +13,7 @@ export default class User extends BaseModel {
     public password: string
 
     // The nation that this user is a part of
-    @column({ serializeAs: null })
+    @column({ serializeAs: 'oid' })
     public nationId: number
 
     // If the user is a nation admin

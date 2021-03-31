@@ -11,11 +11,12 @@ export async function createStaffUser(nationId: number, nationAdmin: boolean) {
         .send({ email: user.email, password })
         .expect(200)
 
-    const { token, scope } = JSON.parse(text)
+    const { token, scope, oid } = JSON.parse(text)
 
     return {
         user,
         token,
         scope,
+        oid,
     }
 }

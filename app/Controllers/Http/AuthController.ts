@@ -5,9 +5,10 @@ import { NationOwnerScopes } from 'App/Utils/Scopes'
 export default class AuthController {
     public async login({ request, auth }: HttpContextContract) {
         const { email, password } = await request.validate(UserValidator)
-
         const token = await auth.use('api').attempt(email, password)
-        let scope: string = NationOwnerScopes.None
+
+        let scope = NationOwnerScopes.None
+        let oid = -1
 
         // Set scope depending on what user is
         // If nationId is not part of a nation (-1),
@@ -18,11 +19,14 @@ export default class AuthController {
             } else {
                 scope = NationOwnerScopes.Staff
             }
+
+            oid = auth.user.nationId
         }
 
         return {
             ...token.toJSON(),
             scope,
+            oid,
         }
     }
 }
