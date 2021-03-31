@@ -2,6 +2,7 @@ import Nation from 'App/Models/Nation'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import BadRequestException from 'App/Exceptions/BadRequestException'
 import InternalErrorException from 'App/Exceptions/InternalErrorException'
+import NationActivityValidator from 'App/Validators/NationActivityValidator'
 import NationInformationValidator from 'App/Validators/NationInformationValidator'
 
 export default class NationsController {
@@ -16,7 +17,7 @@ export default class NationsController {
 
     public async update({ request }: HttpContextContract) {
         const changes = await request.validate(NationInformationValidator)
-        const { nation } = request
+        const nation = request.nation
 
         // Make sure that there is updated data from the request
         if (Object.keys(changes).length === 0) {
@@ -36,12 +37,26 @@ export default class NationsController {
     }
 
     public async updateActivity({ request }: HttpContextContract) {
+        const { change } = await request.validate(NationActivityValidator)
         const { nation } = request
 
-        // TODO: Add validator for request data
-        // TODO: Update nation activity
-        // TODO: Return updated nation
+        if (nation) {
+            const { maxCapacity, estimatedPeopleCount } = nation
 
-        return nation
+            // Clamp value between 0 and maxCapacity
+            nation.estimatedPeopleCount = Math.min(
+                Math.max(0, estimatedPeopleCount + change),
+                maxCapacity
+            )
+
+            await nation.save()
+        } else {
+            throw new InternalErrorException('Could not find nation to update')
+        }
+
+        return {
+            estimated_people_count: nation.estimatedPeopleCount,
+            activity_level: nation.activityLevel,
+        }
     }
 }

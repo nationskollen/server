@@ -146,23 +146,87 @@ test.group('Update nation activity', () => {
             .expect(401)
     })
 
-    test('ensure that updating a nation activity works with staff permissions', async () => {
+    test('ensure that trying to update nation activity with no request data fails', async () => {
         const { oid } = await NationFactory.create()
         const { token } = await createStaffUser(oid, false)
 
         await supertest(BASE_URL)
             .put(`/nations/${oid}/activity`)
             .set('Authorization', 'Bearer ' + token)
-            .expect(200)
+            .expect(422)
     })
 
-    test('ensure that updating a nation activity works with admin permissions', async () => {
+    test('ensure that invalid properties are removed when updating nation activity', async () => {
         const { oid } = await NationFactory.create()
-        const { token } = await createStaffUser(oid, true)
+        const { token } = await createStaffUser(oid, false)
 
         await supertest(BASE_URL)
             .put(`/nations/${oid}/activity`)
             .set('Authorization', 'Bearer ' + token)
+            .send({
+                invalidKey: 'hello',
+                anotherInvalidKey: 'world',
+            })
+            .expect(422)
+    })
+
+    test('ensure that updating a nation activity works with staff permissions', async (assert) => {
+        const { oid, maxCapacity } = await NationFactory.create()
+        const { token } = await createStaffUser(oid, false)
+
+        const { text } = await supertest(BASE_URL)
+            .put(`/nations/${oid}/activity`)
+            .set('Authorization', 'Bearer ' + token)
+            .send({ change: maxCapacity })
             .expect(200)
+
+        const data = await JSON.parse(text)
+
+        assert.equal(data.estimated_people_count, maxCapacity)
+    })
+
+    test('ensure that updating a nation activity works with admin permissions', async (assert) => {
+        const { oid, maxCapacity } = await NationFactory.create()
+        const { token } = await createStaffUser(oid, true)
+
+        const { text } = await supertest(BASE_URL)
+            .put(`/nations/${oid}/activity`)
+            .set('Authorization', 'Bearer ' + token)
+            .send({ change: maxCapacity })
+            .expect(200)
+
+        const data = await JSON.parse(text)
+
+        assert.equal(data.estimated_people_count, maxCapacity)
+    })
+
+    test('ensure that nation people count does not go below 0', async (assert) => {
+        const { oid, maxCapacity } = await NationFactory.create()
+        const { token } = await createStaffUser(oid, true)
+
+        const { text } = await supertest(BASE_URL)
+            .put(`/nations/${oid}/activity`)
+            .set('Authorization', 'Bearer ' + token)
+            .send({ change: -1 * (maxCapacity + 10) })
+            .expect(200)
+
+        const data = await JSON.parse(text)
+
+        assert.equal(data.estimated_people_count, 0)
+    })
+
+    test('ensure that nation people count does not go above max capacity', async (assert) => {
+        const { oid, maxCapacity } = await NationFactory.create()
+        const { token } = await createStaffUser(oid, true)
+
+        const { text } = await supertest(BASE_URL)
+            .put(`/nations/${oid}/activity`)
+            .set('Authorization', 'Bearer ' + token)
+            .send({ change: maxCapacity + 10 })
+            .expect(200)
+
+        const data = await JSON.parse(text)
+
+        assert.equal(data.estimated_people_count, maxCapacity)
     })
 })
