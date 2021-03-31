@@ -15,7 +15,7 @@ async function createNation(adminUserId?: number) {
     return NationFactory.create()
 }
 
-async function createAdmin() {
+async function createUser() {
     const password = 'admintest'
     const { id, email } = await UserFactory.merge({ password }).create()
 
@@ -82,7 +82,7 @@ test.group('Nation', () => {
     })
 
     test('ensure that updating a non-existant nation with a valid token fails', async () => {
-        const { token } = await createAdmin()
+        const { token } = await createUser()
 
         await supertest(BASE_URL)
             .put(`/nations/${INVALID_NATION_OID}`)
@@ -91,7 +91,7 @@ test.group('Nation', () => {
     })
 
     test('ensure that updating a nation with a non-admin token fails', async () => {
-        const { token } = await createAdmin()
+        const { token } = await createUser()
         const { oid } = await createNation()
 
         await supertest(BASE_URL)
@@ -101,7 +101,7 @@ test.group('Nation', () => {
     })
 
     test('ensure that updating a nation requires a valid oid with admin permissions', async () => {
-        const { id, token } = await createAdmin()
+        const { id, token } = await createUser()
         // Add the admin user id as argument to set the admin user in the created nation
         const { oid } = await createNation(id)
 
@@ -110,4 +110,16 @@ test.group('Nation', () => {
             .set('Authorization', 'Bearer ' + token)
             .expect(200)
     })
+
+    /* test('ensure that updating a nation activity requires oid with staff permissions', async () => { */
+    /*     const { token } = await createUser() */
+    /*     // Add the user id as argument to set the admin user in the created nation */
+    /*     const { oid } = await createNation() */
+
+    /*     // TODO will fail for now since no scope is set up for staff */
+    /*     await supertest(BASE_URL) */
+    /*         .put(`/nations/${oid}/activity`) */
+    /*         .set('Authorization', 'Bearer ' + token) */
+    /*         .expect(200) */
+    /* }) */
 })
