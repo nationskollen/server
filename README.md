@@ -1,3 +1,5 @@
+[![Environment Tests](https://github.com/dsp-krabby/server/actions/workflows/CI-Tests.yml/badge.svg?branch=main)](https://github.com/dsp-krabby/server/actions/workflows/CI-Tests.yml)
+
 # Nationskollen API
 This repository contains the API, database and other core infrastructure needed
 for the "backend" of all clients, e.g. the [mobile app](https://github.com/dsp-krabby/mobile)
