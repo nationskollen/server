@@ -4,7 +4,7 @@ import User from 'App/Models/User'
 import { BASE_URL } from 'App/Utils/Constants'
 import { NationFactory, UserFactory } from 'Database/factories/index'
 import { createStaffUser } from 'App/Utils/Test'
-import {NationOwnerScopes} from 'App/Utils/Scopes'
+import { NationOwnerScopes } from 'App/Utils/Scopes'
 
 test.group('Auth', () => {
     test('ensure user can login', async (assert) => {
@@ -85,7 +85,6 @@ test.group('Auth', () => {
         const { scope } = await createStaffUser(oid, true)
 
         assert.equal(scope, NationOwnerScopes.Admin)
-
     })
 
     test('ensure that server response that a user is staff', async (assert) => {

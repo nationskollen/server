@@ -10,19 +10,19 @@ export default class AuthController {
         let scope: string = NationOwnerScopes.None
 
         // Set scope depending on what user is
-        // If nationId is not part of a nation (-1), 
+        // If nationId is not part of a nation (-1),
         // then return None.
         if (auth.user && auth.user.nationId > -1) {
-          if (auth.user.nationAdmin) {
-            scope = NationOwnerScopes.Admin
-          } else {
-            scope = NationOwnerScopes.Staff
-          }
+            if (auth.user.nationAdmin) {
+                scope = NationOwnerScopes.Admin
+            } else {
+                scope = NationOwnerScopes.Staff
+            }
         }
 
-        return { 
-            ...token.toJSON(), 
-            scope 
+        return {
+            ...token.toJSON(),
+            scope,
         }
     }
 }
