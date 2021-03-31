@@ -24,10 +24,12 @@ test.group('Auth', () => {
         const data = JSON.parse(text)
 
         assert.isString(data.token)
-        assert.equal(data.type, 'bearer')
+        assert.equal('bearer', data.type)
+        assert.equal(NationOwnerScopes.None, data.scope)
+        assert.equal(-1, data.oid)
     })
 
-    test('ensure email is validated', async (assert) => {
+    test('ensure email is validated', async () => {
         await supertest(BASE_URL)
             .post('/user/login')
             .expect('Content-Type', /json/)
@@ -38,7 +40,7 @@ test.group('Auth', () => {
             .expect(422)
     })
 
-    test('ensure password is validated', async (assert) => {
+    test('ensure password is validated', async () => {
         await supertest(BASE_URL)
             .post('/user/login')
             .expect('Content-Type', /json/)
@@ -49,7 +51,7 @@ test.group('Auth', () => {
             .expect(422)
     })
 
-    test('ensure both email and password is validated', async (assert) => {
+    test('ensure both email and password is validated', async () => {
         await supertest(BASE_URL)
             .post('/user/login')
             .expect('Content-Type', /json/)
@@ -68,7 +70,7 @@ test.group('Auth', () => {
             password: '12345678',
         })
 
-        assert.equal(user.email, email)
+        assert.equal(email, user.email)
     })
 
     test('ensure user password gets hashed during save', async (assert) => {
@@ -77,25 +79,30 @@ test.group('Auth', () => {
             password: '12345678',
         })
 
-        assert.notEqual(user.password, 'secret')
+        assert.notEqual('secret', user.password)
     })
 
     test('ensure that logging in as admin returns the "admin" scope', async (assert) => {
         const { oid } = await NationFactory.create()
-        const { scope } = await createStaffUser(oid, true)
+        const data = await createStaffUser(oid, true)
 
-        assert.equal(scope, NationOwnerScopes.Admin)
+        assert.equal(NationOwnerScopes.Admin, data.scope)
+        assert.equal(oid, data.oid)
     })
 
     test('ensure that logging in as staff returns the "staff" scope', async (assert) => {
         const { oid } = await NationFactory.create()
-        const { scope } = await createStaffUser(oid, false)
+        const data = await createStaffUser(oid, false)
 
-        assert.equal(scope, NationOwnerScopes.Staff)
+        assert.equal(NationOwnerScopes.Staff, data.scope)
+        assert.equal(oid, data.oid)
     })
 
     test('ensure that logging in as a user with no nation relation returns the "none" scope', async (assert) => {
-        const { scope } = await createStaffUser(-1, false)
-        assert.equal(scope, NationOwnerScopes.None)
+        const oid = -1
+        const data = await createStaffUser(oid, false)
+
+        assert.equal(NationOwnerScopes.None, data.scope)
+        assert.equal(oid, data.oid)
     })
 })
