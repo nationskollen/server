@@ -1,7 +1,8 @@
 import Factory from '@ioc:Adonis/Lucid/Factory'
 
 import User from 'App/Models/User'
-import Nation, { ActivityLevel } from 'App/Models/Nation'
+import Nation from 'App/Models/Nation'
+import { ActivityLevels } from 'App/Utils/Activity'
 
 function randomNumber(max: number, min: number) {
     return Math.floor(Math.random() * max) + min
@@ -16,7 +17,7 @@ export const UserFactory = Factory.define(User, ({ faker }) => {
 
 export const NationFactory = Factory.define(Nation, async ({ faker }) => {
     const maxCapacity = randomNumber(500, 25)
-    const maxActivityLevel = Object.keys(ActivityLevel).length - 1
+    const maxActivityLevel = Object.keys(ActivityLevels).length - 1
 
     return {
         oid: randomNumber(100000, 0),

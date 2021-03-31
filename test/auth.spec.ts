@@ -80,21 +80,21 @@ test.group('Auth', () => {
         assert.notEqual(user.password, 'secret')
     })
 
-    test('ensure that server response that a user is admin', async (assert) => {
+    test('ensure that logging in as admin returns the "admin" scope', async (assert) => {
         const { oid } = await NationFactory.create()
         const { scope } = await createStaffUser(oid, true)
 
         assert.equal(scope, NationOwnerScopes.Admin)
     })
 
-    test('ensure that server response that a user is staff', async (assert) => {
+    test('ensure that logging in as staff returns the "staff" scope', async (assert) => {
         const { oid } = await NationFactory.create()
         const { scope } = await createStaffUser(oid, false)
 
         assert.equal(scope, NationOwnerScopes.Staff)
     })
 
-    test('ensure that server response that a user is not a member of nation', async (assert) => {
+    test('ensure that logging in as a user with no nation relation returns the "none" scope', async (assert) => {
         const { scope } = await createStaffUser(-1, false)
         assert.equal(scope, NationOwnerScopes.None)
     })
