@@ -25,7 +25,10 @@ test.group('Fetch nation', () => {
 
         assert.equal(data.status, 404)
         assert.exists(data.errors)
+        assert.isArray(data.errors)
         assert.isNotEmpty(data.errors)
+        assert.isObject(data.errors[0])
+        assert.isDefined(data.errors[0].message)
     })
 
     test('ensure that fetching a nation using a valid oid returns the nation', async (assert) => {
