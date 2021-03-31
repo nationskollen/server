@@ -3,4 +3,5 @@ build
 coverage
 .vscode
 .DS_STORE
+package-lock.json
 tmp/db.sqlite3

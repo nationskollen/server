@@ -7,29 +7,19 @@ import { BASE_URL } from 'App/Utils/Constants'
 
 const INVALID_NATION_OID = 9999999999
 
-async function createNation(adminUserId?: number) {
-    if (adminUserId) {
-        return await NationFactory.merge({ adminUserId }).create()
-    }
-
-    return NationFactory.create()
-}
-
-async function createAdmin() {
-    const password = 'admintest'
-    const { id, email } = await UserFactory.merge({ password }).create()
+async function createStaffUser(nationId: number, nationAdmin: boolean) {
+    const password = 'randomuserpassword'
+    const user = await UserFactory.merge({ password, nationId, nationAdmin }).create()
 
     const { text } = await supertest(BASE_URL)
         .post(`/user/login`)
-        .send({ email, password })
+        .send({ email: user.email, password })
         .expect(200)
 
     const { token } = JSON.parse(text)
 
     return {
-        id,
-        email,
-        password,
+        user,
         token,
     }
 }
@@ -58,7 +48,7 @@ test.group('Nation', () => {
     })
 
     test('ensure that fetching a nation using a valid oid returns the nation', async (assert) => {
-        const nation = await createNation()
+        const nation = await NationFactory.create()
         const { text } = await supertest(BASE_URL).get(`/nations/${nation.oid}`).expect(200)
 
         const data = JSON.parse(text)
@@ -70,7 +60,7 @@ test.group('Nation', () => {
     })
 
     test('ensure that updating a nation requires a valid token', async (assert) => {
-        const { oid } = await createNation()
+        const { oid } = await NationFactory.create()
         const { text } = await supertest(BASE_URL)
             .put(`/nations/${oid}`)
             .set('Authorization', 'Bearer ' + 'invalidToken')
@@ -82,7 +72,8 @@ test.group('Nation', () => {
     })
 
     test('ensure that updating a non-existant nation with a valid token fails', async () => {
-        const { token } = await createAdmin()
+        const { oid } = await NationFactory.create()
+        const { token } = await createStaffUser(oid, true)
 
         await supertest(BASE_URL)
             .put(`/nations/${INVALID_NATION_OID}`)
@@ -91,8 +82,8 @@ test.group('Nation', () => {
     })
 
     test('ensure that updating a nation with a non-admin token fails', async () => {
-        const { token } = await createAdmin()
-        const { oid } = await createNation()
+        const { oid } = await NationFactory.create()
+        const { token } = await createStaffUser(oid, false)
 
         await supertest(BASE_URL)
             .put(`/nations/${oid}`)
@@ -100,13 +91,44 @@ test.group('Nation', () => {
             .expect(401)
     })
 
-    test('ensure that updating a nation requires a valid oid with admin permissions', async () => {
-        const { id, token } = await createAdmin()
+    test('ensure that updating a nation with admin permission works', async () => {
         // Add the admin user id as argument to set the admin user in the created nation
-        const { oid } = await createNation(id)
+        const { oid } = await NationFactory.create()
+        const { token } = await createStaffUser(oid, true)
 
         await supertest(BASE_URL)
             .put(`/nations/${oid}`)
+            .set('Authorization', 'Bearer ' + token)
+            .expect(200)
+    })
+
+    test('ensure that updating a nation activity requires authorization', async () => {
+        const { oid } = await NationFactory.create()
+        // Create a user for another nation
+        const { token } = await createStaffUser(oid + 1, false)
+
+        await supertest(BASE_URL)
+            .put(`/nations/${oid}/activity`)
+            .set('Authorization', 'Bearer ' + token)
+            .expect(401)
+    })
+
+    test('ensure that updating a nation activity works with staff permissions', async () => {
+        const { oid } = await NationFactory.create()
+        const { token } = await createStaffUser(oid, false)
+
+        await supertest(BASE_URL)
+            .put(`/nations/${oid}/activity`)
+            .set('Authorization', 'Bearer ' + token)
+            .expect(200)
+    })
+
+    test('ensure that updating a nation activity works with admin permissions', async () => {
+        const { oid } = await NationFactory.create()
+        const { token } = await createStaffUser(oid, true)
+
+        await supertest(BASE_URL)
+            .put(`/nations/${oid}/activity`)
             .set('Authorization', 'Bearer ' + token)
             .expect(200)
     })

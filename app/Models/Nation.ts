@@ -1,4 +1,4 @@
-import { hasOne, HasOne, column, BaseModel } from '@ioc:Adonis/Lucid/Orm'
+import { hasMany, HasMany, column, BaseModel } from '@ioc:Adonis/Lucid/Orm'
 import { DateTime } from 'luxon'
 import User from 'App/Models/User'
 
@@ -8,9 +8,6 @@ export enum ActivityLevel {
     Medium,
     High,
 }
-
-export type HexColor = string
-export type ImageSrc = string
 
 export default class Nation extends BaseModel {
     @column({ isPrimary: true, serializeAs: null })
@@ -25,10 +22,6 @@ export default class Nation extends BaseModel {
     // https://nationsguiden.se/nation/?oid=400 for V-dala.
     @column()
     public oid: number
-
-    // The id of the admin user (foreign key)
-    @column({ serializeAs: null })
-    public adminUserId: number
 
     // Full student nation name, e.g. Västmanlands-Dala nation
     @column()
@@ -56,13 +49,13 @@ export default class Nation extends BaseModel {
     public activityLevel: ActivityLevel
 
     @column()
-    public iconImgSrc: ImageSrc
+    public iconImgSrc: string
 
     @column()
-    public coverImgSrc: ImageSrc
+    public coverImgSrc: string
 
     @column()
-    public accentColor: HexColor
+    public accentColor: string
 
     @column.dateTime({ autoCreate: true, serializeAs: null })
     public createdAt: DateTime
@@ -70,7 +63,7 @@ export default class Nation extends BaseModel {
     @column.dateTime({ autoCreate: true, autoUpdate: true, serializeAs: null })
     public updatedAt: DateTime
 
-    // A nation can only have a single admin user
-    @hasOne(() => Nation, { foreignKey: 'adminUserId' })
-    public owner: HasOne<typeof Nation>
+    // A nation can have many staff users
+    @hasMany(() => User)
+    public staff: HasMany<typeof User>
 }
