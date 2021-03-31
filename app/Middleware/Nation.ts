@@ -1,6 +1,5 @@
 import User from 'App/Models/User'
 import Nation from 'App/Models/Nation'
-import Logger from '@ioc:Adonis/Core/Logger'
 import NotFoundException from 'App/Exceptions/NotFoundException'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { AuthenticationException } from '@adonisjs/auth/build/standalone'
@@ -11,10 +10,6 @@ import { NationOwnerScopes } from 'App/Utils/Scopes'
 export default class NationMiddleware {
     private throwUnauthorized() {
         throw new AuthenticationException('Unauthorized access', 'E_UNAUTHORIZED_ACCESS')
-    }
-
-    private throwInvalidScope() {
-        throw new InternalErrorException('Could not verify authentication scopes')
     }
 
     private isStaff({ oid }: Nation, { nationId }: User) {
@@ -37,8 +32,7 @@ export default class NationMiddleware {
                 !this.isStaff(nation, user) && this.throwUnauthorized()
                 break
             default:
-                Logger.error(`Invalid scope in "nation" middleware: ${scope}`)
-                this.throwInvalidScope()
+                throw new InternalErrorException(`Invalid scope in "nation" middleware: ${scope}`)
         }
     }
 
@@ -62,12 +56,12 @@ export default class NationMiddleware {
             if (auth.user) {
                 await this.verifyAuthenticationScope(nation, auth.user, scopes)
             } else {
-                Logger.error('"nation" must be preceeded by the "auth" middleware')
-                this.throwInvalidScope()
+                throw new InternalErrorException(
+                    '"nation" must be preceeded by the "auth" middleware'
+                )
             }
         } else if (scopes.length > 1) {
-            Logger.error('Nation middleware only allows a single scope')
-            this.throwInvalidScope()
+            throw new InternalErrorException('Nation middleware only allows a single scope')
         }
 
         await next()
