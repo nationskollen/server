@@ -110,8 +110,6 @@ test.group('Update nation information', () => {
             description: 'test-description',
             address: 'test-address 123',
             max_capacity: 100,
-            estimated_people_count: 100,
-            activity_level: ActivityLevels.VeryHigh,
             accent_color: '#FFFFFF',
         }
 
