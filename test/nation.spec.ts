@@ -1,39 +1,20 @@
 import test from 'japa'
 import supertest from 'supertest'
-import User from 'App/Models/User'
 import Nation from 'App/Models/Nation'
-import { NationFactory, UserFactory } from 'Database/factories/index'
+import { NationFactory } from 'Database/factories/index'
 import { BASE_URL } from 'App/Utils/Constants'
+import { createStaffUser } from 'App/Utils/Test'
 
 const INVALID_NATION_OID = 9999999999
 
-async function createStaffUser(nationId: number, nationAdmin: boolean) {
-    const password = 'randomuserpassword'
-    const user = await UserFactory.merge({ password, nationId, nationAdmin }).create()
-
-    const { text } = await supertest(BASE_URL)
-        .post(`/user/login`)
-        .send({ email: user.email, password })
-        .expect(200)
-
-    const { token } = JSON.parse(text)
-
-    return {
-        user,
-        token,
-    }
-}
-
 test.group('Nation', () => {
     test('ensure you can fetch all nations', async (assert) => {
-        const count = 10
-        await NationFactory.createMany(count)
+        await NationFactory.createMany(5)
 
         const { text } = await supertest(BASE_URL).get('/nations').expect(200)
         const data = JSON.parse(text)
 
         assert.isArray(data)
-        assert.lengthOf(data, count)
         data.forEach((nation: Nation) => assert.isObject(nation))
     })
 

@@ -2,7 +2,9 @@ import test from 'japa'
 import supertest from 'supertest'
 import User from 'App/Models/User'
 import { BASE_URL } from 'App/Utils/Constants'
-import { UserFactory } from 'Database/factories/index'
+import { NationFactory, UserFactory } from 'Database/factories/index'
+import { createStaffUser } from 'App/Utils/Test'
+import { NationOwnerScopes } from 'App/Utils/Scopes'
 
 test.group('Auth', () => {
     test('ensure user can login', async (assert) => {
@@ -76,5 +78,24 @@ test.group('Auth', () => {
         })
 
         assert.notEqual(user.password, 'secret')
+    })
+
+    test('ensure that server response that a user is admin', async (assert) => {
+        const { oid } = await NationFactory.create()
+        const { scope } = await createStaffUser(oid, true)
+
+        assert.equal(scope, NationOwnerScopes.Admin)
+    })
+
+    test('ensure that server response that a user is staff', async (assert) => {
+        const { oid } = await NationFactory.create()
+        const { scope } = await createStaffUser(oid, false)
+
+        assert.equal(scope, NationOwnerScopes.Staff)
+    })
+
+    test('ensure that server response that a user is not a member of nation', async (assert) => {
+        const { scope } = await createStaffUser(-1, false)
+        assert.equal(scope, NationOwnerScopes.None)
     })
 })

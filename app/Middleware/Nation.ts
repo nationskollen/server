@@ -5,11 +5,7 @@ import NotFoundException from 'App/Exceptions/NotFoundException'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { AuthenticationException } from '@adonisjs/auth/build/standalone'
 import InternalErrorException from 'App/Exceptions/InternalErrorException'
-
-export enum NationOwnerScopes {
-    Staff = 'staff',
-    Admin = 'admin',
-}
+import { NationOwnerScopes } from 'App/Utils/Scopes'
 
 // Verifies that the id param of a route is a valid oid of a student nation
 export default class NationMiddleware {
