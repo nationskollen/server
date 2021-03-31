@@ -1,6 +1,20 @@
 name: Environment Tests
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+    paths:
+    - 'app/'
+    - 'database/'
+    - 'test/'
+    - 'start/'
+    - 'providers/'
+    - 'contracts/'
+    - 'config/'
+    - 'contracts/'
+    - 'commands/'
 
 jobs:
   build:
