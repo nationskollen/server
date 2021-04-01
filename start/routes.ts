@@ -16,4 +16,6 @@ Route.group(() => {
         'auth',
         'nation:staff',
     ])
+    Route.put('/nations/:id/open', 'NationsController.open').middleware(['auth', 'nation:staff'])
+    Route.put('/nations/:id/close', 'NationsController.close').middleware(['auth', 'nation:staff'])
 }).prefix('/api/v1')

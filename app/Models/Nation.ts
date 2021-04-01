@@ -28,6 +28,10 @@ export default class Nation extends BaseModel {
     @column()
     public description: string
 
+    // If the nation is open for the day or not
+    @column()
+    public isOpen: boolean
+
     @column()
     public address: string
 
@@ -59,6 +63,10 @@ export default class Nation extends BaseModel {
 
     @beforeUpdate()
     public static async updateActivityLevel(nation: Nation) {
+        if (!nation.isOpen) {
+            return
+        }
+
         if (nation.$dirty.hasOwnProperty('estimatedPeopleCount') || nation.$dirty.maxCapacity) {
             const activityInPercentage = nation.estimatedPeopleCount / nation.maxCapacity
             const newActivityLevel = Math.round(activityInPercentage * MAX_ACTIVITY_LEVEL)
