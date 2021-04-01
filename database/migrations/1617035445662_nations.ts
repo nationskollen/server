@@ -12,7 +12,7 @@ export default class Nations extends BaseSchema {
             table.string('description')
             table.boolean('is_open').defaultTo(false).notNullable()
             table.string('address')
-            table.integer('max_capacity')
+            table.integer('max_capacity').notNullable().unsigned()
             table.integer('estimated_people_count').defaultTo(0)
             table.integer('activity_level').defaultTo(0)
             table.string('icon_img_src')

@@ -64,7 +64,7 @@ export default class Nation extends BaseModel {
     @beforeUpdate()
     public static async updateActivityLevel(nation: Nation) {
         if (!nation.isOpen) {
-            return
+            return;
         }
 
         if (nation.$dirty.hasOwnProperty('estimatedPeopleCount') || nation.$dirty.maxCapacity) {

@@ -21,7 +21,7 @@ export default class NationInformationValidator {
         ]),
         description: schema.string.optional(),
         address: schema.string.optional(),
-        max_capacity: schema.number.optional([rules.unsigned()]),
+        max_capacity: schema.number.optional([rules.unsigned(), rules.range(1, 5000)]),
         accent_color: schema.string.optional({}, [rules.regex(/^#[a-fA-F0-9]{6}$/)]),
     })
 

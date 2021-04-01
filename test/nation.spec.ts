@@ -325,11 +325,26 @@ test.group('Update nation activity', () => {
 
         const { text } = await supertest(BASE_URL)
             .put(`/nations/${oid}/open`)
+
+    test('ensure that max capacity cannot be set to 0', async (assert) => {
+        const { oid, maxCapacity } = await NationFactory.create()
+        const { token } = await createStaffUser(oid, true)
+
+        await supertest(BASE_URL)
+            .put(`/nations/${oid}`)
+            .set('Authorization', 'Bearer ' + token)
+            .send({ max_capacity: 0 })
+            .expect(422)
+
+        const { text } = await supertest(BASE_URL)
+            .get(`/nations/${oid}`)
             .set('Authorization', 'Bearer ' + token)
             .expect(200)
 
         const data = await JSON.parse(text)
         assert.equal(data.activity_level, ActivityLevels.Low)
         assert.equal(data.estimated_people_count, 0)
+        assert.equal(data.max_capacity, maxCapacity)
+
     })
 })
