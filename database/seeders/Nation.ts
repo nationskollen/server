@@ -1,5 +1,7 @@
 import User from 'App/Models/User'
+import { Days } from 'App/Utils/Time'
 import Nation from 'App/Models/Nation'
+import OpeningHour from 'App/Models/OpeningHour'
 import BaseSeeder from '@ioc:Adonis/Lucid/Seeder'
 import { ActivityLevels } from 'App/Utils/Activity'
 
@@ -66,5 +68,24 @@ export default class NationSeeder extends BaseSeeder {
                 nationAdmin: true,
             },
         ])
+
+        for (const { oid } of Object.values(nations)) {
+            await OpeningHour.updateOrCreateMany('nationId', [
+                {
+                    nationId: oid,
+                    day: Days.Monday,
+                    open: '10:00',
+                    close: '20:00',
+                    isOpen: true,
+                },
+                {
+                    nationId: oid,
+                    day: Days.Friday,
+                    open: '14:00',
+                    close: '21:00',
+                    isOpen: true,
+                },
+            ])
+        }
     }
 }

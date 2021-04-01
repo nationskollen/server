@@ -7,7 +7,8 @@ import NationInformationValidator from 'App/Validators/NationInformationValidato
 
 export default class NationsController {
     public async index({}: HttpContextContract) {
-        const nations = await Nation.all()
+        const nations = await Nation.query().preload('openingHours')
+
         return nations
     }
 

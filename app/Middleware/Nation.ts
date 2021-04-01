@@ -41,7 +41,7 @@ export default class NationMiddleware {
         next: () => Promise<void>,
         scopes: string[]
     ) {
-        const nation = await Nation.findBy('oid', params.id)
+        const nation = await Nation.query().preload('openingHours').where('oid', params.id).first()
 
         if (!nation) {
             throw new NotFoundException(`Could not find student nation with id: ${params.id}`)
