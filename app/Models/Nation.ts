@@ -1,7 +1,7 @@
 import { DateTime } from 'luxon'
 import User from 'App/Models/User'
-import { ActivityLevels } from 'App/Utils/Activity'
-import { hasMany, HasMany, column, BaseModel } from '@ioc:Adonis/Lucid/Orm'
+import { MAX_ACTIVITY_LEVELS, ActivityLevels } from 'App/Utils/Activity'
+import { hasMany, HasMany, column, BaseModel, beforeUpdate } from '@ioc:Adonis/Lucid/Orm'
 
 export default class Nation extends BaseModel {
     @column({ isPrimary: true, serializeAs: null })
@@ -56,6 +56,14 @@ export default class Nation extends BaseModel {
 
     @column.dateTime({ autoCreate: true, autoUpdate: true, serializeAs: null })
     public updatedAt: DateTime
+
+    @beforeUpdate()
+    public static async updateActivityLevel(nation: Nation) {
+        if (nation.$dirty.estimatedPeopleCount || nation.$dirty.maxCapacity) {
+            const activityInPercentage = nation.estimatedPeopleCount / nation.maxCapacity
+            nation.activityLevel = Math.round(activityInPercentage * MAX_ACTIVITY_LEVELS)
+        }
+    }
 
     // A nation can have many staff users
     @hasMany(() => User, { localKey: 'oid' })
