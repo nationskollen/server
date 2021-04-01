@@ -26,12 +26,12 @@ export default class OpeningHour extends BaseModel {
     @column()
     public close: string
 
-    @column()
+    @column({ consume: (value: number) => Boolean(value) })
     public isOpen: boolean
 
-    @column.dateTime({ autoCreate: true })
+    @column.dateTime({ autoCreate: true, serializeAs: null })
     public createdAt: DateTime
 
-    @column.dateTime({ autoCreate: true, autoUpdate: true })
+    @column.dateTime({ autoCreate: true, autoUpdate: true, serializeAs: null })
     public updatedAt: DateTime
 }

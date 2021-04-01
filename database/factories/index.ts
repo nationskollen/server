@@ -27,6 +27,7 @@ export const OpeningHourFactory = Factory.define(OpeningHour, () => {
 
     return {
         day,
+        daySpecial: null,
         type: OpeningHourTypes.Default,
         open,
         close,

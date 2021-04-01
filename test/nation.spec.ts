@@ -32,15 +32,27 @@ test.group('Fetch nation', () => {
     })
 
     test('ensure that fetching a nation using a valid oid returns the nation', async (assert) => {
-        const nation = await NationFactory.create()
+        const openingHoursCount = 2
+        const openingHourExceptionsCount = 4
+
+        const nation = await NationFactory
+            .with('openingHours', openingHoursCount)
+            .with('openingHourExceptions', openingHourExceptionsCount, (builder) => builder.apply('exception'))
+            .create()
+
         const { text } = await supertest(BASE_URL).get(`/nations/${nation.oid}`).expect(200)
 
         const data = JSON.parse(text)
         const serializedNation = nation.toJSON()
 
         for (const key of Object.keys(serializedNation)) {
-            assert.equal(serializedNation[key], data[key])
+            assert.deepEqual(data[key], serializedNation[key])
         }
+
+        assert.isArray(data.openingHours)
+        assert.isArray(data.openingHourExceptions)
+        assert.lengthOf(data.openingHours, openingHoursCount)
+        assert.lengthOf(data.openingHourExceptions, openingHourExceptionsCount)
     })
 })
 
