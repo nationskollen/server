@@ -59,4 +59,35 @@ export default class NationsController {
             activity_level: nation.activityLevel,
         }
     }
+
+    public async close({ request }: HttpContextContract) {
+        const { nation } = request
+
+        if (nation) {
+            nation.isOpen = false
+            nation.activityLevel = 0
+            nation.estimatedPeopleCount = 0
+            await nation.save()
+        } else {
+            throw new InternalErrorException('Could not find nation to update')
+        }
+
+        return nation
+    }
+
+    public async open({ request }: HttpContextContract) {
+        const { nation } = request
+
+        // TODO CHECKING OPENING HOURS?
+        if (nation) {
+            nation.isOpen = true
+            nation.activityLevel = 1
+            nation.estimatedPeopleCount = 0
+            await nation.save()
+        } else {
+            throw new InternalErrorException('Could not find nation to update')
+        }
+
+        return nation
+    }
 }

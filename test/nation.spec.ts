@@ -236,6 +236,13 @@ test.group('Update nation activity', () => {
         const { oid, maxCapacity } = await NationFactory.create()
         const { token } = await createStaffUser(oid, true)
 
+        // Since .isOpen default to false, we need to make sure it is open in
+        // order to test it closing.
+        await supertest(BASE_URL)
+            .put(`/nations/${oid}/open`)
+            .set('Authorization', 'Bearer ' + token)
+            .expect(200)
+
         const { text } = await supertest(BASE_URL)
             .put(`/nations/${oid}/activity`)
             .set('Authorization', 'Bearer ' + token)
@@ -250,6 +257,13 @@ test.group('Update nation activity', () => {
     test('ensure that activity level changes dynamically to medium +- 1 (range: low - high)', async (assert) => {
         const { oid, maxCapacity, estimatedPeopleCount } = await NationFactory.create()
         const { token } = await createStaffUser(oid, true)
+
+        // Since .isOpen default to false, we need to make sure it is open in
+        // order to test it closing.
+        await supertest(BASE_URL)
+            .put(`/nations/${oid}/open`)
+            .set('Authorization', 'Bearer ' + token)
+            .expect(200)
 
         const { text } = await supertest(BASE_URL)
             .put(`/nations/${oid}/activity`)
@@ -266,6 +280,13 @@ test.group('Update nation activity', () => {
         const { oid, maxCapacity } = await NationFactory.create()
         const { token } = await createStaffUser(oid, true)
 
+        // Since .isOpen default to false, we need to make sure it is open in
+        // order to test it closing.
+        await supertest(BASE_URL)
+            .put(`/nations/${oid}/open`)
+            .set('Authorization', 'Bearer ' + token)
+            .expect(200)
+
         const { text } = await supertest(BASE_URL)
             .put(`/nations/${oid}/activity`)
             .set('Authorization', 'Bearer ' + token)
@@ -275,6 +296,41 @@ test.group('Update nation activity', () => {
         const data = await JSON.parse(text)
         // TODO Should become low during opening hours, but is "closed"
         assert.equal(data.activity_level, ActivityLevels.Low)
+    })
+
+    test('ensure that nation is closed on PUT', async (assert) => {
+        const { oid } = await NationFactory.create()
+        const { token } = await createStaffUser(oid, true)
+
+        // Since .isOpen default to false, we need to make sure it is open in
+        // order to test it closing.
+        await supertest(BASE_URL)
+            .put(`/nations/${oid}/open`)
+            .set('Authorization', 'Bearer ' + token)
+            .expect(200)
+
+        const { text } = await supertest(BASE_URL)
+            .put(`/nations/${oid}/close`)
+            .set('Authorization', 'Bearer ' + token)
+            .expect(200)
+
+        const data = await JSON.parse(text)
+        assert.equal(data.activity_level, ActivityLevels.Closed)
+        assert.equal(data.estimated_people_count, 0)
+    })
+
+    test('ensure that nation is open on PUT', async (assert) => {
+        const { oid } = await NationFactory.create()
+        const { token } = await createStaffUser(oid, true)
+
+        const { text } = await supertest(BASE_URL)
+            .put(`/nations/${oid}/open`)
+            .set('Authorization', 'Bearer ' + token)
+            .expect(200)
+
+        const data = await JSON.parse(text)
+        assert.equal(data.activity_level, ActivityLevels.Low)
+        assert.equal(data.estimated_people_count, 0)
     })
 
     test('ensure that max capacity cannot be set to 0', async (assert) => {
