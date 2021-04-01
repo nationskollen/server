@@ -89,7 +89,7 @@ export default class Nation extends BaseModel {
             nation.activityLevel = Math.min(Math.max(newActivityLevel, 0), MAX_ACTIVITY_LEVEL)
 
             // TODO OPENING HOURS CHECK
-            if (nation.activityLevel == 0) {
+            if (nation.activityLevel === 0) {
                 nation.activityLevel = 1
             }
         }

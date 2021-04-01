@@ -23,5 +23,7 @@ Route.group(() => {
         Route.post('/', 'OpeningHoursController.create')
         Route.put('/:ohid', 'OpeningHoursController.update')
         Route.delete('/:ohid', 'OpeningHoursController.delete')
-    }).prefix('/nations/:id/opening_hours').middleware(['auth', 'nation:admin'])
+    })
+        .prefix('/nations/:id/opening_hours')
+        .middleware(['auth', 'nation:admin'])
 }).prefix('/api/v1')
