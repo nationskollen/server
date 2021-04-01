@@ -82,6 +82,7 @@ export default class NationsController {
         if (nation) {
             nation.isOpen = true
             nation.activityLevel = 1
+            nation.estimatedPeopleCount = 0
             await nation.save()
         } else {
             throw new InternalErrorException('Could not find nation to update')
