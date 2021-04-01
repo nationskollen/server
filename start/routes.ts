@@ -12,10 +12,16 @@ Route.group(() => {
     Route.get('/nations', 'NationsController.index')
     Route.get('/nations/:id', 'NationsController.show').middleware('nation')
     Route.put('/nations/:id', 'NationsController.update').middleware(['auth', 'nation:admin'])
+    Route.put('/nations/:id/open', 'NationsController.open').middleware(['auth', 'nation:staff'])
+    Route.put('/nations/:id/close', 'NationsController.close').middleware(['auth', 'nation:staff'])
     Route.put('/nations/:id/activity', 'NationsController.updateActivity').middleware([
         'auth',
         'nation:staff',
     ])
-    Route.put('/nations/:id/open', 'NationsController.open').middleware(['auth', 'nation:staff'])
-    Route.put('/nations/:id/close', 'NationsController.close').middleware(['auth', 'nation:staff'])
+
+    Route.group(() => {
+        Route.post('/', 'OpeningHoursController.create')
+        Route.put('/:ohid', 'OpeningHoursController.update')
+        Route.delete('/:ohid', 'OpeningHoursController.delete')
+    }).prefix('/nations/:id/opening_hours').middleware(['auth', 'nation:admin'])
 }).prefix('/api/v1')

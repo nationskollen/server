@@ -1,5 +1,6 @@
 import Factory from '@ioc:Adonis/Lucid/Factory'
 
+import { DateTime } from 'luxon'
 import User from 'App/Models/User'
 import Nation from 'App/Models/Nation'
 import OpeningHour from 'App/Models/OpeningHour'
@@ -21,13 +22,12 @@ export const UserFactory = Factory.define(User, ({ faker }) => {
     .build()
 
 export const OpeningHourFactory = Factory.define(OpeningHour, () => {
-    const open = `0${randomNumber(6, 1)}:${randomNumber(5, 0)}0`
-    const close = `1${randomNumber(9, 2)}:${randomNumber(5, 0)}0`
+    const open = DateTime.fromObject({ hour: randomNumber(23, 0), minute: randomNumber(59, 0) })
+    const close = DateTime.fromObject({ hour: randomNumber(23, 0), minute: randomNumber(59, 0) })
     const day = randomNumber(6, 0)
 
     return {
         day,
-        daySpecial: null,
         type: OpeningHourTypes.Default,
         open,
         close,

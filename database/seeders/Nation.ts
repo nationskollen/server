@@ -1,3 +1,4 @@
+import { DateTime } from 'luxon'
 import User from 'App/Models/User'
 import { Days } from 'App/Utils/Time'
 import Nation from 'App/Models/Nation'
@@ -76,14 +77,16 @@ export default class NationSeeder extends BaseSeeder {
                     nationId: oid,
                     type: OpeningHourTypes.Default,
                     day: Days.Monday,
-                    open: '10:00',
-                    close: '20:00',
+                    open: DateTime.fromObject({ hour: 10, minute: 30 }),
+                    close: DateTime.fromObject({ hour: 20, minute: 0 }),
                     isOpen: true,
                 },
                 {
                     nationId: oid,
                     type: OpeningHourTypes.Default,
                     day: Days.Sunday,
+                    open: DateTime.fromObject({ hour: 12, minute: 0 }),
+                    close: DateTime.fromObject({ hour: 17, minute: 0 }),
                     isOpen: false,
                 },
                 {

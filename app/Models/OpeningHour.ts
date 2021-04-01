@@ -1,9 +1,12 @@
 import { DateTime } from 'luxon'
 import { Days, OpeningHourTypes } from 'App/Utils/Time'
 import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
+import {
+    fromStringToOpeningHour,
+    fromIsoToOpeningHour,
+    fromIntegerToBoolean,
+} from 'App/Utils/Serialize'
 
-// TODO: Add column for the day as a string, e.g. Christmas
-// TODO: Add column for the type, e.g. default, exception
 export default class OpeningHour extends BaseModel {
     @column({ isPrimary: true })
     public id: number
@@ -20,13 +23,21 @@ export default class OpeningHour extends BaseModel {
     @column()
     public daySpecial: string
 
-    @column()
-    public open: string
+    @column.dateTime({
+        prepare: fromIsoToOpeningHour,
+        consume: fromStringToOpeningHour,
+        serialize: fromStringToOpeningHour,
+    })
+    public open: DateTime
 
-    @column()
-    public close: string
+    @column.dateTime({
+        prepare: fromIsoToOpeningHour,
+        consume: fromStringToOpeningHour,
+        serialize: fromStringToOpeningHour,
+    })
+    public close: DateTime
 
-    @column({ consume: (value: number) => Boolean(value) })
+    @column({ consume: fromIntegerToBoolean })
     public isOpen: boolean
 
     @column.dateTime({ autoCreate: true, serializeAs: null })

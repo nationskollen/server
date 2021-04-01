@@ -1,3 +1,4 @@
+import Nation from 'App/Models/Nation'
 import { queryNationAll } from 'App/Utils/Query'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import BadRequestException from 'App/Exceptions/BadRequestException'
@@ -8,11 +9,11 @@ import NationInformationValidator from 'App/Validators/NationInformationValidato
 export default class NationsController {
     public async index({}: HttpContextContract) {
         const nations = await queryNationAll()
-        return nations
+        return nations.map((nation: Nation) => nation.toJSON())
     }
 
     public async show({ request }: HttpContextContract) {
-        return request.nation
+        return request.nation?.toJSON()
     }
 
     public async update({ request }: HttpContextContract) {
@@ -33,7 +34,7 @@ export default class NationsController {
             throw new InternalErrorException('Could not find nation to update')
         }
 
-        return nation
+        return nation.toJSON()
     }
 
     public async updateActivity({ request }: HttpContextContract) {
