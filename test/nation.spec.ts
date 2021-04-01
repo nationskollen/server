@@ -350,6 +350,5 @@ test.group('Update nation activity', () => {
 
         const data = await JSON.parse(text)
         assert.equal(data.max_capacity, maxCapacity)
-
     })
 })

@@ -36,6 +36,3 @@ Have in mind that the nations with `:oid`:
 - 400
 - 394 
 - 405
-
-Are predefined in the system, the `isOpen` field is set to `true` or `1` in the
-GET response.
