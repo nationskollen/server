@@ -5,7 +5,7 @@ import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
 // TODO: Add column for the day as a string, e.g. Christmas
 // TODO: Add column for the type, e.g. default, exception
 export default class OpeningHour extends BaseModel {
-    @column({ isPrimary: true, serializeAs: null })
+    @column({ isPrimary: true })
     public id: number
 
     @column({ serializeAs: 'oid' })
