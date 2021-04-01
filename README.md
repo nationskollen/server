@@ -31,8 +31,3 @@ database with test data (only in development mode).
 * `npm run test` - Run all tests defined in `test/`
 
 ## Notes
-
-Have in mind that the nations with `:oid`:
-- 400
-- 394 
-- 405
