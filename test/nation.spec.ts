@@ -231,4 +231,49 @@ test.group('Update nation activity', () => {
 
         assert.equal(data.estimated_people_count, maxCapacity)
     })
+
+    test('ensure that activity level changes dynamically to full', async (assert) => {
+        const { oid, maxCapacity } = await NationFactory.create()
+        const { token } = await createStaffUser(oid, true)
+
+        const { text } = await supertest(BASE_URL)
+            .put(`/nations/${oid}/activity`)
+            .set('Authorization', 'Bearer ' + token)
+            .send({ change: maxCapacity })
+            .expect(200)
+
+        const data = await JSON.parse(text)
+
+        assert.equal(data.activity_level, ActivityLevels.Full)
+    })
+
+    test('ensure that activity level changes dynamically to medium +- 1 (range: low - high)', async (assert) => {
+        const { oid, maxCapacity, estimatedPeopleCount } = await NationFactory.create()
+        const { token } = await createStaffUser(oid, true)
+
+        const { text } = await supertest(BASE_URL)
+            .put(`/nations/${oid}/activity`)
+            .set('Authorization', 'Bearer ' + token)
+            .send({ change: maxCapacity - maxCapacity / 2 - estimatedPeopleCount })
+            .expect(200)
+
+        const data = await JSON.parse(text)
+
+        assert.closeTo(data.activity_level, ActivityLevels.Medium, 1)
+    })
+
+    test('ensure that activity level changes dynamically to low (when rounding from 0)', async (assert) => {
+        const { oid, maxCapacity } = await NationFactory.create()
+        const { token } = await createStaffUser(oid, true)
+
+        const { text } = await supertest(BASE_URL)
+            .put(`/nations/${oid}/activity`)
+            .set('Authorization', 'Bearer ' + token)
+            .send({ change: -1 * maxCapacity })
+            .expect(200)
+
+        const data = await JSON.parse(text)
+        // TODO Should become low during opening hours, but is "closed"
+        assert.equal(data.activity_level, ActivityLevels.Low)
+    })
 })

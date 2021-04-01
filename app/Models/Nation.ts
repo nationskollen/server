@@ -1,6 +1,6 @@
 import { DateTime } from 'luxon'
 import User from 'App/Models/User'
-import { MAX_ACTIVITY_LEVELS, ActivityLevels } from 'App/Utils/Activity'
+import { MAX_ACTIVITY_LEVEL, ActivityLevels } from 'App/Utils/Activity'
 import { hasMany, HasMany, column, BaseModel, beforeUpdate } from '@ioc:Adonis/Lucid/Orm'
 
 export default class Nation extends BaseModel {
@@ -59,9 +59,16 @@ export default class Nation extends BaseModel {
 
     @beforeUpdate()
     public static async updateActivityLevel(nation: Nation) {
-        if (nation.$dirty.estimatedPeopleCount || nation.$dirty.maxCapacity) {
+        if (nation.$dirty.hasOwnProperty('estimatedPeopleCount') || nation.$dirty.maxCapacity) {
             const activityInPercentage = nation.estimatedPeopleCount / nation.maxCapacity
-            nation.activityLevel = Math.round(activityInPercentage * MAX_ACTIVITY_LEVELS)
+            const newActivityLevel = Math.round(activityInPercentage * MAX_ACTIVITY_LEVEL)
+
+            nation.activityLevel = Math.min(Math.max(newActivityLevel, 0), MAX_ACTIVITY_LEVEL)
+
+            // TODO OPENING HOURS CHECK
+            if (nation.activityLevel == 0) {
+                nation.activityLevel = 1
+            }
         }
     }
 

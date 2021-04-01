@@ -1,4 +1,4 @@
-export const MAX_ACTIVITY_LEVELS = 6
+export const MAX_ACTIVITY_LEVEL = 5
 
 export enum ActivityLevels {
     Closed,
