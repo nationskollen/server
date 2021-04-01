@@ -2,11 +2,11 @@ import { Days, OpeningHourTypes } from 'App/Utils/Time'
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
-export default class NationOpeningHourValidator {
+export default class OpeningHourUpdateValidator {
     constructor(protected ctx: HttpContextContract) {}
 
     public schema = schema.create({
-        type: schema.enum([OpeningHourTypes.Default, OpeningHourTypes.Exception]),
+        type: schema.enum.optional([OpeningHourTypes.Default, OpeningHourTypes.Exception]),
         day: schema.enum.optional(
             [
                 Days.Monday,
@@ -31,7 +31,7 @@ export default class NationOpeningHourValidator {
             rules.requiredWhen('is_open', '=', true),
             rules.requiredIfExistsAny(['day', 'open']),
         ]),
-        is_open: schema.boolean(),
+        is_open: schema.boolean.optional(),
     })
 
     public messages = {}

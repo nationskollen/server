@@ -1,15 +1,17 @@
+import OpeningHour from 'App/Models/OpeningHour'
 import { OpeningHourTypes } from 'App/Utils/Time'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import InternalErrorException from 'App/Exceptions/InternalErrorException'
-import NationOpeningHourValidator from 'App/Validators/NationOpeningHourValidator'
+import OpeningHourValidator from 'App/Validators/OpeningHourValidator'
+import OpeningHourUpdateValidator from 'App/Validators/OpeningHourUpdateValidator'
 
 export default class OpeningHoursController {
     public async create({ request }: HttpContextContract) {
-        const data = await request.validate(NationOpeningHourValidator)
+        const data = await request.validate(OpeningHourValidator)
         const { nation } = request
 
         if (!nation) {
-            throw new InternalErrorException('Could not find nation to update opening hours of')
+            throw new InternalErrorException('Could not find nation to create opening hours for')
         }
 
         const relation =
@@ -19,5 +21,36 @@ export default class OpeningHoursController {
         const model = await nation.related(relation).create(data)
 
         return model.toJSON()
+    }
+
+    public async update({ request, params }: HttpContextContract) {
+        const changes = await request.validate(OpeningHourUpdateValidator)
+        const { nation } = request
+
+        if (!nation) {
+            throw new InternalErrorException('Could not find nation to update opening hours of')
+        }
+
+        const model = await OpeningHour.findOrFail(params.ohid)
+
+        model.merge(changes)
+        await model.save()
+
+        return model.toJSON()
+    }
+
+    public async delete({ request, params }: HttpContextContract) {
+        const { nation } = request
+
+        if (!nation) {
+            throw new InternalErrorException('Could not find nation to update opening hours of')
+        }
+
+        const model = await OpeningHour.findOrFail(params.ohid)
+
+        await model.delete()
+
+        // Return nothing
+        return
     }
 }
