@@ -4,6 +4,7 @@ import User from 'App/Models/User'
 import Nation from 'App/Models/Nation'
 import OpeningHour from 'App/Models/OpeningHour'
 import { ActivityLevels } from 'App/Utils/Activity'
+import { OpeningHourTypes } from 'App/Utils/Time'
 
 function randomNumber(max: number, min: number) {
     return Math.floor(Math.random() * max) + min
@@ -13,6 +14,7 @@ export const UserFactory = Factory.define(User, ({ faker }) => {
     return {
         email: faker.internet.email(),
         password: faker.internet.password(),
+        nationAdmin: false,
     }
 })
     .state('admin', (user) => (user.nationAdmin = true))
@@ -25,12 +27,17 @@ export const OpeningHourFactory = Factory.define(OpeningHour, () => {
 
     return {
         day,
+        type: OpeningHourTypes.Default,
         open,
         close,
         isOpen: true,
     }
 })
     .state('closed', (data) => (data.isOpen = false))
+    .state('exception', (data) => {
+        data.type = OpeningHourTypes.Exception
+        data.daySpecial = 'Random holiday'
+    })
     .build()
 
 export const NationFactory = Factory.define(Nation, async ({ faker }) => {

@@ -7,3 +7,8 @@ export enum Days {
     Saturday,
     Sunday,
 }
+
+export enum OpeningHourTypes {
+    Default,
+    Exception,
+}

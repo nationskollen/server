@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon'
-import { Days } from 'App/Utils/Time'
+import { Days, OpeningHourTypes } from 'App/Utils/Time'
 import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
 
 // TODO: Add column for the day as a string, e.g. Christmas
@@ -12,7 +12,13 @@ export default class OpeningHour extends BaseModel {
     public nationId: number
 
     @column()
+    public type: OpeningHourTypes
+
+    @column()
     public day: Days
+
+    @column()
+    public daySpecial: string
 
     @column()
     public open: string

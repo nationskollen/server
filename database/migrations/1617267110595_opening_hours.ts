@@ -1,4 +1,5 @@
 import BaseSchema from '@ioc:Adonis/Lucid/Schema'
+import { OpeningHourTypes } from 'App/Utils/Time'
 
 export default class OpeningHours extends BaseSchema {
     protected tableName = 'opening_hours'
@@ -13,7 +14,9 @@ export default class OpeningHours extends BaseSchema {
                 .references('oid')
                 .inTable('nations')
                 .onDelete('CASCADE')
-            table.integer('day').notNullable().unsigned()
+            table.integer('type').notNullable().unsigned().defaultTo(OpeningHourTypes.Default)
+            table.integer('day').unsigned()
+            table.string('day_special')
             table.string('open')
             table.string('close')
             table.boolean('is_open').notNullable()

@@ -1,4 +1,4 @@
-import Nation from 'App/Models/Nation'
+import { queryNationAll } from 'App/Utils/Query'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import BadRequestException from 'App/Exceptions/BadRequestException'
 import InternalErrorException from 'App/Exceptions/InternalErrorException'
@@ -7,8 +7,7 @@ import NationInformationValidator from 'App/Validators/NationInformationValidato
 
 export default class NationsController {
     public async index({}: HttpContextContract) {
-        const nations = await Nation.query().preload('openingHours')
-
+        const nations = await queryNationAll()
         return nations
     }
 
