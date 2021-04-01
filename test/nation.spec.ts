@@ -276,4 +276,23 @@ test.group('Update nation activity', () => {
         // TODO Should become low during opening hours, but is "closed"
         assert.equal(data.activity_level, ActivityLevels.Low)
     })
+
+    test('ensure that max capacity cannot be set to 0', async (assert) => {
+        const { oid, maxCapacity } = await NationFactory.create()
+        const { token } = await createStaffUser(oid, true)
+
+        await supertest(BASE_URL)
+            .put(`/nations/${oid}`)
+            .set('Authorization', 'Bearer ' + token)
+            .send({ max_capacity: 0 })
+            .expect(422)
+
+        const { text } = await supertest(BASE_URL)
+            .get(`/nations/${oid}`)
+            .set('Authorization', 'Bearer ' + token)
+            .expect(200)
+
+        const data = await JSON.parse(text)
+        assert.equal(data.max_capacity, maxCapacity)
+    })
 })
