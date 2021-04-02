@@ -1,6 +1,12 @@
-import { UserFactory } from 'Database/factories/index'
 import supertest from 'supertest'
 import { BASE_URL } from 'App/Utils/Constants'
+import { UserFactory, NationFactory } from 'Database/factories/index'
+
+export interface TestNationContract {
+    oid: number
+    token: string
+    staffToken: string
+}
 
 export async function createStaffUser(nationId: number, nationAdmin: boolean) {
     const password = 'randomuserpassword'
@@ -18,5 +24,17 @@ export async function createStaffUser(nationId: number, nationAdmin: boolean) {
         token,
         scope,
         oid,
+    }
+}
+
+export async function createTestNation(): Promise<TestNationContract> {
+    const { oid } = await NationFactory.create()
+    const admin = await createStaffUser(oid, true)
+    const staff = await createStaffUser(oid, false)
+
+    return {
+        oid,
+        token: admin.token,
+        staffToken: staff.token,
     }
 }
