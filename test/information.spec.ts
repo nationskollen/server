@@ -3,8 +3,8 @@ import supertest from 'supertest'
 import Nation from 'App/Models/Nation'
 import { BASE_URL } from 'App/Utils/Constants'
 import { createStaffUser } from 'App/Utils/Test'
-import { ActivityLevels } from 'App/Utils/Activity'
 import { NationFactory } from 'Database/factories/index'
+import { TestNationContract, createTestNation } from 'App/Utils/Test'
 
 const INVALID_NATION_OID = 9999999999
 
@@ -57,11 +57,16 @@ test.group('Information fetch', () => {
     })
 })
 
-test.group('Information update', () => {
+test.group('Information update', (group) => {
+    let nation: TestNationContract
+
+    group.before(async () => {
+        nation = await createTestNation()
+    })
+
     test('ensure that updating a nation requires a valid token', async (assert) => {
-        const { oid } = await NationFactory.create()
         const { text } = await supertest(BASE_URL)
-            .put(`/nations/${oid}`)
+            .put(`/nations/${nation.oid}`)
             .set('Authorization', 'Bearer ' + 'invalidToken')
             .send({ address: 'new address' })
             .expect(401)
@@ -72,44 +77,32 @@ test.group('Information update', () => {
     })
 
     test('ensure that updating a non-existant nation with a valid token fails', async () => {
-        const { oid } = await NationFactory.create()
-        const { token } = await createStaffUser(oid, true)
-
         await supertest(BASE_URL)
             .put(`/nations/${INVALID_NATION_OID}`)
-            .set('Authorization', 'Bearer ' + token)
+            .set('Authorization', 'Bearer ' + nation.token)
             .send({ address: 'new address' })
             .expect(404)
     })
 
     test('ensure that updating a nation with a non-admin token fails', async () => {
-        const { oid } = await NationFactory.create()
-        const { token } = await createStaffUser(oid, false)
-
         await supertest(BASE_URL)
-            .put(`/nations/${oid}`)
-            .set('Authorization', 'Bearer ' + token)
+            .put(`/nations/${nation.oid}`)
+            .set('Authorization', 'Bearer ' + nation.staffToken)
             .send({ address: 'new address' })
             .expect(401)
     })
 
     test('ensure that trying to update a nation with no request data fails', async () => {
-        const { oid } = await NationFactory.create()
-        const { token } = await createStaffUser(oid, true)
-
         await supertest(BASE_URL)
-            .put(`/nations/${oid}`)
-            .set('Authorization', 'Bearer ' + token)
+            .put(`/nations/${nation.oid}`)
+            .set('Authorization', 'Bearer ' + nation.token)
             .expect(400)
     })
 
     test('ensure that invalid properties are removed when updating a nation', async (assert) => {
-        const { oid } = await NationFactory.create()
-        const { token } = await createStaffUser(oid, true)
-
         await supertest(BASE_URL)
-            .put(`/nations/${oid}`)
-            .set('Authorization', 'Bearer ' + token)
+            .put(`/nations/${nation.oid}`)
+            .set('Authorization', 'Bearer ' + nation.token)
             .send({
                 invalidKey: 'hello',
                 anotherInvalidKey: 'world',

@@ -4,8 +4,11 @@ import { UserFactory, NationFactory } from 'Database/factories/index'
 
 export interface TestNationContract {
     oid: number
+    maxCapacity: number
+    estimatedPeopleCount: number
     token: string
     staffToken: string
+    adminOtherToken: string
 }
 
 export async function createStaffUser(nationId: number, nationAdmin: boolean) {
@@ -28,13 +31,17 @@ export async function createStaffUser(nationId: number, nationAdmin: boolean) {
 }
 
 export async function createTestNation(): Promise<TestNationContract> {
-    const { oid } = await NationFactory.create()
-    const admin = await createStaffUser(oid, true)
-    const staff = await createStaffUser(oid, false)
+    const nation = await NationFactory.create()
+    const admin = await createStaffUser(nation.oid, true)
+    const adminOther = await createStaffUser(nation.oid + 1, true)
+    const staff = await createStaffUser(nation.oid, false)
 
     return {
-        oid,
+        oid: nation.oid,
+        maxCapacity: nation.maxCapacity,
+        estimatedPeopleCount: nation.estimatedPeopleCount,
         token: admin.token,
         staffToken: staff.token,
+        adminOtherToken: adminOther.token,
     }
 }
