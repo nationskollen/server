@@ -17,6 +17,7 @@ export default class OpeningHours extends BaseSchema {
             table.integer('type').notNullable().unsigned().defaultTo(OpeningHourTypes.Default)
             table.integer('day').unsigned()
             table.string('day_special')
+            table.string('day_special_date')
             table.string('open')
             table.string('close')
             table.boolean('is_open').notNullable()

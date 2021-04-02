@@ -5,6 +5,8 @@ import {
     fromStringToOpeningHour,
     fromIsoToOpeningHour,
     fromIntegerToBoolean,
+    fromIsoToSpecialDate,
+    fromStringToSpecialDate,
 } from 'App/Utils/Serialize'
 
 export default class OpeningHour extends BaseModel {
@@ -22,6 +24,13 @@ export default class OpeningHour extends BaseModel {
 
     @column()
     public daySpecial: string
+
+    @column.dateTime({
+        prepare: fromIsoToSpecialDate,
+        consume: fromStringToSpecialDate,
+        serialize: fromStringToSpecialDate,
+    })
+    public daySpecialDate: DateTime
 
     @column.dateTime({
         prepare: fromIsoToOpeningHour,

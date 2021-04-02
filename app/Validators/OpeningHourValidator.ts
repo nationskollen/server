@@ -23,6 +23,9 @@ export default class OpeningHourValidator {
             rules.minLength(1),
             rules.requiredWhen('type', '=', OpeningHourTypes.Exception),
         ]),
+        day_special_date: schema.date.optional({ format: 'd/M' }, [
+            rules.requiredWhen('type', '=', OpeningHourTypes.Exception),
+        ]),
         open: schema.date.optional({ format: 'HH:mm' }, [
             rules.requiredWhen('is_open', '=', true),
             rules.requiredIfExistsAny(['day', 'close']),

@@ -19,6 +19,13 @@ test.group('Opening hours create', async (group) => {
         is_open: true,
     }
 
+    const openingHourExceptionData = {
+        type: OpeningHourTypes.Exception,
+        day_special: 'Julafton',
+        day_special_date: '24/12',
+        is_open: false,
+    }
+
     let nation: TestNationContract
 
     group.before(async () => {
@@ -49,6 +56,7 @@ test.group('Opening hours create', async (group) => {
             .expect(200)
 
         const data = JSON.parse(text)
+
         assert.containsAllDeepKeys(data, Object.keys(openingHourData))
     })
 
@@ -99,6 +107,63 @@ test.group('Opening hours create', async (group) => {
                 close: '20:00',
                 is_open: false,
             })
+            .expect(422)
+    })
+
+    test('ensure that closing time must be after opening time', async () => {
+        const data = { ...openingHourData }
+        data.open = '10:00'
+        data.close = '08:00'
+
+        await supertest(BASE_URL)
+            .post(`/nations/${nation.oid}/opening_hours`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send(data)
+            .expect(422)
+    })
+
+    test('ensure that closing time can not be equal to opening time', async () => {
+        const data = { ...openingHourData }
+        data.open = '10:00'
+        data.close = '10:00'
+
+        await supertest(BASE_URL)
+            .post(`/nations/${nation.oid}/opening_hours`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send(data)
+            .expect(422)
+    })
+
+    test('ensure that opening time must be in "HH:mm" format', async () => {
+        const data = { ...openingHourData }
+        data.open = '10'
+
+        await supertest(BASE_URL)
+            .post(`/nations/${nation.oid}/opening_hours`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send(data)
+            .expect(422)
+    })
+
+    test('ensure that closing time must be in "HH:mm" format', async () => {
+        const data = { ...openingHourData }
+        data.close = '10:000'
+
+        await supertest(BASE_URL)
+            .post(`/nations/${nation.oid}/opening_hours`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send(data)
+            .expect(422)
+    })
+
+    test('ensure that special day date must be a valid date', async () => {
+        const data = { ...openingHourExceptionData }
+        data.day_special_date = '1/13'
+
+        await supertest(BASE_URL)
+            .post(`/nations/${nation.oid}/opening_hours`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send(data)
             .expect(422)
     })
 })
@@ -157,6 +222,13 @@ test.group('Opening hours update', async (group) => {
         assert.deepEqual(data.close, newData.close)
     })
 
+    test('ensure that the opening hour id is validated before the data', async () => {
+        await supertest(BASE_URL)
+            .put(`/nations/${nation.oid}/opening_hours/9999999999`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .expect(404)
+    })
+
     test('ensure that invalid properties are removed', async () => {
         const openingHour = await createOpeningHour(nation.oid)
 
@@ -207,6 +279,7 @@ test.group('Opening hours update', async (group) => {
     test('ensure that you can update the opening hour type', async (assert) => {
         const openingHour = await createOpeningHour(nation.oid)
         const day = 'random holiday'
+        const date = '1/12'
 
         const { text } = await supertest(BASE_URL)
             .put(`/nations/${nation.oid}/opening_hours/${openingHour.id}`)
@@ -214,6 +287,7 @@ test.group('Opening hours update', async (group) => {
             .send({
                 type: OpeningHourTypes.Exception,
                 day_special: day,
+                day_special_date: date,
             })
             .expect(200)
 
@@ -221,6 +295,7 @@ test.group('Opening hours update', async (group) => {
 
         assert.deepEqual(data.type, OpeningHourTypes.Exception)
         assert.deepEqual(data.day_special, day)
+        assert.deepEqual(data.day_special_date, date)
     })
 
     test('ensure that you can not update a non-existing opening hour', async () => {
@@ -230,6 +305,7 @@ test.group('Opening hours update', async (group) => {
             .send({
                 type: OpeningHourTypes.Exception,
                 day_special: 'hello',
+                day_special_date: '1/12',
             })
             .expect(404)
     })
@@ -243,6 +319,7 @@ test.group('Opening hours update', async (group) => {
             .send({
                 type: OpeningHourTypes.Exception,
                 day_special: 'hello',
+                day_special_date: '1/12',
             })
             .expect(401)
     })
@@ -293,6 +370,18 @@ test.group('Opening hours update', async (group) => {
             .set('Authorization', 'Bearer ' + nation.token)
             .send({
                 close: '10:000',
+            })
+            .expect(422)
+    })
+
+    test('ensure that special day date must be a valid date', async () => {
+        const openingHour = await createExceptionOpeningHour(nation.oid)
+
+        await supertest(BASE_URL)
+            .put(`/nations/${nation.oid}/opening_hours/${openingHour.id}`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send({
+                day_special_date: '1/13',
             })
             .expect(422)
     })

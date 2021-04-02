@@ -21,8 +21,8 @@ Route.group(() => {
 
     Route.group(() => {
         Route.post('/', 'OpeningHoursController.create')
-        Route.put('/:ohid', 'OpeningHoursController.update')
-        Route.delete('/:ohid', 'OpeningHoursController.delete')
+        Route.put('/:ohid', 'OpeningHoursController.update').middleware(['opening_hour'])
+        Route.delete('/:ohid', 'OpeningHoursController.delete').middleware(['opening_hour'])
     })
         .prefix('/nations/:id/opening_hours')
         .middleware(['auth', 'nation:admin'])

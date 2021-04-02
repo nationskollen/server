@@ -18,15 +18,15 @@ export default class OpeningHoursController {
         const relation =
             data.type === OpeningHourTypes.Default ? 'openingHours' : 'openingHourExceptions'
 
-        // TODO: Remove opening hour if it already exists for the selected day/day_special
+        // TODO: Remove opening hour if it already exists for the selected day/day_special?
         const model = await nation.related(relation).create(data)
 
         return model.toJSON()
     }
 
-    public async update({ request, params }: HttpContextContract) {
+    public async update({ request }: HttpContextContract) {
         const changes = await request.validate(OpeningHourUpdateValidator)
-        const { nation } = request
+        const { nation, openingHour } = request
 
         // Make sure that there is updated data from the request
         if (Object.keys(changes).length === 0) {
@@ -39,24 +39,28 @@ export default class OpeningHoursController {
             throw new InternalErrorException('Could not find nation to update opening hours of')
         }
 
-        const model = await OpeningHour.findOrFail(params.ohid)
+        if (!openingHour) {
+            throw new InternalErrorException('Could not find opening hour to update')
+        }
 
-        model.merge(changes)
-        await model.save()
+        openingHour.merge(changes)
+        await openingHour.save()
 
-        return model.toJSON()
+        return openingHour.toJSON()
     }
 
-    public async delete({ request, params }: HttpContextContract) {
-        const { nation } = request
+    public async delete({ request }: HttpContextContract) {
+        const { nation, openingHour } = request
 
         if (!nation) {
             throw new InternalErrorException('Could not find nation to update opening hours of')
         }
 
-        const model = await OpeningHour.findOrFail(params.ohid)
+        if (!openingHour) {
+            throw new InternalErrorException('Could not find opening hour to update')
+        }
 
-        await model.delete()
+        await openingHour.delete()
 
         // Return nothing
         return
