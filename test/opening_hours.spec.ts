@@ -1,6 +1,7 @@
 import test from 'japa'
 import supertest from 'supertest'
 import { BASE_URL } from 'App/Utils/Constants'
+import OpeningHour from 'App/Models/OpeningHour'
 import { Days, OpeningHourTypes } from 'App/Utils/Time'
 import {
     TestNationContract,
@@ -220,5 +221,83 @@ test.group('Opening hours update', async (group) => {
 
         assert.deepEqual(data.type, OpeningHourTypes.Exception)
         assert.deepEqual(data.day_special, day)
+    })
+
+    test('ensure that you can not update a non-existing opening hour', async () => {
+        await supertest(BASE_URL)
+            .put(`/nations/${nation.oid}/opening_hours/9999999999`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send({
+                type: OpeningHourTypes.Exception,
+                day_special: 'hello',
+            })
+            .expect(404)
+    })
+
+    test('ensure that you can not update an opening hour of another nation', async () => {
+        const openingHour = await createOpeningHour(nation.oid)
+
+        await supertest(BASE_URL)
+            .put(`/nations/${nation.oid}/opening_hours/${openingHour.id}`)
+            .set('Authorization', 'Bearer ' + nation.adminOtherToken)
+            .send({
+                type: OpeningHourTypes.Exception,
+                day_special: 'hello',
+            })
+            .expect(401)
+    })
+})
+
+test.group('Opening hours delete', async (group) => {
+    let nation: TestNationContract
+
+    group.before(async () => {
+        nation = await createTestNation()
+    })
+
+    test('ensure that deleting opening hours requires a valid token', async () => {
+        const openingHour = await createOpeningHour(nation.oid)
+
+        await supertest(BASE_URL)
+            .delete(`/nations/${nation.oid}/opening_hours/${openingHour.id}`)
+            .set('Authorization', 'Bearer ' + 'invalidToken')
+            .expect(401)
+    })
+
+    test('ensure that deleting opening hours requires an admin token', async () => {
+        const openingHour = await createOpeningHour(nation.oid)
+
+        await supertest(BASE_URL)
+            .delete(`/nations/${nation.oid}/opening_hours/${openingHour.id}`)
+            .set('Authorization', 'Bearer ' + nation.staffToken)
+            .expect(401)
+    })
+
+    test('ensure that admins can delete opening hours', async (assert) => {
+        const openingHour = await createOpeningHour(nation.oid)
+
+        await supertest(BASE_URL)
+            .delete(`/nations/${nation.oid}/opening_hours/${openingHour.id}`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .expect(200)
+
+        const model = await OpeningHour.find(openingHour.id)
+        assert.isNull(model)
+    })
+
+    test('ensure that you can not delete a non-existing opening hour', async () => {
+        await supertest(BASE_URL)
+            .delete(`/nations/${nation.oid}/opening_hours/99999999`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .expect(404)
+    })
+
+    test('ensure that you can not delete an opening hour of another nation', async () => {
+        const openingHour = await createOpeningHour(nation.oid)
+
+        await supertest(BASE_URL)
+            .delete(`/nations/${nation.oid}/opening_hours/${openingHour.id}`)
+            .set('Authorization', 'Bearer ' + nation.adminOtherToken)
+            .expect(401)
     })
 })
