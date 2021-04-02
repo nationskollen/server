@@ -139,8 +139,8 @@ test.group('Opening hours update', async (group) => {
         const newData = {
             is_open: !openingHour.isOpen,
             day: openingHour.id === Days.Monday ? Days.Friday : Days.Monday,
-            open: openingHour.open.toFormat('HH:mm'),
-            close: openingHour.close.toFormat('HH:mm'),
+            open: '10:00',
+            close: '20:00',
         }
 
         const { text } = await supertest(BASE_URL)
@@ -245,6 +245,56 @@ test.group('Opening hours update', async (group) => {
                 day_special: 'hello',
             })
             .expect(401)
+    })
+
+    test('ensure that closing time must be after opening time', async () => {
+        const openingHour = await createOpeningHour(nation.oid)
+
+        await supertest(BASE_URL)
+            .put(`/nations/${nation.oid}/opening_hours/${openingHour.id}`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send({
+                open: '10:00',
+                close: '09:00',
+            })
+            .expect(422)
+    })
+
+    test('ensure that closing time can not be equal to opening time', async () => {
+        const openingHour = await createOpeningHour(nation.oid)
+
+        await supertest(BASE_URL)
+            .put(`/nations/${nation.oid}/opening_hours/${openingHour.id}`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send({
+                open: '10:00',
+                close: '10:00',
+            })
+            .expect(422)
+    })
+
+    test('ensure that opening time must be in "HH:mm" format', async () => {
+        const openingHour = await createOpeningHour(nation.oid)
+
+        await supertest(BASE_URL)
+            .put(`/nations/${nation.oid}/opening_hours/${openingHour.id}`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send({
+                open: '10:000',
+            })
+            .expect(422)
+    })
+
+    test('ensure that closing time must be in "HH:mm" format', async () => {
+        const openingHour = await createOpeningHour(nation.oid)
+
+        await supertest(BASE_URL)
+            .put(`/nations/${nation.oid}/opening_hours/${openingHour.id}`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send({
+                close: '10:000',
+            })
+            .expect(422)
     })
 })
 

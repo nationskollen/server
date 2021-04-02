@@ -22,8 +22,8 @@ export const UserFactory = Factory.define(User, ({ faker }) => {
     .build()
 
 export const OpeningHourFactory = Factory.define(OpeningHour, () => {
-    const open = DateTime.fromObject({ hour: randomNumber(23, 0), minute: randomNumber(59, 0) })
-    const close = DateTime.fromObject({ hour: randomNumber(23, 0), minute: randomNumber(59, 0) })
+    const open = DateTime.fromObject({ hour: randomNumber(12, 0), minute: randomNumber(59, 0) })
+    const close = DateTime.fromObject({ hour: randomNumber(23, 13), minute: randomNumber(59, 0) })
     const day = randomNumber(6, 0)
 
     return {

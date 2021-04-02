@@ -26,10 +26,12 @@ export default class OpeningHourUpdateValidator {
         open: schema.date.optional({ format: 'HH:mm' }, [
             rules.requiredWhen('is_open', '=', true),
             rules.requiredIfExistsAny(['day']),
+            rules.beforeField('close'),
         ]),
         close: schema.date.optional({ format: 'HH:mm' }, [
             rules.requiredWhen('is_open', '=', true),
             rules.requiredIfExistsAny(['day']),
+            rules.afterField('open'),
         ]),
         is_open: schema.boolean.optional(),
     })
