@@ -1,8 +1,9 @@
 import OpeningHour from 'App/Models/OpeningHour'
 import { OpeningHourTypes } from 'App/Utils/Time'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import InternalErrorException from 'App/Exceptions/InternalErrorException'
+import BadRequestException from 'App/Exceptions/BadRequestException'
 import OpeningHourValidator from 'App/Validators/OpeningHourValidator'
+import InternalErrorException from 'App/Exceptions/InternalErrorException'
 import OpeningHourUpdateValidator from 'App/Validators/OpeningHourUpdateValidator'
 
 export default class OpeningHoursController {
@@ -26,6 +27,13 @@ export default class OpeningHoursController {
     public async update({ request, params }: HttpContextContract) {
         const changes = await request.validate(OpeningHourUpdateValidator)
         const { nation } = request
+
+        // Make sure that there is updated data from the request
+        if (Object.keys(changes).length === 0) {
+            throw new BadRequestException(
+                'Could not update opening hour since the data contained no valid properties'
+            )
+        }
 
         if (!nation) {
             throw new InternalErrorException('Could not find nation to update opening hours of')

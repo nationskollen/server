@@ -2,17 +2,22 @@ import test from 'japa'
 import supertest from 'supertest'
 import { BASE_URL } from 'App/Utils/Constants'
 import { Days, OpeningHourTypes } from 'App/Utils/Time'
-import { TestNationContract, createTestNation } from 'App/Utils/Test'
-
-const openingHourData = {
-    type: OpeningHourTypes.Default,
-    day: Days.Monday,
-    open: '10:00',
-    close: '20:00',
-    is_open: true,
-}
+import {
+    TestNationContract,
+    createTestNation,
+    createOpeningHour,
+    createExceptionOpeningHour,
+} from 'App/Utils/Test'
 
 test.group('Opening hours create', async (group) => {
+    const openingHourData = {
+        type: OpeningHourTypes.Default,
+        day: Days.Monday,
+        open: '10:00',
+        close: '20:00',
+        is_open: true,
+    }
+
     let nation: TestNationContract
 
     group.before(async () => {
@@ -94,5 +99,126 @@ test.group('Opening hours create', async (group) => {
                 is_open: false,
             })
             .expect(422)
+    })
+})
+
+test.group('Opening hours update', async (group) => {
+    let nation: TestNationContract
+
+    group.before(async () => {
+        nation = await createTestNation()
+    })
+
+    test('ensure that updating opening hours requires a valid token', async () => {
+        const openingHour = await createOpeningHour(nation.oid)
+
+        await supertest(BASE_URL)
+            .put(`/nations/${nation.oid}/opening_hours/${openingHour.id}`)
+            .set('Authorization', 'Bearer ' + 'invalidToken')
+            .send({
+                day: Days.Monday,
+            })
+            .expect(401)
+    })
+
+    test('ensure that updating opening hours requires an admin token', async () => {
+        const openingHour = await createOpeningHour(nation.oid)
+
+        await supertest(BASE_URL)
+            .put(`/nations/${nation.oid}/opening_hours/${openingHour.id}`)
+            .set('Authorization', 'Bearer ' + nation.staffToken)
+            .send({
+                day: Days.Monday,
+            })
+            .expect(401)
+    })
+
+    test('ensure that admins can update opening hours', async (assert) => {
+        const openingHour = await createOpeningHour(nation.oid)
+        const newData = {
+            is_open: !openingHour.isOpen,
+            day: openingHour.id === Days.Monday ? Days.Friday : Days.Monday,
+            open: openingHour.open.toFormat('HH:mm'),
+            close: openingHour.close.toFormat('HH:mm'),
+        }
+
+        const { text } = await supertest(BASE_URL)
+            .put(`/nations/${nation.oid}/opening_hours/${openingHour.id}`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send(newData)
+            .expect(200)
+
+        const data = JSON.parse(text)
+
+        assert.deepEqual(data.day, newData.day)
+        assert.deepEqual(data.is_open, newData.is_open)
+        assert.deepEqual(data.open, newData.open)
+        assert.deepEqual(data.close, newData.close)
+    })
+
+    test('ensure that invalid properties are removed', async () => {
+        const openingHour = await createOpeningHour(nation.oid)
+
+        await supertest(BASE_URL)
+            .put(`/nations/${nation.oid}/opening_hours/${openingHour.id}`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send({
+                invalidProp: 'hello',
+                anotherInvalidProp: 'world',
+            })
+            .expect(400)
+    })
+
+    test('ensure that id and oid can not be updated', async (assert) => {
+        const openingHour = await createOpeningHour(nation.oid)
+
+        const { text } = await supertest(BASE_URL)
+            .put(`/nations/${nation.oid}/opening_hours/${openingHour.id}`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send({
+                id: -1,
+                // nationId is the internal column name
+                nationId: nation.oid + 1,
+                // oid is the serialized column name
+                oid: nation.oid + 1,
+                // Add a valid property to make sure that the request goes through
+                is_open: false,
+            })
+            .expect(200)
+
+        const data = JSON.parse(text)
+
+        assert.deepEqual(data.id, openingHour.id)
+        assert.deepEqual(data.oid, openingHour.nationId)
+        assert.deepEqual(data.is_open, false)
+    })
+
+    test('ensure that updating opening hour type requires additional data', async () => {
+        const openingHour = await createOpeningHour(nation.oid)
+
+        await supertest(BASE_URL)
+            .put(`/nations/${nation.oid}/opening_hours/${openingHour.id}`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send({ type: OpeningHourTypes.Exception })
+            .expect(422)
+    })
+
+    test('ensure that you can update the opening hour type', async (assert) => {
+        const openingHour = await createOpeningHour(nation.oid)
+        const day = 'random holiday'
+
+        const { text } = await supertest(BASE_URL)
+            .put(`/nations/${nation.oid}/opening_hours/${openingHour.id}`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send({
+                type: OpeningHourTypes.Exception,
+                day_special: day,
+            })
+            .expect(200)
+
+        const data = JSON.parse(text)
+
+        assert.deepEqual(data.type, OpeningHourTypes.Exception)
+        assert.deepEqual(data.day_special, day)
     })
 })

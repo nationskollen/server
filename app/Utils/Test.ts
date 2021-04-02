@@ -1,6 +1,9 @@
 import supertest from 'supertest'
+import Nation from 'App/Models/Nation'
 import { BASE_URL } from 'App/Utils/Constants'
-import { UserFactory, NationFactory } from 'Database/factories/index'
+import OpeningHour from 'App/Models/OpeningHour'
+import { Days, OpeningHourTypes } from 'App/Utils/Time'
+import { UserFactory, NationFactory, OpeningHourFactory } from 'Database/factories/index'
 
 export interface TestNationContract {
     oid: number
@@ -44,4 +47,16 @@ export async function createTestNation(): Promise<TestNationContract> {
         staffToken: staff.token,
         adminOtherToken: adminOther.token,
     }
+}
+
+export async function createOpeningHour(oid: number) {
+    const defaultOpeningHour = await OpeningHourFactory.merge({ nationId: oid }).create()
+    return defaultOpeningHour
+}
+
+export async function createExceptionOpeningHour(oid: number) {
+    const exceptionOpeningHour = await OpeningHourFactory.merge({ nationId: oid })
+        .apply('exception')
+        .create()
+    return exceptionOpeningHour
 }
