@@ -1,5 +1,6 @@
 import { DateTime } from 'luxon'
 import User from 'App/Models/User'
+import OpeningHour from 'App/Models/OpeningHour'
 import { MAX_ACTIVITY_LEVEL, ActivityLevels } from 'App/Utils/Activity'
 import { hasMany, HasMany, column, BaseModel, beforeUpdate } from '@ioc:Adonis/Lucid/Orm'
 
@@ -61,6 +62,20 @@ export default class Nation extends BaseModel {
     @column.dateTime({ autoCreate: true, autoUpdate: true, serializeAs: null })
     public updatedAt: DateTime
 
+    // A nation can have many staff users
+    @hasMany(() => User, { localKey: 'oid' })
+    public staff: HasMany<typeof User>
+
+    // A nation can have many opening hours
+    @hasMany(() => OpeningHour, { localKey: 'oid' })
+    public openingHours: HasMany<typeof OpeningHour>
+
+    // TODO: Not sure how to handle these
+    // There are exceptions to opening hours, e.g. christmas
+    @hasMany(() => OpeningHour, { localKey: 'oid' })
+    public openingHourExceptions: HasMany<typeof OpeningHour>
+
+    // Dynamically update the activity level based on the estimated people count
     @beforeUpdate()
     public static async updateActivityLevel(nation: Nation) {
         if (!nation.isOpen) {
@@ -74,13 +89,9 @@ export default class Nation extends BaseModel {
             nation.activityLevel = Math.min(Math.max(newActivityLevel, 0), MAX_ACTIVITY_LEVEL)
 
             // TODO OPENING HOURS CHECK
-            if (nation.activityLevel == 0) {
+            if (nation.activityLevel === 0) {
                 nation.activityLevel = 1
             }
         }
     }
-
-    // A nation can have many staff users
-    @hasMany(() => User, { localKey: 'oid' })
-    public staff: HasMany<typeof User>
 }

@@ -17,7 +17,7 @@ export default class User extends BaseModel {
     public nationId: number
 
     // If the user is a nation admin
-    @column({ serializeAs: null })
+    @column({ serializeAs: null, consume: (value: number) => Boolean(value) })
     public nationAdmin: boolean
 
     @column()

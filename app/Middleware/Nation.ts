@@ -1,10 +1,11 @@
 import User from 'App/Models/User'
 import Nation from 'App/Models/Nation'
+import { queryNationByOid } from 'App/Utils/Query'
+import { NationOwnerScopes } from 'App/Utils/Scopes'
 import NotFoundException from 'App/Exceptions/NotFoundException'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { AuthenticationException } from '@adonisjs/auth/build/standalone'
 import InternalErrorException from 'App/Exceptions/InternalErrorException'
-import { NationOwnerScopes } from 'App/Utils/Scopes'
 
 // Verifies that the id param of a route is a valid oid of a student nation
 export default class NationMiddleware {
@@ -41,7 +42,7 @@ export default class NationMiddleware {
         next: () => Promise<void>,
         scopes: string[]
     ) {
-        const nation = await Nation.findBy('oid', params.id)
+        const nation = await queryNationByOid(params.id)
 
         if (!nation) {
             throw new NotFoundException(`Could not find student nation with id: ${params.id}`)

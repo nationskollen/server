@@ -1,6 +1,10 @@
+import { DateTime } from 'luxon'
 import User from 'App/Models/User'
+import { Days } from 'App/Utils/Time'
 import Nation from 'App/Models/Nation'
+import OpeningHour from 'App/Models/OpeningHour'
 import BaseSeeder from '@ioc:Adonis/Lucid/Seeder'
+import { OpeningHourTypes } from 'App/Utils/Time'
 import { ActivityLevels } from 'App/Utils/Activity'
 
 export default class NationSeeder extends BaseSeeder {
@@ -66,5 +70,32 @@ export default class NationSeeder extends BaseSeeder {
                 nationAdmin: true,
             },
         ])
+
+        for (const { oid } of Object.values(nations)) {
+            await OpeningHour.updateOrCreateMany('nationId', [
+                {
+                    nationId: oid,
+                    type: OpeningHourTypes.Default,
+                    day: Days.Monday,
+                    open: DateTime.fromObject({ hour: 10, minute: 30 }),
+                    close: DateTime.fromObject({ hour: 20, minute: 0 }),
+                    isOpen: true,
+                },
+                {
+                    nationId: oid,
+                    type: OpeningHourTypes.Default,
+                    day: Days.Sunday,
+                    open: DateTime.fromObject({ hour: 12, minute: 0 }),
+                    close: DateTime.fromObject({ hour: 17, minute: 0 }),
+                    isOpen: false,
+                },
+                {
+                    nationId: oid,
+                    type: OpeningHourTypes.Exception,
+                    daySpecial: 'Långfredagen',
+                    isOpen: false,
+                },
+            ])
+        }
     }
 }

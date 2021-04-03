@@ -30,4 +30,7 @@ database with test data (only in development mode).
 * `npm run format` - Format all source files using Prettier
 * `npm run test` - Run all tests defined in `test/`
 
-## Notes
+### Insomnia
+Insomnia can be setup by importing the workspace file in
+`.insomnia/Workspace/nationskollen.json`. Tokens are auto-generated and will be
+inserted automatically when making authenticated requests.
