@@ -71,4 +71,24 @@ export default class Location extends BaseModel {
             )
         }
     }
+
+    public async setOpen() {
+        this.isOpen = true
+        this.activityLevel = ActivityLevels.Low
+        this.estimatedPeopleCount = 0
+
+        await this.save()
+
+        return this
+    }
+
+    public async setClosed() {
+        this.isOpen = false
+        this.activityLevel = ActivityLevels.Closed
+        this.estimatedPeopleCount = 0
+
+        await this.save()
+
+        return this
+    }
 }

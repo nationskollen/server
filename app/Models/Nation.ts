@@ -4,29 +4,6 @@ import Location from 'App/Models/Location'
 import { hasMany, HasMany, column, BaseModel } from '@ioc:Adonis/Lucid/Orm'
 
 export default class Nation extends BaseModel {
-    // Create nation query builder with locations preloaded
-    private static withPreloads() {
-        return Nation.query().preload('locations', (query) => {
-            query
-                .preload('openingHours', (query) => {
-                    query.apply((scopes) => scopes.default())
-                })
-                .preload('openingHourExceptions', (query) => {
-                    query.apply((scopes) => scopes.exception())
-                })
-        })
-    }
-
-    // Fetch all nations with all locations preloaded
-    public static async allWithLocations() {
-        return this.withPreloads()
-    }
-
-    // Fetch single nation with all locations preloaded
-    public static async withLocations(oid: number) {
-        return this.withPreloads().where('oid', oid).first()
-    }
-
     @column({ isPrimary: true, serializeAs: null })
     public id: number
 
@@ -71,4 +48,27 @@ export default class Nation extends BaseModel {
 
     @hasMany(() => Location, { localKey: 'oid' })
     public locations: HasMany<typeof Location>
+
+    // Create nation query builder with locations preloaded
+    private static withPreloads() {
+        return Nation.query().preload('locations', (query) => {
+            query
+                .preload('openingHours', (query) => {
+                    query.apply((scopes) => scopes.default())
+                })
+                .preload('openingHourExceptions', (query) => {
+                    query.apply((scopes) => scopes.exception())
+                })
+        })
+    }
+
+    // Fetch all nations with all locations preloaded
+    public static async allWithLocations() {
+        return this.withPreloads()
+    }
+
+    // Fetch single nation with all locations preloaded
+    public static async withLocations(oid: number) {
+        return this.withPreloads().where('oid', oid).first()
+    }
 }
