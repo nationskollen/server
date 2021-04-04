@@ -47,7 +47,7 @@ class Ws {
                 oid,
                 location,
                 activity,
-            }
+            },
         })
     }
 

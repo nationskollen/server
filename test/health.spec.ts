@@ -1,8 +1,8 @@
 import test from 'japa'
 import wstest from 'superwstest'
 import supertest from 'supertest'
-import { BASE_URL, HOSTNAME } from 'App/Utils/Constants'
 import { WebSocketDataTypes } from 'App/Services/Ws'
+import { BASE_URL, HOSTNAME } from 'App/Utils/Constants'
 
 interface HealthReport {
     health: {
@@ -24,9 +24,6 @@ test.group('Health', () => {
     })
 
     test('ensure websocket server is running', async () => {
-        await wstest(HOSTNAME)
-            .ws('/')
-            .expectJson({ type: WebSocketDataTypes.Connected })
-            .close();
+        await wstest(HOSTNAME).ws('/').expectJson({ type: WebSocketDataTypes.Connected }).close()
     })
 })
