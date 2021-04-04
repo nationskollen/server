@@ -1,9 +1,12 @@
-import Ws from 'App/Services/Ws'
+import Ws, { WebSocketClient, WebSocketDataTypes } from 'App/Services/Ws'
 
-Ws.start((socket) => {
-    socket.emit('start', { hello: 'from server' })
+function onConnection(ws: WebSocketClient) {
+    // Mark websocket as alive
+    ws.isAlive = true
 
-    socket.on('test', (data) => {
-        console.log(data)
-    })
-})
+    // Send verification of connection status
+    Ws.send(ws, { type: WebSocketDataTypes.Connected })
+}
+
+// Start WebSocket server
+Ws.start(onConnection)
