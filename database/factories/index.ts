@@ -1,15 +1,11 @@
-import Factory from '@ioc:Adonis/Lucid/Factory'
-
 import { DateTime } from 'luxon'
 import User from 'App/Models/User'
 import Nation from 'App/Models/Nation'
+import Location from 'App/Models/Location'
+import Factory from '@ioc:Adonis/Lucid/Factory'
 import OpeningHour from 'App/Models/OpeningHour'
-import { ActivityLevels } from 'App/Utils/Activity'
 import { OpeningHourTypes } from 'App/Utils/Time'
-
-function randomNumber(max: number, min: number) {
-    return Math.floor(Math.random() * max) + min
-}
+import { MAX_ACTIVITY_LEVEL } from 'App/Utils/Activity'
 
 export const UserFactory = Factory.define(User, ({ faker }) => {
     return {
@@ -21,53 +17,70 @@ export const UserFactory = Factory.define(User, ({ faker }) => {
     .state('admin', (user) => (user.nationAdmin = true))
     .build()
 
-export const OpeningHourFactory = Factory.define(OpeningHour, () => {
-    const open = DateTime.fromObject({ hour: randomNumber(12, 0), minute: randomNumber(59, 0) })
-    const close = DateTime.fromObject({ hour: randomNumber(23, 13), minute: randomNumber(59, 0) })
-    const day = randomNumber(6, 0)
-
+export const OpeningHourFactory = Factory.define(OpeningHour, ({ faker }) => {
     return {
-        day,
         type: OpeningHourTypes.Default,
-        open,
-        close,
-        isOpen: true,
+        day: faker.datatype.number(6),
+        open: DateTime.fromObject({
+            hour: faker.datatype.number(12),
+            minute: faker.datatype.number(59),
+        }),
+        close: DateTime.fromObject({
+            hour: faker.datatype.number({ min: 13, max: 23 }),
+            minute: faker.datatype.number(59),
+        }),
+        isOpen: faker.datatype.boolean(),
     }
-})
-    .state('closed', (data) => (data.isOpen = false))
-    .state('exception', (data) => {
-        data.type = OpeningHourTypes.Exception
-        data.daySpecial = 'Random holiday'
-    })
-    .build()
+}).build()
 
-export const NationFactory = Factory.define(Nation, async ({ faker }) => {
-    const maxCapacity = randomNumber(500, 25)
-    const maxActivityLevel = Object.keys(ActivityLevels).length - 1
+export const OpeningHourExceptionFactory = Factory.define(OpeningHour, ({ faker }) => {
+    return {
+        type: OpeningHourTypes.Exception,
+        daySpecial: faker.lorem.word(2),
+        daySpecialDate: DateTime.fromObject({
+            month: faker.datatype.number({ min: 1, max: 12 }),
+            day: faker.datatype.number({ min: 1, max: 28 }),
+        }),
+        open: DateTime.fromObject({
+            hour: faker.datatype.number(12),
+            minute: faker.datatype.number(59),
+        }),
+        close: DateTime.fromObject({
+            hour: faker.datatype.number({ min: 13, max: 23 }),
+            minute: faker.datatype.number(59),
+        }),
+        isOpen: faker.datatype.boolean(),
+    }
+}).build()
+
+export const LocationFactory = Factory.define(Location, ({ faker }) => {
+    const maxCapacity = faker.datatype.number({ min: 40, max: 1000 })
 
     return {
-        oid: randomNumber(100000, 0),
         name: faker.company.companyName(),
         description: faker.lorem.paragraph(),
         address: faker.address.streetAddress(),
         maxCapacity,
-        estimatedPeopleCount: randomNumber(maxCapacity, 0),
-        activityLevel: randomNumber(maxActivityLevel, 0),
-        accentColor: '#333333',
+        estimatedPeopleCount: faker.datatype.number(maxCapacity),
+        activityLevel: faker.datatype.number(MAX_ACTIVITY_LEVEL),
+        isOpen: faker.datatype.boolean(),
+    }
+})
+    .relation('openingHours', () => OpeningHourFactory)
+    .relation('openingHourExceptions', () => OpeningHourExceptionFactory)
+    .build()
+
+export const NationFactory = Factory.define(Nation, async ({ faker }) => {
+    return {
+        oid: faker.unique(faker.datatype.number, [{ min: 0, max: 1000 }]),
+        name: faker.company.companyName(),
+        shortName: faker.company.companyName(),
+        description: faker.lorem.paragraph(),
+        accentColor: faker.internet.color(),
+        coverImgSrc: faker.image.imageUrl(),
+        iconImgSrc: faker.image.avatar(),
     }
 })
     .relation('staff', () => UserFactory)
-    .relation('openingHours', () => OpeningHourFactory)
-    .relation('openingHourExceptions', () => OpeningHourFactory)
-    .before('create', (_, model: Nation) => {
-        // Make sure that the oid is unique or tests will fail
-        const nation = Nation.findBy('oid', model.oid)
-
-        if (!nation) {
-            return
-        }
-
-        // Regenerate the oid
-        model.oid = randomNumber(100000, 0)
-    })
+    .relation('locations', () => LocationFactory)
     .build()

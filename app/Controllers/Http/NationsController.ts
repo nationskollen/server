@@ -1,5 +1,4 @@
 import Nation from 'App/Models/Nation'
-import { queryNationAll } from 'App/Utils/Query'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import BadRequestException from 'App/Exceptions/BadRequestException'
 import InternalErrorException from 'App/Exceptions/InternalErrorException'
@@ -8,7 +7,7 @@ import InformationValidator from 'App/Validators/InformationValidator'
 
 export default class NationsController {
     public async index({}: HttpContextContract) {
-        const nations = await queryNationAll()
+        const nations = await Nation.allWithLocations()
         return nations.map((nation: Nation) => nation.toJSON())
     }
 

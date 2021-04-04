@@ -1,6 +1,5 @@
 import User from 'App/Models/User'
 import Nation from 'App/Models/Nation'
-import { queryNationByOid } from 'App/Utils/Query'
 import { NationOwnerScopes } from 'App/Utils/Scopes'
 import NotFoundException from 'App/Exceptions/NotFoundException'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
@@ -42,7 +41,7 @@ export default class NationMiddleware {
         next: () => Promise<void>,
         scopes: string[]
     ) {
-        const nation = await queryNationByOid(params.id)
+        const nation = await Nation.withLocations(params.id)
 
         if (!nation) {
             throw new NotFoundException(`Could not find student nation with id: ${params.id}`)
