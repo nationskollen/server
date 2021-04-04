@@ -72,6 +72,7 @@ export default class Location extends BaseModel {
         }
     }
 
+    // Set location state to open
     public async setOpen() {
         this.isOpen = true
         this.activityLevel = ActivityLevels.Low
@@ -82,6 +83,7 @@ export default class Location extends BaseModel {
         return this
     }
 
+    // Set location state to closed
     public async setClosed() {
         this.isOpen = false
         this.activityLevel = ActivityLevels.Closed
@@ -90,5 +92,27 @@ export default class Location extends BaseModel {
         await this.save()
 
         return this
+    }
+
+    // Create location query builder with opening hours preloaded
+    private static withPreloads(oid: number) {
+        return this.query()
+            .where('nationId', oid)
+            .preload('openingHours', (query) => {
+                query.apply((scopes) => scopes.default())
+            })
+            .preload('openingHourExceptions', (query) => {
+                query.apply((scopes) => scopes.exception())
+            })
+    }
+
+    // Fetch all locations with all opening hours preloaded
+    public static async allWithOpeningHours(oid: number) {
+        return this.withPreloads(oid)
+    }
+
+    // Fetch single location with all opening hours preloaded
+    public static async withOpeningHours(oid: number, lid: number) {
+        return this.withPreloads(oid).where('id', lid).first()
     }
 }

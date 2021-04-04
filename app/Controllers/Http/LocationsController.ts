@@ -1,5 +1,6 @@
 import Location from 'App/Models/Location'
 import ActivityValidator from 'App/Validators/ActivityValidator'
+import LocationValidator from 'App/Validators/LocationValidator'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { getNation, getLocation, getValidatedData } from 'App/Utils/Request'
 
@@ -19,8 +20,10 @@ export default class LocationsController {
         // TODO: Create locations
     }
 
-    public async update({ request }: HttpContextContract) {
-        // TODO: Update locations
+    public async update({ request, response }: HttpContextContract) {
+        const changes = await getValidatedData(request, LocationValidator)
+
+        return response.status(501)
     }
 
     public async delete({ request }: HttpContextContract) {

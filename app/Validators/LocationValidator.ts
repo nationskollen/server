@@ -1,7 +1,7 @@
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
-export default class InformationValidator {
+export default class LocationValidator {
     constructor(protected ctx: HttpContextContract) {}
 
     public schema = schema.create({
@@ -9,19 +9,10 @@ export default class InformationValidator {
             rules.alpha({
                 allow: ['space', 'dash'],
             }),
-            rules.unique({
-                table: 'nations',
-                column: 'name',
-            }),
-        ]),
-        short_name: schema.string.optional({}, [
-            rules.alpha({
-                allow: ['space', 'dash'],
-            }),
         ]),
         description: schema.string.optional(),
         address: schema.string.optional(),
-        accent_color: schema.string.optional({}, [rules.regex(/^#[a-fA-F0-9]{6}$/)]),
+        max_capacity: schema.number.optional([rules.unsigned(), rules.range(1, 5000)]),
     })
 
     public messages = {}

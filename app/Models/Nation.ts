@@ -51,15 +51,7 @@ export default class Nation extends BaseModel {
 
     // Create nation query builder with locations preloaded
     private static withPreloads() {
-        return Nation.query().preload('locations', (query) => {
-            query
-                .preload('openingHours', (query) => {
-                    query.apply((scopes) => scopes.default())
-                })
-                .preload('openingHourExceptions', (query) => {
-                    query.apply((scopes) => scopes.exception())
-                })
-        })
+        return Nation.query().preload('locations')
     }
 
     // Fetch all nations with all locations preloaded

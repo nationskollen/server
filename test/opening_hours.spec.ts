@@ -6,8 +6,8 @@ import { Days, OpeningHourTypes } from 'App/Utils/Time'
 import {
     TestNationContract,
     createTestNation,
-    createOpeningHour,
-    createExceptionOpeningHour,
+    createTestOpeningHour,
+    createTestExceptionOpeningHour,
 } from 'App/Utils/Test'
 
 test.group('Opening hours create', async (group) => {
@@ -176,7 +176,7 @@ test.group('Opening hours update', async (group) => {
     })
 
     test('ensure that updating opening hours requires a valid token', async () => {
-        const openingHour = await createOpeningHour(nation.oid)
+        const openingHour = await createTestOpeningHour(nation.oid)
 
         await supertest(BASE_URL)
             .put(`/nations/${nation.oid}/opening_hours/${openingHour.id}`)
@@ -188,7 +188,7 @@ test.group('Opening hours update', async (group) => {
     })
 
     test('ensure that updating opening hours requires an admin token', async () => {
-        const openingHour = await createOpeningHour(nation.oid)
+        const openingHour = await createTestOpeningHour(nation.oid)
 
         await supertest(BASE_URL)
             .put(`/nations/${nation.oid}/opening_hours/${openingHour.id}`)
@@ -200,7 +200,7 @@ test.group('Opening hours update', async (group) => {
     })
 
     test('ensure that admins can update opening hours', async (assert) => {
-        const openingHour = await createOpeningHour(nation.oid)
+        const openingHour = await createTestOpeningHour(nation.oid)
         const newData = {
             is_open: !openingHour.isOpen,
             day: openingHour.id === Days.Monday ? Days.Friday : Days.Monday,
@@ -230,7 +230,7 @@ test.group('Opening hours update', async (group) => {
     })
 
     test('ensure that invalid properties are removed', async () => {
-        const openingHour = await createOpeningHour(nation.oid)
+        const openingHour = await createTestOpeningHour(nation.oid)
 
         await supertest(BASE_URL)
             .put(`/nations/${nation.oid}/opening_hours/${openingHour.id}`)
@@ -243,7 +243,7 @@ test.group('Opening hours update', async (group) => {
     })
 
     test('ensure that id and oid can not be updated', async (assert) => {
-        const openingHour = await createOpeningHour(nation.oid)
+        const openingHour = await createTestOpeningHour(nation.oid)
 
         const { text } = await supertest(BASE_URL)
             .put(`/nations/${nation.oid}/opening_hours/${openingHour.id}`)
@@ -267,7 +267,7 @@ test.group('Opening hours update', async (group) => {
     })
 
     test('ensure that updating opening hour type requires additional data', async () => {
-        const openingHour = await createOpeningHour(nation.oid)
+        const openingHour = await createTestOpeningHour(nation.oid)
 
         await supertest(BASE_URL)
             .put(`/nations/${nation.oid}/opening_hours/${openingHour.id}`)
@@ -277,7 +277,7 @@ test.group('Opening hours update', async (group) => {
     })
 
     test('ensure that you can update the opening hour type', async (assert) => {
-        const openingHour = await createOpeningHour(nation.oid)
+        const openingHour = await createTestOpeningHour(nation.oid)
         const day = 'random holiday'
         const date = '1/12'
 
@@ -311,7 +311,7 @@ test.group('Opening hours update', async (group) => {
     })
 
     test('ensure that you can not update an opening hour of another nation', async () => {
-        const openingHour = await createOpeningHour(nation.oid)
+        const openingHour = await createTestOpeningHour(nation.oid)
 
         await supertest(BASE_URL)
             .put(`/nations/${nation.oid}/opening_hours/${openingHour.id}`)
@@ -325,7 +325,7 @@ test.group('Opening hours update', async (group) => {
     })
 
     test('ensure that closing time must be after opening time', async () => {
-        const openingHour = await createOpeningHour(nation.oid)
+        const openingHour = await createTestOpeningHour(nation.oid)
 
         await supertest(BASE_URL)
             .put(`/nations/${nation.oid}/opening_hours/${openingHour.id}`)
@@ -338,7 +338,7 @@ test.group('Opening hours update', async (group) => {
     })
 
     test('ensure that closing time can not be equal to opening time', async () => {
-        const openingHour = await createOpeningHour(nation.oid)
+        const openingHour = await createTestOpeningHour(nation.oid)
 
         await supertest(BASE_URL)
             .put(`/nations/${nation.oid}/opening_hours/${openingHour.id}`)
@@ -351,7 +351,7 @@ test.group('Opening hours update', async (group) => {
     })
 
     test('ensure that opening time must be in "HH:mm" format', async () => {
-        const openingHour = await createOpeningHour(nation.oid)
+        const openingHour = await createTestOpeningHour(nation.oid)
 
         await supertest(BASE_URL)
             .put(`/nations/${nation.oid}/opening_hours/${openingHour.id}`)
@@ -363,7 +363,7 @@ test.group('Opening hours update', async (group) => {
     })
 
     test('ensure that closing time must be in "HH:mm" format', async () => {
-        const openingHour = await createOpeningHour(nation.oid)
+        const openingHour = await createTestOpeningHour(nation.oid)
 
         await supertest(BASE_URL)
             .put(`/nations/${nation.oid}/opening_hours/${openingHour.id}`)
@@ -375,7 +375,7 @@ test.group('Opening hours update', async (group) => {
     })
 
     test('ensure that special day date must be a valid date', async () => {
-        const openingHour = await createExceptionOpeningHour(nation.oid)
+        const openingHour = await createTestExceptionOpeningHour(nation.oid)
 
         await supertest(BASE_URL)
             .put(`/nations/${nation.oid}/opening_hours/${openingHour.id}`)
@@ -395,7 +395,7 @@ test.group('Opening hours delete', async (group) => {
     })
 
     test('ensure that deleting opening hours requires a valid token', async () => {
-        const openingHour = await createOpeningHour(nation.oid)
+        const openingHour = await createTestOpeningHour(nation.oid)
 
         await supertest(BASE_URL)
             .delete(`/nations/${nation.oid}/opening_hours/${openingHour.id}`)
@@ -404,7 +404,7 @@ test.group('Opening hours delete', async (group) => {
     })
 
     test('ensure that deleting opening hours requires an admin token', async () => {
-        const openingHour = await createOpeningHour(nation.oid)
+        const openingHour = await createTestOpeningHour(nation.oid)
 
         await supertest(BASE_URL)
             .delete(`/nations/${nation.oid}/opening_hours/${openingHour.id}`)
@@ -413,7 +413,7 @@ test.group('Opening hours delete', async (group) => {
     })
 
     test('ensure that admins can delete opening hours', async (assert) => {
-        const openingHour = await createOpeningHour(nation.oid)
+        const openingHour = await createTestOpeningHour(nation.oid)
 
         await supertest(BASE_URL)
             .delete(`/nations/${nation.oid}/opening_hours/${openingHour.id}`)
@@ -432,7 +432,7 @@ test.group('Opening hours delete', async (group) => {
     })
 
     test('ensure that you can not delete an opening hour of another nation', async () => {
-        const openingHour = await createOpeningHour(nation.oid)
+        const openingHour = await createTestOpeningHour(nation.oid)
 
         await supertest(BASE_URL)
             .delete(`/nations/${nation.oid}/opening_hours/${openingHour.id}`)
