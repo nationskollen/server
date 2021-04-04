@@ -1,23 +1,59 @@
-import socketIo from 'socket.io'
+import WebSocket from 'ws'
 import Server from '@ioc:Adonis/Core/Server'
+import { ActivityLevels } from 'app/Utils/Activity'
+
+export enum WebSocketDataTypes {
+    Connected,
+    Heartbeat,
+    Activity,
+}
+
+export interface WebSocketClient extends WebSocket {
+    isAlive: boolean
+}
+
+export interface WebSocketData {
+    type: WebSocketDataTypes
+    data?: any
+}
 
 class Ws {
     public isReady = false
-    public io: socketIo.Server
+    public server: WebSocket.Server
 
-    public start(callback: (socket: socketIo.Socket) => void) {
-        this.io = new socketIo.Server(Server.instance!, {
-            // CORS (Cross-origin resource sharing) must be disabled
-            // to allow for users of the mobile app to connect. The
-            // app does not have the same origin of the API and will
-            // be blocked unless it is disabled.
-            // [CORS configuration]{@link https://socket.io/docs/v4/handling-cors/#Configuration}
-            cors: {
-                origin: '*',
+    public start(callback: (ws: WebSocketClient) => void) {
+        this.server = new WebSocket.Server({
+            server: Server.instance!,
+            // Track connected clients in "server.clients"
+            clientTracking: true,
+        })
+
+        this.server.on('connection', callback)
+        this.isReady = true
+    }
+
+    protected broadcast(data: WebSocketData) {
+        const serializedData = JSON.stringify(data)
+
+        this.server.clients.forEach((client: WebSocketClient) => {
+            client.send(serializedData)
+        })
+    }
+
+    public broadcastActivity(oid: number, location: number, activity: ActivityLevels) {
+        this.broadcast({
+            type: WebSocketDataTypes.Activity,
+            data: {
+                oid,
+                location,
+                activity,
             },
         })
-        this.io.on('connection', callback)
-        this.isReady = true
+    }
+
+    // Helper function for serializing data before sending it
+    public send(ws: WebSocketClient, data: WebSocketData) {
+        ws.send(JSON.stringify(data))
     }
 }
 
