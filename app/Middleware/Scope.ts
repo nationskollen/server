@@ -1,6 +1,4 @@
 import User from 'App/Models/User'
-import Nation from 'App/Models/Nation'
-import Location from 'App/Models/Location'
 import { NationOwnerScopes } from 'App/Utils/Scopes'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { AuthenticationException } from '@adonisjs/auth/build/standalone'
