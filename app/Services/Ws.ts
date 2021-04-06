@@ -4,7 +4,6 @@ import { ActivityLevels } from 'app/Utils/Activity'
 
 export enum WebSocketDataTypes {
     Connected,
-    Heartbeat,
     Activity,
 }
 

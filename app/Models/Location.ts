@@ -1,3 +1,4 @@
+import Ws from 'App/Services/Ws'
 import { DateTime } from 'luxon'
 import { toBoolean } from 'App/Utils/Serialize'
 import OpeningHour from 'App/Models/OpeningHour'
@@ -53,31 +54,44 @@ export default class Location extends BaseModel {
     // Dynamically update the activity level based on the estimated people count
     @beforeUpdate()
     public static async updateActivityLevel(location: Location) {
-        // If the location is closed, there is no need to update the activity level
-        if (!location.isOpen) {
+        if (
+            !location.$dirty.hasOwnProperty('isOpen') &&
+            !location.$dirty.hasOwnProperty('maxCapacity') &&
+            !location.$dirty.hasOwnProperty('estimatedPeopleCount')
+        ) {
+            // No activity changes has been made
             return
         }
 
-        if (location.$dirty.hasOwnProperty('estimatedPeopleCount') || location.$dirty.maxCapacity) {
-            const activityInPercentage = location.estimatedPeopleCount / location.maxCapacity
-            const newActivityLevel = Math.round(activityInPercentage * MAX_ACTIVITY_LEVEL)
+        // If the location is open and 'estimatedPeopleCount' or 'maxCapacity'
+        // has changed.
+        const activityInPercentage = location.estimatedPeopleCount / location.maxCapacity
+        let newActivityLevel = Math.round(activityInPercentage * MAX_ACTIVITY_LEVEL)
 
-            // Clamp new activity level between ActivityLevels.Low and ActivityLevels.Full.
-            // This code only runs if the location is open and therefore we should never set
-            // the new activity level to ActivityLevels.Closed.
-            location.activityLevel = Math.min(
-                Math.max(newActivityLevel, ActivityLevels.Low),
-                MAX_ACTIVITY_LEVEL
-            )
+        // Make sure that the activity can not be set to closed if the location is open
+        if (location.isOpen && newActivityLevel === ActivityLevels.Closed) {
+            newActivityLevel = ActivityLevels.Low
         }
+
+        // Skip activity broadcast if the activity level is the same
+        // NOTE: This must be checked after we set the activity level
+        //       to ActivityLevels.Low if open. Otherwise, it might
+        //       return when in fact the activity level is one higher.
+        if (newActivityLevel === location.activityLevel) {
+            return
+        }
+
+        location.activityLevel = newActivityLevel
+
+        // Broadcast new activity to all connected websocket clients
+        // TODO: Should we make sure that the activity has changed
+        Ws.broadcastActivity(location.nationId, location.id, location.activityLevel)
     }
 
     // Set location state to open
     public async setOpen() {
         this.isOpen = true
-        this.activityLevel = ActivityLevels.Low
         this.estimatedPeopleCount = 0
-
         await this.save()
 
         return this
@@ -86,9 +100,7 @@ export default class Location extends BaseModel {
     // Set location state to closed
     public async setClosed() {
         this.isOpen = false
-        this.activityLevel = ActivityLevels.Closed
         this.estimatedPeopleCount = 0
-
         await this.save()
 
         return this
