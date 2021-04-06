@@ -29,6 +29,7 @@ database with test data (only in development mode).
 * `npm run lint` - Run ESLint on all source files
 * `npm run format` - Format all source files using Prettier
 * `npm run test` - Run all tests defined in `test/`
+* `npm run coverage` - Get test coverage as HTML in `coverage/index.html`
 
 ### Insomnia
 Insomnia can be setup by importing the workspace file in
