@@ -1,12 +1,21 @@
+import { getLocation } from 'App/Utils/Request'
 import OpeningHour from 'App/Models/OpeningHour'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import OpeningHourNotFoundException from 'App/Exceptions/OpeningHourNotFoundException'
 
-// Verifies that the id param of a route is a valid oid of a student nation
 export default class OpeningHourMiddleware {
     public async handle({ request, params }: HttpContextContract, next: () => Promise<void>) {
-        const model = await OpeningHour.findOrFail(params.ohid)
+        const location = getLocation(request)
+        const openingHour = await OpeningHour.query()
+            .where('id', params.hid)
+            .where('locationId', location.id)
+            .first()
 
-        request.openingHour = model
+        if (!openingHour) {
+            throw new OpeningHourNotFoundException()
+        }
+
+        request.openingHour = openingHour
 
         await next()
     }

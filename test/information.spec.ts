@@ -35,25 +35,27 @@ test.group('Information fetch', () => {
         const openingHoursCount = 2
         const openingHourExceptionsCount = 4
 
-        const nation = await NationFactory.with('openingHours', openingHoursCount)
-            .with('openingHourExceptions', openingHourExceptionsCount, (builder) =>
-                builder.apply('exception')
-            )
-            .create()
+        const nation = await NationFactory.with('locations', 1, (location) => {
+            location
+                .with('openingHours', openingHoursCount)
+                .with('openingHourExceptions', openingHourExceptionsCount)
+        }).create()
 
-        const { text } = await supertest(BASE_URL).get(`/nations/${nation.oid}`).expect(200)
+        let nationData = await supertest(BASE_URL).get(`/nations/${nation.oid}`).expect(200)
+        let parsedNationData = JSON.parse(nationData.text)
 
-        const data = JSON.parse(text)
+        assert.isArray(parsedNationData.locations)
+        assert.lengthOf(parsedNationData.locations, 1)
 
-        // This is broken because values that are null will not
-        // be included in the result of 'nation.toJSON()'
-        /* const serializedNation = nation.toJSON() */
-        /* assert.deepStrictEqual(data, serializedNation) */
+        let locationData = await supertest(BASE_URL)
+            .get(`/nations/${nation.oid}/locations/${parsedNationData.locations[0].id}`)
+            .expect(200)
+        const parsedLocationData = JSON.parse(locationData.text)
 
-        assert.isArray(data.openingHours)
-        assert.isArray(data.openingHourExceptions)
-        assert.lengthOf(data.openingHours, openingHoursCount)
-        assert.lengthOf(data.openingHourExceptions, openingHourExceptionsCount)
+        assert.isArray(parsedLocationData.opening_hours)
+        assert.isArray(parsedLocationData.opening_hour_exceptions)
+        assert.lengthOf(parsedLocationData.opening_hours, openingHoursCount)
+        assert.lengthOf(parsedLocationData.opening_hour_exceptions, openingHourExceptionsCount)
     })
 })
 
@@ -68,7 +70,7 @@ test.group('Information update', (group) => {
         const { text } = await supertest(BASE_URL)
             .put(`/nations/${nation.oid}`)
             .set('Authorization', 'Bearer ' + 'invalidToken')
-            .send({ address: 'new address' })
+            .send({ accent_color: '#333333' })
             .expect(401)
 
         const data = JSON.parse(text)
@@ -80,7 +82,7 @@ test.group('Information update', (group) => {
         await supertest(BASE_URL)
             .put(`/nations/${INVALID_NATION_OID}`)
             .set('Authorization', 'Bearer ' + nation.token)
-            .send({ address: 'new address' })
+            .send({ accent_color: '#333333' })
             .expect(404)
     })
 
@@ -88,7 +90,7 @@ test.group('Information update', (group) => {
         await supertest(BASE_URL)
             .put(`/nations/${nation.oid}`)
             .set('Authorization', 'Bearer ' + nation.staffToken)
-            .send({ address: 'new address' })
+            .send({ accent_color: '#333333' })
             .expect(401)
     })
 
@@ -99,7 +101,7 @@ test.group('Information update', (group) => {
             .expect(400)
     })
 
-    test('ensure that invalid properties are removed when updating a nation', async (assert) => {
+    test('ensure that invalid properties are removed when updating a nation', async () => {
         await supertest(BASE_URL)
             .put(`/nations/${nation.oid}`)
             .set('Authorization', 'Bearer ' + nation.token)
@@ -116,8 +118,6 @@ test.group('Information update', (group) => {
             name: 'test-name',
             short_name: 'test-short',
             description: 'test-description',
-            address: 'test-address 123',
-            max_capacity: 100,
             accent_color: '#FFFFFF',
         }
 

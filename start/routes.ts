@@ -2,28 +2,101 @@ import Route from '@ioc:Adonis/Core/Route'
 import HealthCheck from '@ioc:Adonis/Core/HealthCheck'
 
 Route.group(() => {
+    // ----------------------------------------------------------
+    // System health
+    // ----------------------------------------------------------
     Route.get('/health', async ({ response }) => {
         const report = await HealthCheck.getReport()
         return report.healthy ? response.ok(report) : response.badRequest(report)
     })
 
+    // ----------------------------------------------------------
+    // Authentication
+    // ----------------------------------------------------------
     Route.post('/user/login', 'AuthController.login')
 
+    // ----------------------------------------------------------
+    // Nations
+    // ----------------------------------------------------------
     Route.get('/nations', 'NationsController.index')
-    Route.get('/nations/:id', 'NationsController.show').middleware('nation')
-    Route.put('/nations/:id', 'NationsController.update').middleware(['auth', 'nation:admin'])
-    Route.put('/nations/:id/open', 'NationsController.open').middleware(['auth', 'nation:staff'])
-    Route.put('/nations/:id/close', 'NationsController.close').middleware(['auth', 'nation:staff'])
-    Route.put('/nations/:id/activity', 'NationsController.updateActivity').middleware([
+
+    // ----------------------------------------------------------
+    // Single nation
+    // ----------------------------------------------------------
+    Route.get('/nations/:id', 'NationsController.show').middleware(['nation'])
+    Route.put('/nations/:id', 'NationsController.update').middleware([
         'auth',
-        'nation:staff',
+        'nation',
+        'scope:admin',
     ])
 
-    Route.group(() => {
-        Route.post('/', 'OpeningHoursController.create')
-        Route.put('/:ohid', 'OpeningHoursController.update').middleware(['opening_hour'])
-        Route.delete('/:ohid', 'OpeningHoursController.delete').middleware(['opening_hour'])
-    })
-        .prefix('/nations/:id/opening_hours')
-        .middleware(['auth', 'nation:admin'])
+    // ----------------------------------------------------------
+    // Locations
+    // ----------------------------------------------------------
+    Route.get('/nations/:id/locations', 'LocationsController.index').middleware(['nation'])
+    Route.post('/nations/:id/locations', 'LocationsController.create').middleware([
+        'auth',
+        'nation',
+        'scope:admin',
+    ])
+
+    // ----------------------------------------------------------
+    // Single location
+    // ----------------------------------------------------------
+    Route.get('/nations/:id/locations/:lid', 'LocationsController.single').middleware([
+        'nation',
+        'location',
+    ])
+    Route.put('/nations/:id/locations/:lid', 'LocationsController.update').middleware([
+        'auth',
+        'nation',
+        'location',
+        'scope:admin',
+    ])
+    Route.delete('/nations/:id/locations/:lid', 'LocationsController.delete').middleware([
+        'auth',
+        'nation',
+        'location',
+        'scope:admin',
+    ])
+
+    // ----------------------------------------------------------
+    // Location actions
+    // ----------------------------------------------------------
+    Route.put('/locations/:lid/open', 'LocationsController.open').middleware([
+        'auth',
+        'location',
+        'scope:staff',
+    ])
+    Route.put('/locations/:lid/close', 'LocationsController.close').middleware([
+        'auth',
+        'location',
+        'scope:staff',
+    ])
+    Route.put('/locations/:lid/activity', 'LocationsController.activity').middleware([
+        'auth',
+        'location',
+        'scope:staff',
+    ])
+
+    // ----------------------------------------------------------
+    // Location opening hours
+    // ----------------------------------------------------------
+    Route.post('/locations/:lid/hours', 'OpeningHoursController.create').middleware([
+        'auth',
+        'location',
+        'scope:admin',
+    ])
+    Route.put('/locations/:lid/hours/:hid', 'OpeningHoursController.update').middleware([
+        'auth',
+        'location',
+        'openinghour',
+        'scope:admin',
+    ])
+    Route.delete('/locations/:lid/hours/:hid', 'OpeningHoursController.delete').middleware([
+        'auth',
+        'location',
+        'openinghour',
+        'scope:admin',
+    ])
 }).prefix('/api/v1')

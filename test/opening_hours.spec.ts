@@ -1,13 +1,15 @@
 import test from 'japa'
 import supertest from 'supertest'
+import Location from 'App/Models/Location'
 import { BASE_URL } from 'App/Utils/Constants'
 import OpeningHour from 'App/Models/OpeningHour'
 import { Days, OpeningHourTypes } from 'App/Utils/Time'
 import {
     TestNationContract,
     createTestNation,
-    createOpeningHour,
-    createExceptionOpeningHour,
+    createTestLocation,
+    createTestOpeningHour,
+    createTestExceptionOpeningHour,
 } from 'App/Utils/Test'
 
 test.group('Opening hours create', async (group) => {
@@ -27,14 +29,16 @@ test.group('Opening hours create', async (group) => {
     }
 
     let nation: TestNationContract
+    let location: Location
 
     group.before(async () => {
         nation = await createTestNation()
+        location = await createTestLocation(nation.oid)
     })
 
     test('ensure that creating opening hours requires a valid token', async () => {
         await supertest(BASE_URL)
-            .post(`/nations/${nation.oid}/opening_hours`)
+            .post(`/locations/${location.id}/hours`)
             .set('Authorization', 'Bearer ' + 'invalidToken')
             .send(openingHourData)
             .expect(401)
@@ -42,7 +46,7 @@ test.group('Opening hours create', async (group) => {
 
     test('ensure that creating opening hours requires an admin token', async () => {
         await supertest(BASE_URL)
-            .post(`/nations/${nation.oid}/opening_hours`)
+            .post(`/locations/${location.id}/hours`)
             .set('Authorization', 'Bearer ' + nation.staffToken)
             .send(openingHourData)
             .expect(401)
@@ -50,7 +54,7 @@ test.group('Opening hours create', async (group) => {
 
     test('ensure that admins can create opening hours', async (assert) => {
         const { text } = await supertest(BASE_URL)
-            .post(`/nations/${nation.oid}/opening_hours`)
+            .post(`/locations/${location.id}/hours`)
             .set('Authorization', 'Bearer ' + nation.token)
             .send(openingHourData)
             .expect(200)
@@ -62,7 +66,7 @@ test.group('Opening hours create', async (group) => {
 
     test('ensure that default opening hours require hours if open', async () => {
         await supertest(BASE_URL)
-            .post(`/nations/${nation.oid}/opening_hours`)
+            .post(`/locations/${location.id}/hours`)
             .set('Authorization', 'Bearer ' + nation.token)
             .send({
                 type: OpeningHourTypes.Default,
@@ -74,7 +78,7 @@ test.group('Opening hours create', async (group) => {
 
     test('ensure that exception opening hours require hours if open', async () => {
         await supertest(BASE_URL)
-            .post(`/nations/${nation.oid}/opening_hours`)
+            .post(`/locations/${location.id}/hours`)
             .set('Authorization', 'Bearer ' + nation.token)
             .send({
                 type: OpeningHourTypes.Exception,
@@ -86,7 +90,7 @@ test.group('Opening hours create', async (group) => {
 
     test('ensure that exception opening hours require name of day if open', async () => {
         await supertest(BASE_URL)
-            .post(`/nations/${nation.oid}/opening_hours`)
+            .post(`/locations/${location.id}/hours`)
             .set('Authorization', 'Bearer ' + nation.token)
             .send({
                 type: OpeningHourTypes.Exception,
@@ -99,7 +103,7 @@ test.group('Opening hours create', async (group) => {
 
     test('ensure that exception opening hours require name of day if closed', async () => {
         await supertest(BASE_URL)
-            .post(`/nations/${nation.oid}/opening_hours`)
+            .post(`/locations/${location.id}/hours`)
             .set('Authorization', 'Bearer ' + nation.token)
             .send({
                 type: OpeningHourTypes.Exception,
@@ -116,7 +120,7 @@ test.group('Opening hours create', async (group) => {
         data.close = '08:00'
 
         await supertest(BASE_URL)
-            .post(`/nations/${nation.oid}/opening_hours`)
+            .post(`/locations/${location.id}/hours`)
             .set('Authorization', 'Bearer ' + nation.token)
             .send(data)
             .expect(422)
@@ -128,7 +132,7 @@ test.group('Opening hours create', async (group) => {
         data.close = '10:00'
 
         await supertest(BASE_URL)
-            .post(`/nations/${nation.oid}/opening_hours`)
+            .post(`/locations/${location.id}/hours`)
             .set('Authorization', 'Bearer ' + nation.token)
             .send(data)
             .expect(422)
@@ -139,7 +143,7 @@ test.group('Opening hours create', async (group) => {
         data.open = '10'
 
         await supertest(BASE_URL)
-            .post(`/nations/${nation.oid}/opening_hours`)
+            .post(`/locations/${location.id}/hours`)
             .set('Authorization', 'Bearer ' + nation.token)
             .send(data)
             .expect(422)
@@ -150,7 +154,7 @@ test.group('Opening hours create', async (group) => {
         data.close = '10:000'
 
         await supertest(BASE_URL)
-            .post(`/nations/${nation.oid}/opening_hours`)
+            .post(`/locations/${location.id}/hours`)
             .set('Authorization', 'Bearer ' + nation.token)
             .send(data)
             .expect(422)
@@ -161,7 +165,7 @@ test.group('Opening hours create', async (group) => {
         data.day_special_date = '1/13'
 
         await supertest(BASE_URL)
-            .post(`/nations/${nation.oid}/opening_hours`)
+            .post(`/locations/${location.id}/hours`)
             .set('Authorization', 'Bearer ' + nation.token)
             .send(data)
             .expect(422)
@@ -170,16 +174,18 @@ test.group('Opening hours create', async (group) => {
 
 test.group('Opening hours update', async (group) => {
     let nation: TestNationContract
+    let location: Location
 
     group.before(async () => {
         nation = await createTestNation()
+        location = await createTestLocation(nation.oid)
     })
 
     test('ensure that updating opening hours requires a valid token', async () => {
-        const openingHour = await createOpeningHour(nation.oid)
+        const openingHour = await createTestOpeningHour(location.id)
 
         await supertest(BASE_URL)
-            .put(`/nations/${nation.oid}/opening_hours/${openingHour.id}`)
+            .put(`/locations/${location.id}/hours/${openingHour.id}`)
             .set('Authorization', 'Bearer ' + 'invalidToken')
             .send({
                 day: Days.Monday,
@@ -188,10 +194,10 @@ test.group('Opening hours update', async (group) => {
     })
 
     test('ensure that updating opening hours requires an admin token', async () => {
-        const openingHour = await createOpeningHour(nation.oid)
+        const openingHour = await createTestOpeningHour(location.id)
 
         await supertest(BASE_URL)
-            .put(`/nations/${nation.oid}/opening_hours/${openingHour.id}`)
+            .put(`/locations/${location.id}/hours/${openingHour.id}`)
             .set('Authorization', 'Bearer ' + nation.staffToken)
             .send({
                 day: Days.Monday,
@@ -200,7 +206,7 @@ test.group('Opening hours update', async (group) => {
     })
 
     test('ensure that admins can update opening hours', async (assert) => {
-        const openingHour = await createOpeningHour(nation.oid)
+        const openingHour = await createTestOpeningHour(location.id)
         const newData = {
             is_open: !openingHour.isOpen,
             day: openingHour.id === Days.Monday ? Days.Friday : Days.Monday,
@@ -209,7 +215,7 @@ test.group('Opening hours update', async (group) => {
         }
 
         const { text } = await supertest(BASE_URL)
-            .put(`/nations/${nation.oid}/opening_hours/${openingHour.id}`)
+            .put(`/locations/${location.id}/hours/${openingHour.id}`)
             .set('Authorization', 'Bearer ' + nation.token)
             .send(newData)
             .expect(200)
@@ -224,16 +230,16 @@ test.group('Opening hours update', async (group) => {
 
     test('ensure that the opening hour id is validated before the data', async () => {
         await supertest(BASE_URL)
-            .put(`/nations/${nation.oid}/opening_hours/9999999999`)
+            .put(`/locations/${location.id}/hours/9999999999`)
             .set('Authorization', 'Bearer ' + nation.token)
             .expect(404)
     })
 
     test('ensure that invalid properties are removed', async () => {
-        const openingHour = await createOpeningHour(nation.oid)
+        const openingHour = await createTestOpeningHour(location.id)
 
         await supertest(BASE_URL)
-            .put(`/nations/${nation.oid}/opening_hours/${openingHour.id}`)
+            .put(`/locations/${location.id}/hours/${openingHour.id}`)
             .set('Authorization', 'Bearer ' + nation.token)
             .send({
                 invalidProp: 'hello',
@@ -243,10 +249,10 @@ test.group('Opening hours update', async (group) => {
     })
 
     test('ensure that id and oid can not be updated', async (assert) => {
-        const openingHour = await createOpeningHour(nation.oid)
+        const openingHour = await createTestOpeningHour(location.id)
 
         const { text } = await supertest(BASE_URL)
-            .put(`/nations/${nation.oid}/opening_hours/${openingHour.id}`)
+            .put(`/locations/${location.id}/hours/${openingHour.id}`)
             .set('Authorization', 'Bearer ' + nation.token)
             .send({
                 id: -1,
@@ -262,27 +268,27 @@ test.group('Opening hours update', async (group) => {
         const data = JSON.parse(text)
 
         assert.deepEqual(data.id, openingHour.id)
-        assert.deepEqual(data.oid, openingHour.nationId)
+        assert.deepEqual(data.location_id, openingHour.locationId)
         assert.deepEqual(data.is_open, false)
     })
 
     test('ensure that updating opening hour type requires additional data', async () => {
-        const openingHour = await createOpeningHour(nation.oid)
+        const openingHour = await createTestOpeningHour(location.id)
 
         await supertest(BASE_URL)
-            .put(`/nations/${nation.oid}/opening_hours/${openingHour.id}`)
+            .put(`/locations/${location.id}/hours/${openingHour.id}`)
             .set('Authorization', 'Bearer ' + nation.token)
             .send({ type: OpeningHourTypes.Exception })
             .expect(422)
     })
 
     test('ensure that you can update the opening hour type', async (assert) => {
-        const openingHour = await createOpeningHour(nation.oid)
+        const openingHour = await createTestOpeningHour(location.id)
         const day = 'random holiday'
         const date = '1/12'
 
         const { text } = await supertest(BASE_URL)
-            .put(`/nations/${nation.oid}/opening_hours/${openingHour.id}`)
+            .put(`/locations/${location.id}/hours/${openingHour.id}`)
             .set('Authorization', 'Bearer ' + nation.token)
             .send({
                 type: OpeningHourTypes.Exception,
@@ -300,7 +306,7 @@ test.group('Opening hours update', async (group) => {
 
     test('ensure that you can not update a non-existing opening hour', async () => {
         await supertest(BASE_URL)
-            .put(`/nations/${nation.oid}/opening_hours/9999999999`)
+            .put(`/locations/${location.id}/hours/99999999999`)
             .set('Authorization', 'Bearer ' + nation.token)
             .send({
                 type: OpeningHourTypes.Exception,
@@ -311,10 +317,10 @@ test.group('Opening hours update', async (group) => {
     })
 
     test('ensure that you can not update an opening hour of another nation', async () => {
-        const openingHour = await createOpeningHour(nation.oid)
+        const openingHour = await createTestOpeningHour(location.id)
 
         await supertest(BASE_URL)
-            .put(`/nations/${nation.oid}/opening_hours/${openingHour.id}`)
+            .put(`/locations/${location.id}/hours/${openingHour.id}`)
             .set('Authorization', 'Bearer ' + nation.adminOtherToken)
             .send({
                 type: OpeningHourTypes.Exception,
@@ -325,10 +331,10 @@ test.group('Opening hours update', async (group) => {
     })
 
     test('ensure that closing time must be after opening time', async () => {
-        const openingHour = await createOpeningHour(nation.oid)
+        const openingHour = await createTestOpeningHour(location.id)
 
         await supertest(BASE_URL)
-            .put(`/nations/${nation.oid}/opening_hours/${openingHour.id}`)
+            .put(`/locations/${location.id}/hours/${openingHour.id}`)
             .set('Authorization', 'Bearer ' + nation.token)
             .send({
                 open: '10:00',
@@ -338,10 +344,10 @@ test.group('Opening hours update', async (group) => {
     })
 
     test('ensure that closing time can not be equal to opening time', async () => {
-        const openingHour = await createOpeningHour(nation.oid)
+        const openingHour = await createTestOpeningHour(location.id)
 
         await supertest(BASE_URL)
-            .put(`/nations/${nation.oid}/opening_hours/${openingHour.id}`)
+            .put(`/locations/${location.id}/hours/${openingHour.id}`)
             .set('Authorization', 'Bearer ' + nation.token)
             .send({
                 open: '10:00',
@@ -351,10 +357,10 @@ test.group('Opening hours update', async (group) => {
     })
 
     test('ensure that opening time must be in "HH:mm" format', async () => {
-        const openingHour = await createOpeningHour(nation.oid)
+        const openingHour = await createTestOpeningHour(location.id)
 
         await supertest(BASE_URL)
-            .put(`/nations/${nation.oid}/opening_hours/${openingHour.id}`)
+            .put(`/locations/${location.id}/hours/${openingHour.id}`)
             .set('Authorization', 'Bearer ' + nation.token)
             .send({
                 open: '10:000',
@@ -363,10 +369,10 @@ test.group('Opening hours update', async (group) => {
     })
 
     test('ensure that closing time must be in "HH:mm" format', async () => {
-        const openingHour = await createOpeningHour(nation.oid)
+        const openingHour = await createTestOpeningHour(location.id)
 
         await supertest(BASE_URL)
-            .put(`/nations/${nation.oid}/opening_hours/${openingHour.id}`)
+            .put(`/locations/${location.id}/hours/${openingHour.id}`)
             .set('Authorization', 'Bearer ' + nation.token)
             .send({
                 close: '10:000',
@@ -375,10 +381,10 @@ test.group('Opening hours update', async (group) => {
     })
 
     test('ensure that special day date must be a valid date', async () => {
-        const openingHour = await createExceptionOpeningHour(nation.oid)
+        const openingHour = await createTestExceptionOpeningHour(location.id)
 
         await supertest(BASE_URL)
-            .put(`/nations/${nation.oid}/opening_hours/${openingHour.id}`)
+            .put(`/locations/${location.id}/hours/${openingHour.id}`)
             .set('Authorization', 'Bearer ' + nation.token)
             .send({
                 day_special_date: '1/13',
@@ -389,34 +395,36 @@ test.group('Opening hours update', async (group) => {
 
 test.group('Opening hours delete', async (group) => {
     let nation: TestNationContract
+    let location: Location
 
     group.before(async () => {
         nation = await createTestNation()
+        location = await createTestLocation(nation.oid)
     })
 
     test('ensure that deleting opening hours requires a valid token', async () => {
-        const openingHour = await createOpeningHour(nation.oid)
+        const openingHour = await createTestOpeningHour(location.id)
 
         await supertest(BASE_URL)
-            .delete(`/nations/${nation.oid}/opening_hours/${openingHour.id}`)
+            .delete(`/locations/${location.id}/hours/${openingHour.id}`)
             .set('Authorization', 'Bearer ' + 'invalidToken')
             .expect(401)
     })
 
     test('ensure that deleting opening hours requires an admin token', async () => {
-        const openingHour = await createOpeningHour(nation.oid)
+        const openingHour = await createTestOpeningHour(location.id)
 
         await supertest(BASE_URL)
-            .delete(`/nations/${nation.oid}/opening_hours/${openingHour.id}`)
+            .delete(`/locations/${location.id}/hours/${openingHour.id}`)
             .set('Authorization', 'Bearer ' + nation.staffToken)
             .expect(401)
     })
 
     test('ensure that admins can delete opening hours', async (assert) => {
-        const openingHour = await createOpeningHour(nation.oid)
+        const openingHour = await createTestOpeningHour(location.id)
 
         await supertest(BASE_URL)
-            .delete(`/nations/${nation.oid}/opening_hours/${openingHour.id}`)
+            .delete(`/locations/${location.id}/hours/${openingHour.id}`)
             .set('Authorization', 'Bearer ' + nation.token)
             .expect(200)
 
@@ -426,16 +434,16 @@ test.group('Opening hours delete', async (group) => {
 
     test('ensure that you can not delete a non-existing opening hour', async () => {
         await supertest(BASE_URL)
-            .delete(`/nations/${nation.oid}/opening_hours/99999999`)
+            .delete(`/locations/${location.id}/hours/999999999999`)
             .set('Authorization', 'Bearer ' + nation.token)
             .expect(404)
     })
 
     test('ensure that you can not delete an opening hour of another nation', async () => {
-        const openingHour = await createOpeningHour(nation.oid)
+        const openingHour = await createTestOpeningHour(location.id)
 
         await supertest(BASE_URL)
-            .delete(`/nations/${nation.oid}/opening_hours/${openingHour.id}`)
+            .delete(`/locations/${location.id}/hours/${openingHour.id}`)
             .set('Authorization', 'Bearer ' + nation.adminOtherToken)
             .expect(401)
     })

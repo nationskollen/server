@@ -1,5 +1,6 @@
 import { DateTime } from 'luxon'
 import Hash from '@ioc:Adonis/Core/Hash'
+import { toBoolean } from 'App/Utils/Serialize'
 import { column, beforeSave, BaseModel } from '@ioc:Adonis/Lucid/Orm'
 
 export default class User extends BaseModel {
@@ -17,7 +18,7 @@ export default class User extends BaseModel {
     public nationId: number
 
     // If the user is a nation admin
-    @column({ serializeAs: null, consume: (value: number) => Boolean(value) })
+    @column({ serializeAs: null, consume: toBoolean })
     public nationAdmin: boolean
 
     @column()
