@@ -2,9 +2,5 @@
     "extends": "@istanbuljs/nyc-config-typescript",
     "all": true,
     "reporter": ["html"],
-    "include": [
-        "app/**",
-        "start/routes.ts",
-        "start/socket.ts"
-    ]
+    "include": ["app/**", "start/routes.ts", "start/socket.ts"]
 }

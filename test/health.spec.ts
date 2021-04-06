@@ -24,6 +24,10 @@ test.group('Health', () => {
     })
 
     test('ensure websocket server is running', async () => {
-        await wstest(HOSTNAME).ws('/').expectJson({ type: WebSocketDataTypes.Connected }).close()
+        await wstest(HOSTNAME)
+            .ws('/')
+            .expectJson({ type: WebSocketDataTypes.Connected })
+            .close()
+            .expectClosed()
     })
 })
