@@ -95,9 +95,8 @@ export default class Location extends BaseModel {
     }
 
     // Create location query builder with opening hours preloaded
-    private static withPreloads(oid: number) {
+    private static withPreloads() {
         return this.query()
-            .where('nationId', oid)
             .preload('openingHours', (query) => {
                 query.apply((scopes) => scopes.default())
             })
@@ -107,12 +106,12 @@ export default class Location extends BaseModel {
     }
 
     // Fetch all locations with all opening hours preloaded
-    public static async allWithOpeningHours(oid: number) {
-        return this.withPreloads(oid)
+    public static async allWithOpeningHours() {
+        return this.withPreloads()
     }
 
     // Fetch single location with all opening hours preloaded
-    public static async withOpeningHours(oid: number, lid: number) {
-        return this.withPreloads(oid).where('id', lid).first()
+    public static async withOpeningHours(lid: number) {
+        return this.withPreloads().where('id', lid).first()
     }
 }

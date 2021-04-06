@@ -16,21 +16,21 @@ test.group('Activity update', (group) => {
 
     test('ensure that updating activity requires a valid token', async () => {
         await supertest(BASE_URL)
-            .put(`/nations/${nation.oid}/locations/${location.id}/activity`)
+            .put(`/locations/${location.id}/activity`)
             .set('Authorization', 'Bearer ' + nation.adminOtherToken)
             .expect(401)
     })
 
     test('ensure that trying to update activity with no request data fails', async () => {
         await supertest(BASE_URL)
-            .put(`/nations/${nation.oid}/locations/${location.id}/activity`)
+            .put(`/locations/${location.id}/activity`)
             .set('Authorization', 'Bearer ' + nation.staffToken)
             .expect(422)
     })
 
     test('ensure that invalid properties are removed when updating activity', async () => {
         await supertest(BASE_URL)
-            .put(`/nations/${nation.oid}/locations/${location.id}/activity`)
+            .put(`/locations/${location.id}/activity`)
             .set('Authorization', 'Bearer ' + nation.staffToken)
             .send({
                 invalidKey: 'hello',
@@ -41,7 +41,7 @@ test.group('Activity update', (group) => {
 
     test('ensure that staff can update activity', async (assert) => {
         const { text } = await supertest(BASE_URL)
-            .put(`/nations/${nation.oid}/locations/${location.id}/activity`)
+            .put(`/locations/${location.id}/activity`)
             .set('Authorization', 'Bearer ' + nation.staffToken)
             .send({ change: location.maxCapacity })
             .expect(200)
@@ -53,7 +53,7 @@ test.group('Activity update', (group) => {
 
     test('ensure that admins can update activity', async (assert) => {
         const { text } = await supertest(BASE_URL)
-            .put(`/nations/${nation.oid}/locations/${location.id}/activity`)
+            .put(`/locations/${location.id}/activity`)
             .set('Authorization', 'Bearer ' + nation.token)
             .send({ change: location.maxCapacity })
             .expect(200)
@@ -65,7 +65,7 @@ test.group('Activity update', (group) => {
 
     test('ensure that people count does not go below 0', async (assert) => {
         const { text } = await supertest(BASE_URL)
-            .put(`/nations/${nation.oid}/locations/${location.id}/activity`)
+            .put(`/locations/${location.id}/activity`)
             .set('Authorization', 'Bearer ' + nation.token)
             .send({ change: -1 * (location.maxCapacity + 10) })
             .expect(200)
@@ -77,7 +77,7 @@ test.group('Activity update', (group) => {
 
     test('ensure that nation people count does not go above max capacity', async (assert) => {
         const { text } = await supertest(BASE_URL)
-            .put(`/nations/${nation.oid}/locations/${location.id}/activity`)
+            .put(`/locations/${location.id}/activity`)
             .set('Authorization', 'Bearer ' + nation.token)
             .send({ change: location.maxCapacity + 10 })
             .expect(200)
@@ -89,12 +89,12 @@ test.group('Activity update', (group) => {
 
     test('ensure that activity level changes dynamically to full', async (assert) => {
         await supertest(BASE_URL)
-            .put(`/nations/${nation.oid}/locations/${location.id}/open`)
+            .put(`/locations/${location.id}/open`)
             .set('Authorization', 'Bearer ' + nation.token)
             .expect(200)
 
         const { text } = await supertest(BASE_URL)
-            .put(`/nations/${nation.oid}/locations/${location.id}/activity`)
+            .put(`/locations/${location.id}/activity`)
             .set('Authorization', 'Bearer ' + nation.token)
             .send({ change: location.maxCapacity })
             .expect(200)
@@ -106,12 +106,12 @@ test.group('Activity update', (group) => {
 
     test('ensure that activity level changes dynamically to medium', async (assert) => {
         await supertest(BASE_URL)
-            .put(`/nations/${nation.oid}/locations/${location.id}/open`)
+            .put(`/locations/${location.id}/open`)
             .set('Authorization', 'Bearer ' + nation.token)
             .expect(200)
 
         const { text } = await supertest(BASE_URL)
-            .put(`/nations/${nation.oid}/locations/${location.id}/activity`)
+            .put(`/locations/${location.id}/activity`)
             .set('Authorization', 'Bearer ' + nation.token)
             .send({
                 change:
@@ -126,12 +126,12 @@ test.group('Activity update', (group) => {
 
     test('ensure that activity level changes dynamically to low', async (assert) => {
         await supertest(BASE_URL)
-            .put(`/nations/${nation.oid}/locations/${location.id}/open`)
+            .put(`/locations/${location.id}/open`)
             .set('Authorization', 'Bearer ' + nation.token)
             .expect(200)
 
         const { text } = await supertest(BASE_URL)
-            .put(`/nations/${nation.oid}/locations/${location.id}/activity`)
+            .put(`/locations/${location.id}/activity`)
             .set('Authorization', 'Bearer ' + nation.token)
             .send({ change: -1 * location.maxCapacity })
             .expect(200)
@@ -144,12 +144,12 @@ test.group('Activity update', (group) => {
 
     test('ensure that closing a nation updates the activity level and resets people count', async (assert) => {
         await supertest(BASE_URL)
-            .put(`/nations/${nation.oid}/locations/${location.id}/open`)
+            .put(`/locations/${location.id}/open`)
             .set('Authorization', 'Bearer ' + nation.token)
             .expect(200)
 
         const { text } = await supertest(BASE_URL)
-            .put(`/nations/${nation.oid}/locations/${location.id}/close`)
+            .put(`/locations/${location.id}/close`)
             .set('Authorization', 'Bearer ' + nation.token)
             .expect(200)
 
@@ -161,7 +161,7 @@ test.group('Activity update', (group) => {
 
     test('ensure that opening a nation updates the activity level', async (assert) => {
         const { text } = await supertest(BASE_URL)
-            .put(`/nations/${nation.oid}/locations/${location.id}/open`)
+            .put(`/locations/${location.id}/open`)
             .set('Authorization', 'Bearer ' + nation.token)
             .expect(200)
 

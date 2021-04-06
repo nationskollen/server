@@ -101,7 +101,7 @@ test.group('Information update', (group) => {
             .expect(400)
     })
 
-    test('ensure that invalid properties are removed when updating a nation', async (assert) => {
+    test('ensure that invalid properties are removed when updating a nation', async () => {
         await supertest(BASE_URL)
             .put(`/nations/${nation.oid}`)
             .set('Authorization', 'Bearer ' + nation.token)

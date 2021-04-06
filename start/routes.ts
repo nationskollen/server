@@ -24,7 +24,11 @@ Route.group(() => {
     // Single nation
     // ----------------------------------------------------------
     Route.get('/nations/:id', 'NationsController.show').middleware(['nation'])
-    Route.put('/nations/:id', 'NationsController.update').middleware(['auth', 'nation:admin'])
+    Route.put('/nations/:id', 'NationsController.update').middleware([
+        'auth',
+        'nation',
+        'scope:admin',
+    ])
 
     // ----------------------------------------------------------
     // Locations
@@ -32,7 +36,8 @@ Route.group(() => {
     Route.get('/nations/:id/locations', 'LocationsController.index').middleware(['nation'])
     Route.post('/nations/:id/locations', 'LocationsController.create').middleware([
         'auth',
-        'nation:admin',
+        'nation',
+        'scope:admin',
     ])
 
     // ----------------------------------------------------------
@@ -44,48 +49,54 @@ Route.group(() => {
     ])
     Route.put('/nations/:id/locations/:lid', 'LocationsController.update').middleware([
         'auth',
-        'nation:admin',
+        'nation',
         'location',
+        'scope:admin',
     ])
     Route.delete('/nations/:id/locations/:lid', 'LocationsController.delete').middleware([
         'auth',
-        'nation:admin',
+        'nation',
         'location',
+        'scope:admin',
     ])
 
     // ----------------------------------------------------------
-    // Single location actions (e.g. open/close/activity)
+    // Location actions
     // ----------------------------------------------------------
-    Route.put('/nations/:id/locations/:lid/open', 'LocationsController.open').middleware([
+    Route.put('/locations/:lid/open', 'LocationsController.open').middleware([
         'auth',
-        'nation:staff',
         'location',
+        'scope:staff',
     ])
-    Route.put('/nations/:id/locations/:lid/close', 'LocationsController.close').middleware([
+    Route.put('/locations/:lid/close', 'LocationsController.close').middleware([
         'auth',
-        'nation:staff',
         'location',
+        'scope:staff',
     ])
-    Route.put('/nations/:id/locations/:lid/activity', 'LocationsController.activity').middleware([
+    Route.put('/locations/:lid/activity', 'LocationsController.activity').middleware([
         'auth',
-        'nation:staff',
         'location',
+        'scope:staff',
     ])
 
     // ----------------------------------------------------------
-    // Single location opening hours
+    // Location opening hours
     // ----------------------------------------------------------
-    Route.post('/nations/:id/locations/:lid/hours', 'OpeningHoursController.create').middleware([
+    Route.post('/locations/:lid/hours', 'OpeningHoursController.create').middleware([
         'auth',
-        'nation:admin',
         'location',
+        'scope:admin',
     ])
-    Route.put(
-        '/nations/:id/locations/:lid/hours/:hid',
-        'OpeningHoursController.update'
-    ).middleware(['auth', 'nation:admin', 'location', 'openinghour'])
-    Route.delete(
-        '/nations/:id/locations/:lid/hours/:hid',
-        'OpeningHoursController.delete'
-    ).middleware(['auth', 'nation:admin', 'location', 'openinghour'])
+    Route.put('/locations/:lid/hours/:hid', 'OpeningHoursController.update').middleware([
+        'auth',
+        'location',
+        'openinghour',
+        'scope:admin',
+    ])
+    Route.delete('/locations/:lid/hours/:hid', 'OpeningHoursController.delete').middleware([
+        'auth',
+        'location',
+        'openinghour',
+        'scope:admin',
+    ])
 }).prefix('/api/v1')
