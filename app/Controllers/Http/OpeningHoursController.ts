@@ -18,7 +18,7 @@ export default class OpeningHoursController {
         const model = await location.related(relation).create(data)
 
         if (!model) {
-          throw new InternalErrorException("Unable to add 'opening hour' to database")
+            throw new InternalErrorException("Unable to add 'opening hour' to database")
         }
 
         return model.toJSON()

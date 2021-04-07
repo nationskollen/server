@@ -22,27 +22,27 @@ export default class LocationsController {
         const location = await getValidatedData(request, LocationCreateValidator)
         const nation = getNation(request)
         const model = await nation.related('locations').create(location)
-        
+
         if (!model) {
-          throw new InternalErrorException("Unable to apply 'location' to database")
+            throw new InternalErrorException("Unable to apply 'location' to database")
         }
 
-        return model.toJSON();
+        return model.toJSON()
     }
 
     public async update({ request }: HttpContextContract) {
         const changes = await getValidatedData(request, LocationUpdateValidator)
-        const location = getLocation(request);
-        
-        // Apply the changes that was requested
-        location.merge(changes);
+        const location = getLocation(request)
 
-        return location.toJSON();
+        // Apply the changes that was requested
+        location.merge(changes)
+
+        return location.toJSON()
     }
 
     public async delete({ request }: HttpContextContract) {
-        const location = getLocation(request);
-        await location.delete();
+        const location = getLocation(request)
+        await location.delete()
     }
 
     public async activity({ request }: HttpContextContract) {
