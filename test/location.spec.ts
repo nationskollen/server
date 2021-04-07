@@ -106,7 +106,7 @@ test.group('Locations activity handling', async (group) => {
         assert.equal(data.max_capacity, 500)
     })
 
-    test('ensure that admins cannot update a location falsely', async () => {
+    test('ensure that admins cannot update a location max_capacity falsely', async () => {
         const location = await createTestLocation(nation.oid)
 
         await supertest(BASE_URL)
@@ -116,6 +116,10 @@ test.group('Locations activity handling', async (group) => {
                 max_capacity: '500a',
             })
             .expect(422)
+    })
+
+    test('ensure that admins cannot update a location name falsely', async () => {
+        const location = await createTestLocation(nation.oid)
 
         await supertest(BASE_URL)
             .put(`/nations/${nation.oid}/locations/${location.id}`)
@@ -129,7 +133,7 @@ test.group('Locations activity handling', async (group) => {
     test('ensure that it is not possible to update a non-existing location', async () => {
         await supertest(BASE_URL)
             .put(`/nations/${nation.oid}/locations/999999999999`)
-            .set('Authorization', 'Bearer ' + nation.staffToken)
+            .set('Authorization', 'Bearer ' + nation.token)
             .send({
                 name: 'TheNew',
             })
@@ -196,6 +200,12 @@ test.group('Location deletion', async (group) => {
             .delete(`/nations/${nation.oid}/locations/${location.id}`)
             .set('Authorization', 'Bearer ' + nation.token)
             .expect(200)
+
+        // making sure the loaction was removed from the nation
+        await supertest(BASE_URL)
+            .get(`/nations/${nation.oid}/locations/${location.id}`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .expect(404)
     })
 
     test('ensure that deletion of a non-existing location is not viable', async () => {

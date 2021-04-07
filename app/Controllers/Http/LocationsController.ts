@@ -34,8 +34,9 @@ export default class LocationsController {
         const changes = await getValidatedData(request, LocationUpdateValidator)
         const location = getLocation(request)
 
-        // Apply the changes that was requested
+        // Apply the changes that was requested and save
         location.merge(changes)
+        await location.save()
 
         return location.toJSON()
     }
