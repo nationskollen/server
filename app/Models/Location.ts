@@ -107,7 +107,7 @@ export default class Location extends BaseModel {
     }
 
     // Create location query builder with opening hours preloaded
-    private static withPreloads() {
+    public static withPreloads() {
         return this.query()
             .preload('openingHours', (query) => {
                 query.apply((scopes) => scopes.default())
