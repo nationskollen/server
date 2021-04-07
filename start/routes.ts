@@ -82,9 +82,7 @@ Route.group(() => {
     // ----------------------------------------------------------
     // Location opening hours
     // ----------------------------------------------------------
-    Route.get('/locations/:lid/hours', 'OpeningHoursController.index').middleware([
-        'location',
-    ])
+    Route.get('/locations/:lid/hours', 'OpeningHoursController.index').middleware(['location'])
     Route.get('/locations/:lid/hours/:hid', 'OpeningHoursController.single').middleware([
         'location',
         'openinghour:preload',
@@ -110,9 +108,7 @@ Route.group(() => {
     // ----------------------------------------------------------
     // Location menus
     // ----------------------------------------------------------
-    Route.get('/locations/:lid/menus', 'MenusController.index').middleware([
-        'location',
-    ])
+    Route.get('/locations/:lid/menus', 'MenusController.index').middleware(['location'])
     Route.get('/locations/:lid/menus/:mid', 'MenusController.single').middleware([
         'location',
         'menu',

@@ -11,7 +11,7 @@ export default class Menu extends BaseModel {
     //       Or rather, is there an easier way to verify that a certain user is
     //       allowed to access the resource? Right now, we must extract the oid
     //       somehow from every resource that we need to modify.
-    @column()
+    @column({ serializeAs: 'oid' })
     public nationId: number
 
     @column()
@@ -23,10 +23,10 @@ export default class Menu extends BaseModel {
     @column({ consume: toBoolean })
     public hidden: boolean
 
-    @column.dateTime({ autoCreate: true })
+    @column.dateTime({ autoCreate: true, serializeAs: null })
     public createdAt: DateTime
 
-    @column.dateTime({ autoCreate: true, autoUpdate: true })
+    @column.dateTime({ autoCreate: true, autoUpdate: true, serializeAs: null })
     public updatedAt: DateTime
 
     @hasMany(() => MenuItem, { serializeAs: 'items' })

@@ -5,12 +5,9 @@ export default class NationSeeder extends BaseSeeder {
     public static developmentOnly = true
 
     public async run() {
-        const nations = await NationFactory
-            .with('locations', 3, (location) => {
-                location
-                    .with('openingHours', 2)
-                    .with('openingHourExceptions', 1)
-            })
+        const nations = await NationFactory.with('locations', 3, (location) => {
+            location.with('openingHours', 2).with('openingHourExceptions', 1)
+        })
             .merge([
                 {
                     oid: 400,
@@ -56,8 +53,7 @@ export default class NationSeeder extends BaseSeeder {
         // TODO: Fix this hacky solution for setting the nationId
         for (const nation of nations) {
             for (const location of nation.locations) {
-                await MenuFactory
-                    .with('items', 3)
+                await MenuFactory.with('items', 3)
                     .merge({ locationId: location.id, nationId: nation.oid })
                     .createMany(3)
             }

@@ -25,7 +25,7 @@ test.group('Opening hours fetch', async (group) => {
         exceptionOpeningHour = await createTestExceptionOpeningHour(location.id)
     })
 
-    test('ensure that you can fetch all opening hours', async (assert) => {
+    test('ensure that you can fetch all opening hours of a location', async (assert) => {
         const { text } = await supertest(BASE_URL)
             .get(`/locations/${location.id}/hours`)
             .expect(200)
@@ -73,9 +73,7 @@ test.group('Opening hours fetch', async (group) => {
     })
 
     test('ensure that you get an error if fetching a non-existant opening hour', async () => {
-        await supertest(BASE_URL)
-            .get(`/locations/${location.id}/hours/99999999`)
-            .expect(404)
+        await supertest(BASE_URL).get(`/locations/${location.id}/hours/99999999`).expect(404)
     })
 })
 

@@ -6,7 +6,7 @@ export default class MenuMiddleware {
     public async handle(
         { request, params }: HttpContextContract,
         next: () => Promise<void>,
-        options: string[],
+        options: string[]
     ) {
         let menu: Menu | null
 
