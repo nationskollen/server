@@ -3,6 +3,7 @@ import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import OpeningHourValidator from 'App/Validators/OpeningHourValidator'
 import { getLocation, getOpeningHour, getValidatedData } from 'App/Utils/Request'
 import OpeningHourUpdateValidator from 'App/Validators/OpeningHourUpdateValidator'
+import InternalErrorException from 'App/Exceptions/InternalErrorException'
 
 export default class OpeningHoursController {
     public async create({ request }: HttpContextContract) {
@@ -12,8 +13,13 @@ export default class OpeningHoursController {
         const relation =
             data.type === OpeningHourTypes.Default ? 'openingHours' : 'openingHourExceptions'
 
-        // TODO: Remove opening hour if it already exists for the selected day/day_special?
+        // TODO: Remove opening hour if it already exists for the selected
+        // day/day_special?
         const model = await location.related(relation).create(data)
+
+        if (!model) {
+          throw new InternalErrorException("Unable to add 'opening hour' to database")
+        }
 
         return model.toJSON()
     }
