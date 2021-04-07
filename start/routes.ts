@@ -82,6 +82,13 @@ Route.group(() => {
     // ----------------------------------------------------------
     // Location opening hours
     // ----------------------------------------------------------
+    Route.get('/locations/:lid/hours', 'OpeningHoursController.index').middleware([
+        'location',
+    ])
+    Route.get('/locations/:lid/hours/:hid', 'OpeningHoursController.single').middleware([
+        'location',
+        'openinghour:preload',
+    ])
     Route.post('/locations/:lid/hours', 'OpeningHoursController.create').middleware([
         'auth',
         'location',
@@ -97,6 +104,34 @@ Route.group(() => {
         'auth',
         'location',
         'openinghour',
+        'scope:admin',
+    ])
+
+    // ----------------------------------------------------------
+    // Location menus
+    // ----------------------------------------------------------
+    Route.get('/locations/:lid/menus', 'MenusController.index').middleware([
+        'location',
+    ])
+    Route.get('/locations/:lid/menus/:mid', 'MenusController.single').middleware([
+        'location',
+        'menu',
+    ])
+    Route.post('/locations/:lid/menus', 'MenusController.create').middleware([
+        'auth',
+        'location',
+        'scope:admin',
+    ])
+    Route.put('/locations/:lid/menus/:mid', 'MenusController.update').middleware([
+        'auth',
+        'location',
+        'menu',
+        'scope:admin',
+    ])
+    Route.delete('/locations/:lid/menus/:mid', 'MenusController.delete').middleware([
+        'auth',
+        'location',
+        'menu',
         'scope:admin',
     ])
 }).prefix('/api/v1')

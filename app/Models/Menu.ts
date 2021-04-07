@@ -31,4 +31,16 @@ export default class Menu extends BaseModel {
 
     @hasMany(() => MenuItem, { serializeAs: 'items' })
     public items: HasMany<typeof MenuItem>
+
+    private static withPreloads() {
+        return this.query().preload('items')
+    }
+
+    public static async withItems(id: number) {
+        return this.withPreloads().where('id', id).first()
+    }
+
+    public static async allWithItems(locationId: number) {
+        return this.withPreloads().where('location_id', locationId)
+    }
 }
