@@ -1,12 +1,18 @@
 import BaseSchema from '@ioc:Adonis/Lucid/Schema'
+import { DatabaseTables } from 'App/Utils/Database'
 
 export default class Locations extends BaseSchema {
-    protected tableName = 'locations'
+    protected tableName = DatabaseTables.Locations
 
     public async up() {
         this.schema.createTable(this.tableName, (table) => {
             table.increments('id')
-            table.integer('nation_id').notNullable().unsigned().references('oid').inTable('nations')
+            table
+                .integer('nation_id')
+                .notNullable()
+                .unsigned()
+                .references('oid')
+                .inTable(DatabaseTables.Nations)
             table.string('name').notNullable()
             table.string('description')
             table.string('address').notNullable()
