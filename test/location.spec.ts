@@ -135,6 +135,33 @@ test.group('Locations activity handling', async (group) => {
             })
             .expect(404)
     })
+
+    test('ensure that admins can update multiple locations in a nation', async (assert) => {
+        const location1 = await createTestLocation(nation.oid)
+        const location2 = await createTestLocation(nation.oid)
+
+        const text1 = await supertest(BASE_URL)
+            .put(`/nations/${nation.oid}/locations/${location1.id}`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send({
+                max_capacity: 10,
+            })
+            .expect(200)
+
+        const data1 = JSON.parse(text1.text)
+        assert.equal(data1.max_capacity, 10)
+
+        const text2 = await supertest(BASE_URL)
+            .put(`/nations/${nation.oid}/locations/${location2.id}`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send({
+                name: 'TheNewName',
+            })
+            .expect(200)
+
+        const data2 = JSON.parse(text2.text)
+        assert.equal(data2.name, 'TheNewName')
+    })
 })
 
 test.group('Location deletion', async (group) => {
@@ -174,6 +201,33 @@ test.group('Location deletion', async (group) => {
     test('ensure that deletion of a non-existing location is not viable', async () => {
         await supertest(BASE_URL)
             .delete(`/nations/${nation.oid}/locations/999999999999`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .expect(404)
+    })
+
+    test('ensure that admins can delete multiple locations in a nation', async () => {
+        const location1 = await createTestLocation(nation.oid)
+        const location2 = await createTestLocation(nation.oid)
+
+        await supertest(BASE_URL)
+            .delete(`/nations/${nation.oid}/locations/${location1.id}`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .expect(200)
+
+        // making sure the loaction was removed from the nation
+        await supertest(BASE_URL)
+            .get(`/nations/${nation.oid}/locations/${location1.id}`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .expect(404)
+
+        await supertest(BASE_URL)
+            .delete(`/nations/${nation.oid}/locations/${location2.id}`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .expect(200)
+
+        // making sure the loaction was removed from the nation
+        await supertest(BASE_URL)
+            .get(`/nations/${nation.oid}/locations/${location2.id}`)
             .set('Authorization', 'Bearer ' + nation.token)
             .expect(404)
     })
