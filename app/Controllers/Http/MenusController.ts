@@ -1,6 +1,7 @@
 import Menu from 'App/Models/Menu'
 import MenuValidator from 'App/Validators/MenuValidator'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import MenuUpdateValidator from 'App/Validators/MenuUpdateValidator'
 import { getLocation, getMenu, getValidatedData } from 'App/Utils/Request'
 
 export default class MenusController {
@@ -30,7 +31,17 @@ export default class MenusController {
         return menu.toJSON()
     }
 
-    public async update({ request }: HttpContextContract) {}
+    public async update({ request }: HttpContextContract) {
+        const data = await getValidatedData(request, MenuUpdateValidator)
+        const menu = getMenu(request)
 
-    public async delete({ request }: HttpContextContract) {}
+        menu.merge(data)
+        await menu.save()
+
+        return menu.toJSON()
+    }
+
+    public async delete({ request }: HttpContextContract) {
+        await getMenu(request).delete()
+    }
 }

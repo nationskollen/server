@@ -48,8 +48,5 @@ export default class OpeningHoursController {
 
     public async delete({ request }: HttpContextContract) {
         await getOpeningHour(request).delete()
-
-        // TODO: Set correct response code, e.g. 204
-        return
     }
 }
