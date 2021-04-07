@@ -1,13 +1,16 @@
 import BaseSeeder from '@ioc:Adonis/Lucid/Seeder'
-import { NationFactory, UserFactory } from '../factories'
+import { NationFactory, UserFactory, MenuFactory } from '../factories'
 
 export default class NationSeeder extends BaseSeeder {
     public static developmentOnly = true
 
     public async run() {
-        const nations = await NationFactory.with('locations', 3, (location) => {
-            location.with('openingHours', 2).with('openingHourExceptions', 1)
-        })
+        const nations = await NationFactory
+            .with('locations', 3, (location) => {
+                location
+                    .with('openingHours', 2)
+                    .with('openingHourExceptions', 1)
+            })
             .merge([
                 {
                     oid: 400,
@@ -49,5 +52,15 @@ export default class NationSeeder extends BaseSeeder {
         ])
             .apply('admin')
             .createMany(3)
+
+        // TODO: Fix this hacky solution for setting the nationId
+        for (const nation of nations) {
+            for (const location of nation.locations) {
+                await MenuFactory
+                    .with('items', 3)
+                    .merge({ locationId: location.id, nationId: nation.oid })
+                    .createMany(3)
+            }
+        }
     }
 }

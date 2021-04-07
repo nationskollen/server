@@ -1,5 +1,6 @@
 import Ws from 'App/Services/Ws'
 import { DateTime } from 'luxon'
+import Menu from 'App/Models/Menu'
 import { toBoolean } from 'App/Utils/Serialize'
 import OpeningHour from 'App/Models/OpeningHour'
 import { ActivityLevels, MAX_ACTIVITY_LEVEL } from 'App/Utils/Activity'
@@ -51,6 +52,9 @@ export default class Location extends BaseModel {
     @hasMany(() => OpeningHour, { serializeAs: 'opening_hour_exceptions' })
     public openingHourExceptions: HasMany<typeof OpeningHour>
 
+    @hasMany(() => Menu, { serializeAs: 'menus' })
+    public menus: HasMany<typeof Menu>
+
     // Dynamically update the activity level based on the estimated people count
     @beforeUpdate()
     public static async updateActivityLevel(location: Location) {
@@ -84,7 +88,6 @@ export default class Location extends BaseModel {
         location.activityLevel = newActivityLevel
 
         // Broadcast new activity to all connected websocket clients
-        // TODO: Should we make sure that the activity has changed
         Ws.broadcastActivity(location.nationId, location.id, location.activityLevel)
     }
 
