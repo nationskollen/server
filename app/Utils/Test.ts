@@ -2,7 +2,9 @@ import supertest from 'supertest'
 import { BASE_URL } from 'App/Utils/Constants'
 import {
     UserFactory,
+    MenuFactory,
     NationFactory,
+    MenuItemFactory,
     LocationFactory,
     OpeningHourFactory,
     OpeningHourExceptionFactory,
@@ -58,4 +60,12 @@ export async function createTestOpeningHour(lid: number) {
 
 export async function createTestExceptionOpeningHour(lid: number) {
     return OpeningHourExceptionFactory.merge({ locationId: lid }).create()
+}
+
+export async function createTestMenu(oid: number, lid: number) {
+    return MenuFactory.merge({ nationId: oid, locationId: lid }).create()
+}
+
+export async function createTestMenuItem(mid: number) {
+    return MenuItemFactory.merge({ menuId: mid }).create()
 }

@@ -12,6 +12,71 @@ import {
     createTestExceptionOpeningHour,
 } from 'App/Utils/Test'
 
+test.group('Opening hours fetch', async (group) => {
+    let nation: TestNationContract
+    let location: Location
+    let openingHour: OpeningHour
+    let exceptionOpeningHour: OpeningHour
+
+    group.before(async () => {
+        nation = await createTestNation()
+        location = await createTestLocation(nation.oid)
+        openingHour = await createTestOpeningHour(location.id)
+        exceptionOpeningHour = await createTestExceptionOpeningHour(location.id)
+    })
+
+    test('ensure that you can fetch all opening hours of a location', async (assert) => {
+        const { text } = await supertest(BASE_URL)
+            .get(`/locations/${location.id}/hours`)
+            .expect(200)
+
+        const data = JSON.parse(text)
+
+        assert.isNotEmpty(data)
+        assert.lengthOf(data, 2)
+    })
+
+    test('ensure that it returns an empty array if the location has no opening hours', async (assert) => {
+        const testLocation = await createTestLocation(nation.oid)
+
+        const { text } = await supertest(BASE_URL)
+            .get(`/locations/${testLocation.id}/hours`)
+            .expect(200)
+
+        const data = JSON.parse(text)
+
+        assert.isEmpty(data)
+        assert.lengthOf(data, 0)
+    })
+
+    test('ensure that you can fetch a single opening hour', async (assert) => {
+        const { text } = await supertest(BASE_URL)
+            .get(`/locations/${location.id}/hours/${openingHour.id}`)
+            .expect(200)
+
+        const data = JSON.parse(text)
+
+        assert.deepEqual(data.type, openingHour.type)
+        assert.deepEqual(data.is_open, openingHour.isOpen)
+    })
+
+    test('ensure that you can fetch a single exception opening hour', async (assert) => {
+        const { text } = await supertest(BASE_URL)
+            .get(`/locations/${location.id}/hours/${exceptionOpeningHour.id}`)
+            .expect(200)
+
+        const data = JSON.parse(text)
+
+        assert.isNotEmpty(data)
+        assert.deepEqual(data.type, exceptionOpeningHour.type)
+        assert.deepEqual(data.is_open, exceptionOpeningHour.isOpen)
+    })
+
+    test('ensure that you get an error if fetching a non-existant opening hour', async () => {
+        await supertest(BASE_URL).get(`/locations/${location.id}/hours/99999999`).expect(404)
+    })
+})
+
 test.group('Opening hours create', async (group) => {
     const openingHourData = {
         type: OpeningHourTypes.Default,

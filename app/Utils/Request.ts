@@ -1,9 +1,11 @@
+import Menu from 'App/Models/Menu'
 import Nation from 'App/Models/Nation'
 import Location from 'App/Models/Location'
 import OpeningHour from 'App/Models/OpeningHour'
 import { RequestContract } from '@ioc:Adonis/Core/Request'
 import { RequestValidatorNode } from '@ioc:Adonis/Core/Validator'
 import BadRequestException from 'App/Exceptions/BadRequestException'
+import MenuNotFoundException from 'App/Exceptions/MenuNotFoundException'
 import NationNotFoundException from 'App/Exceptions/NationNotFoundException'
 import LocationNotFoundException from 'App/Exceptions/LocationNotFoundException'
 import OpeningHourNotFoundException from 'App/Exceptions/OpeningHourNotFoundException'
@@ -36,6 +38,16 @@ export function getOpeningHour(request: RequestContract): OpeningHour {
     }
 
     return openingHour
+}
+
+export function getMenu(request: RequestContract): Menu {
+    const { menu } = request
+
+    if (!menu) {
+        throw new MenuNotFoundException()
+    }
+
+    return menu
 }
 
 export async function getValidatedData(

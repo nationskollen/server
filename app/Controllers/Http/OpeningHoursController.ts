@@ -1,3 +1,4 @@
+import OpeningHour from 'App/Models/OpeningHour'
 import { OpeningHourTypes } from 'App/Utils/Time'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import OpeningHourValidator from 'App/Validators/OpeningHourValidator'
@@ -6,6 +7,17 @@ import OpeningHourUpdateValidator from 'App/Validators/OpeningHourUpdateValidato
 import InternalErrorException from 'App/Exceptions/InternalErrorException'
 
 export default class OpeningHoursController {
+    public async index({ request }: HttpContextContract) {
+        const location = getLocation(request)
+        const hours = await OpeningHour.query().where('location_id', location.id)
+
+        return hours.map((hour) => hour.toJSON())
+    }
+
+    public async single({ request }: HttpContextContract) {
+        return getOpeningHour(request).toJSON()
+    }
+
     public async create({ request }: HttpContextContract) {
         const data = await getValidatedData(request, OpeningHourValidator)
         const location = getLocation(request)
@@ -36,8 +48,5 @@ export default class OpeningHoursController {
 
     public async delete({ request }: HttpContextContract) {
         await getOpeningHour(request).delete()
-
-        // TODO: Set correct response code, e.g. 204
-        return
     }
 }

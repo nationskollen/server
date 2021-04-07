@@ -39,9 +39,13 @@ Server.middleware.register(['Adonis/Core/BodyParserMiddleware'])
 |
 */
 Server.middleware.registerNamed({
+    // Authentication
     auth: 'App/Middleware/Auth',
     scope: 'App/Middleware/Scope',
+
+    // Resources
     nation: 'App/Middleware/Nation',
-    openinghour: 'App/Middleware/OpeningHour',
+    menu: 'App/Middleware/Menu',
     location: 'App/Middleware/Location',
+    openinghour: 'App/Middleware/OpeningHour',
 })

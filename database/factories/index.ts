@@ -1,20 +1,31 @@
 import { DateTime } from 'luxon'
 import User from 'App/Models/User'
+import Menu from 'App/Models/Menu'
 import Nation from 'App/Models/Nation'
+import MenuItem from 'App/Models/MenuItem'
 import Location from 'App/Models/Location'
 import Factory from '@ioc:Adonis/Lucid/Factory'
 import OpeningHour from 'App/Models/OpeningHour'
 import { OpeningHourTypes } from 'App/Utils/Time'
 import { MAX_ACTIVITY_LEVEL } from 'App/Utils/Activity'
 
-export const UserFactory = Factory.define(User, ({ faker }) => {
+export const MenuItemFactory = Factory.define(MenuItem, ({ faker }) => {
     return {
-        email: faker.internet.email(),
-        password: faker.internet.password(),
-        nationAdmin: false,
+        name: faker.commerce.productName(),
+        description: faker.commerce.productDescription(),
+        price: parseFloat(faker.commerce.price()),
+        coverImgSrc: faker.image.food(),
+        hidden: false,
+    }
+}).build()
+
+export const MenuFactory = Factory.define(Menu, ({ faker }) => {
+    return {
+        name: faker.commerce.productName(),
+        hidden: false,
     }
 })
-    .state('admin', (user) => (user.nationAdmin = true))
+    .relation('items', () => MenuItemFactory)
     .build()
 
 export const OpeningHourFactory = Factory.define(OpeningHour, ({ faker }) => {
@@ -83,4 +94,14 @@ export const NationFactory = Factory.define(Nation, async ({ faker }) => {
 })
     .relation('staff', () => UserFactory)
     .relation('locations', () => LocationFactory)
+    .build()
+
+export const UserFactory = Factory.define(User, ({ faker }) => {
+    return {
+        email: faker.internet.email(),
+        password: faker.internet.password(),
+        nationAdmin: false,
+    }
+})
+    .state('admin', (user) => (user.nationAdmin = true))
     .build()
