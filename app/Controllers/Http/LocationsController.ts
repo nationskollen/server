@@ -7,7 +7,7 @@ import { getNation, getLocation, getValidatedData } from 'App/Utils/Request'
 export default class LocationsController {
     public async index({ request }: HttpContextContract) {
         const { oid } = getNation(request)
-        const locations = await Location.query().where('nationId', oid)
+        const locations = await Location.withPreloads().where('nationId', oid)
 
         return locations.map((location: Location) => location.toJSON())
     }

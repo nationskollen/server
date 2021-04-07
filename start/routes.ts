@@ -45,7 +45,7 @@ Route.group(() => {
     // ----------------------------------------------------------
     Route.get('/nations/:id/locations/:lid', 'LocationsController.single').middleware([
         'nation',
-        'location',
+        'location:with-hours',
     ])
     Route.put('/nations/:id/locations/:lid', 'LocationsController.update').middleware([
         'auth',
