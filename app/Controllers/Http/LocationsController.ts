@@ -1,8 +1,10 @@
 import Location from 'App/Models/Location'
 import ActivityValidator from 'App/Validators/ActivityValidator'
-import LocationValidator from 'App/Validators/LocationValidator'
+import LocationUpdateValidator from 'App/Validators/LocationUpdateValidator'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { getNation, getLocation, getValidatedData } from 'App/Utils/Request'
+import LocationCreateValidator from 'App/Validators/LocationCreateValidator'
+import InternalErrorException from 'App/Exceptions/InternalErrorException'
 
 export default class LocationsController {
     public async index({ request }: HttpContextContract) {
@@ -17,17 +19,31 @@ export default class LocationsController {
     }
 
     public async create({ request }: HttpContextContract) {
-        // TODO: Create locations
+        const location = await getValidatedData(request, LocationCreateValidator)
+        const nation = getNation(request)
+        const model = await nation.related('locations').create(location)
+
+        if (!model) {
+            throw new InternalErrorException("Unable to apply 'location' to database")
+        }
+
+        return model.toJSON()
     }
 
-    public async update({ request, response }: HttpContextContract) {
-        const changes = await getValidatedData(request, LocationValidator)
+    public async update({ request }: HttpContextContract) {
+        const changes = await getValidatedData(request, LocationUpdateValidator)
+        const location = getLocation(request)
 
-        return response.status(501)
+        // Apply the changes that was requested and save
+        location.merge(changes)
+        await location.save()
+
+        return location.toJSON()
     }
 
     public async delete({ request }: HttpContextContract) {
-        // TODO: Delete locations
+        const location = getLocation(request)
+        await location.delete()
     }
 
     public async activity({ request }: HttpContextContract) {
