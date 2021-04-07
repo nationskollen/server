@@ -10,7 +10,7 @@ export default class LocationMiddleware {
     ) {
         let location: Location | null
 
-        if (options.includes('with-hours')) {
+        if (options.includes('preload')) {
             location = await Location.withOpeningHours(params.lid)
         } else {
             location = await Location.find(params.lid)
