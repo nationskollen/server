@@ -6,3 +6,4 @@ coverage
 .DS_STORE
 package-lock.json
 tmp/db.sqlite3
+tmp/db.sqlite3-journal
