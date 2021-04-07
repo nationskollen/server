@@ -11,7 +11,7 @@ export default class ApiTokens extends BaseSchema {
                 .integer('user_id')
                 .unsigned()
                 .references('id')
-                .inTable('users')
+                .inTable(DatabaseTables.Users)
                 .onDelete('CASCADE')
             table.string('name').notNullable()
             table.string('type').notNullable()

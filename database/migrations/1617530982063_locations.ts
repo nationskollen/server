@@ -7,7 +7,12 @@ export default class Locations extends BaseSchema {
     public async up() {
         this.schema.createTable(this.tableName, (table) => {
             table.increments('id')
-            table.integer('nation_id').notNullable().unsigned().references('oid').inTable('nations')
+            table
+                .integer('nation_id')
+                .notNullable()
+                .unsigned()
+                .references('oid')
+                .inTable(DatabaseTables.Nations)
             table.string('name').notNullable()
             table.string('description')
             table.string('address').notNullable()
