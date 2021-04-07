@@ -1,3 +1,4 @@
+import { DatabaseTables } from 'App/Utils/Database'
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
@@ -10,7 +11,7 @@ export default class InformationValidator {
                 allow: ['space', 'dash'],
             }),
             rules.unique({
-                table: 'nations',
+                table: DatabaseTables.Nations,
                 column: 'name',
             }),
         ]),

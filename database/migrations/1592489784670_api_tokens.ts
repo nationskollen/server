@@ -1,7 +1,8 @@
 import BaseSchema from '@ioc:Adonis/Lucid/Schema'
+import { DatabaseTables } from 'App/Utils/Database'
 
 export default class ApiTokens extends BaseSchema {
-    protected tableName = 'api_tokens'
+    protected tableName = DatabaseTables.ApiTokens
 
     public async up() {
         this.schema.createTable(this.tableName, (table) => {

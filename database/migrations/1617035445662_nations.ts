@@ -1,7 +1,8 @@
 import BaseSchema from '@ioc:Adonis/Lucid/Schema'
+import { DatabaseTables } from 'App/Utils/Database'
 
 export default class Nations extends BaseSchema {
-    protected tableName = 'nations'
+    protected tableName = DatabaseTables.Nations
 
     public async up() {
         this.schema.createTable(this.tableName, (table) => {
