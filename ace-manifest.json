@@ -1,4 +1,12 @@
 {
+    "clear:assets": {
+        "settings": {},
+        "commandPath": "./commands/ClearAssets",
+        "commandName": "clear:assets",
+        "description": "Deletes all static assets from public/",
+        "args": [],
+        "flags": []
+    },
     "dump:rcfile": {
         "settings": {},
         "commandPath": "@adonisjs/core/build/commands/DumpRc",

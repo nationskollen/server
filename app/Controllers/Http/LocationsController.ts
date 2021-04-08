@@ -1,10 +1,11 @@
 import Location from 'App/Models/Location'
-import ActivityValidator from 'App/Validators/ActivityValidator'
-import LocationUpdateValidator from 'App/Validators/LocationUpdateValidator'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import { attemptFileUpload, attemptFileRemoval } from 'App/Utils/Upload'
+import ActivityValidator from 'App/Validators/Locations/ActivityValidator'
 import { getNation, getLocation, getValidatedData } from 'App/Utils/Request'
-import LocationCreateValidator from 'App/Validators/LocationCreateValidator'
-import InternalErrorException from 'App/Exceptions/InternalErrorException'
+import LocationUpdateValidator from 'App/Validators/Locations/UpdateValidator'
+import LocationCreateValidator from 'App/Validators/Locations/CreateValidator'
+import LocationUploadValidator from 'App/Validators/Locations/UploadValidator'
 
 export default class LocationsController {
     public async index({ request }: HttpContextContract) {
@@ -19,20 +20,16 @@ export default class LocationsController {
     }
 
     public async create({ request }: HttpContextContract) {
-        const location = await getValidatedData(request, LocationCreateValidator)
         const nation = getNation(request)
-        const model = await nation.related('locations').create(location)
+        const data = await getValidatedData(request, LocationCreateValidator)
+        const location = await nation.related('locations').create(data)
 
-        if (!model) {
-            throw new InternalErrorException("Unable to apply 'location' to database")
-        }
-
-        return model.toJSON()
+        return location.toJSON()
     }
 
     public async update({ request }: HttpContextContract) {
-        const changes = await getValidatedData(request, LocationUpdateValidator)
         const location = getLocation(request)
+        const changes = await getValidatedData(request, LocationUpdateValidator)
 
         // Apply the changes that was requested and save
         location.merge(changes)
@@ -47,8 +44,8 @@ export default class LocationsController {
     }
 
     public async activity({ request }: HttpContextContract) {
-        const { change } = await getValidatedData(request, ActivityValidator)
         const location = getLocation(request)
+        const { change } = await getValidatedData(request, ActivityValidator)
 
         // Clamp value between 0 and maxCapacity
         location.estimatedPeopleCount = Math.min(
@@ -69,6 +66,22 @@ export default class LocationsController {
 
     public async close({ request }: HttpContextContract) {
         const location = await getLocation(request).setClosed()
+
+        return location.toJSON()
+    }
+
+    public async upload({ request }: HttpContextContract) {
+        const location = getLocation(request)
+        const { cover } = await getValidatedData(request, LocationUploadValidator)
+        const filename = await attemptFileUpload(cover)
+
+        if (filename) {
+            attemptFileRemoval(location.coverImgSrc)
+            location.coverImgSrc = filename
+        }
+
+        // Update cover image
+        await location.save()
 
         return location.toJSON()
     }

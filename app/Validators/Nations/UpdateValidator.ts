@@ -2,7 +2,7 @@ import { DatabaseTables } from 'App/Utils/Database'
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
-export default class InformationValidator {
+export default class NationUploadValidator {
     constructor(protected ctx: HttpContextContract) {}
 
     public schema = schema.create({
@@ -21,7 +21,6 @@ export default class InformationValidator {
             }),
         ]),
         description: schema.string.optional(),
-        address: schema.string.optional(),
         accent_color: schema.string.optional({}, [rules.regex(/^#[a-fA-F0-9]{6}$/)]),
     })
 

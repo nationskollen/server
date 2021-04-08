@@ -1,10 +1,10 @@
-import UserValidator from 'App/Validators/UserValidator'
-import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { NationOwnerScopes } from 'App/Utils/Scopes'
+import LoginValidator from 'App/Validators/Users/LoginValidator'
+import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
 export default class AuthController {
     public async login({ request, auth }: HttpContextContract) {
-        const { email, password } = await request.validate(UserValidator)
+        const { email, password } = await request.validate(LoginValidator)
         const token = await auth.use('api').attempt(email, password)
 
         let scope = NationOwnerScopes.None

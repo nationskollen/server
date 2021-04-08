@@ -1,14 +1,15 @@
 import test from 'japa'
+import path from 'path'
 import supertest from 'supertest'
 import Nation from 'App/Models/Nation'
-import { BASE_URL } from 'App/Utils/Constants'
 import { createStaffUser } from 'App/Utils/Test'
+import { BASE_URL, HOSTNAME } from 'App/Utils/Constants'
 import { NationFactory } from 'Database/factories/index'
-import { TestNationContract, createTestNation } from 'App/Utils/Test'
+import { TestNationContract, createTestNation, toRelativePath } from 'App/Utils/Test'
 
 const INVALID_NATION_OID = 9999999999
 
-test.group('Information fetch', () => {
+test.group('Nation fetch', () => {
     test('ensure you can fetch all nations', async (assert) => {
         await NationFactory.createMany(5)
 
@@ -59,7 +60,7 @@ test.group('Information fetch', () => {
     })
 })
 
-test.group('Information update', (group) => {
+test.group('Nation update', (group) => {
     let nation: TestNationContract
 
     group.before(async () => {
@@ -139,5 +140,99 @@ test.group('Information update', (group) => {
             assert.equal(data[key], value)
             assert.equal(savedNationData[key], value)
         }
+    })
+})
+
+test.group('Nation upload', (group) => {
+    const coverImagePath = path.join(__dirname, 'data/cover.png')
+    const iconImagePath = path.join(__dirname, 'data/icon.png')
+    let nation: TestNationContract
+
+    group.before(async () => {
+        nation = await createTestNation()
+    })
+
+    test('ensure that uploading images requires a valid token', async (assert) => {
+        const { text } = await supertest(BASE_URL)
+            .post(`/nations/${nation.oid}/upload`)
+            .set('Authorization', 'Bearer ' + 'invalidToken')
+            .attach('cover', coverImagePath)
+            .expect(401)
+
+        const data = JSON.parse(text)
+        assert.isArray(data.errors)
+        assert.isNotEmpty(data.errors)
+    })
+
+    test('ensure that updating a nation with a non-admin token fails', async () => {
+        await supertest(BASE_URL)
+            .post(`/nations/${nation.oid}/upload`)
+            .set('Authorization', 'Bearer ' + nation.staffToken)
+            .attach('cover', coverImagePath)
+            .expect(401)
+    })
+
+    test('ensure that admins can upload cover image and icon', async (assert) => {
+        const { text } = await supertest(BASE_URL)
+            .post(`/nations/${nation.oid}/upload`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .attach('cover', coverImagePath)
+            .attach('icon', iconImagePath)
+            .expect(200)
+
+        const data = JSON.parse(text)
+
+        assert.isNotNull(data.cover_img_src)
+        assert.isNotNull(data.icon_img_src)
+
+        // Ensure that the uploaded images can be accessed via the specified URL
+        await supertest(HOSTNAME).get(toRelativePath(data.icon_img_src)).expect(200)
+        await supertest(HOSTNAME).get(toRelativePath(data.cover_img_src)).expect(200)
+    })
+
+    test('ensure that old uploads are removed', async (assert) => {
+        // Upload initial images
+        const { text } = await supertest(BASE_URL)
+            .post(`/nations/${nation.oid}/upload`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .attach('cover', coverImagePath)
+            .attach('icon', iconImagePath)
+            .expect(200)
+
+        const data = JSON.parse(text)
+
+        assert.isNotNull(data.cover_img_src)
+        assert.isNotNull(data.icon_img_src)
+
+        await supertest(HOSTNAME).get(toRelativePath(data.icon_img_src)).expect(200)
+        await supertest(HOSTNAME).get(toRelativePath(data.cover_img_src)).expect(200)
+
+        // Upload new images
+        await supertest(BASE_URL)
+            .post(`/nations/${nation.oid}/upload`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .attach('cover', coverImagePath)
+            .attach('icon', iconImagePath)
+            .expect(200)
+
+        // Ensure that the previously uploaded images have been removed
+        await supertest(HOSTNAME).get(toRelativePath(data.icon_img_src)).expect(404)
+        await supertest(HOSTNAME).get(toRelativePath(data.cover_img_src)).expect(404)
+    })
+
+    test('ensure that uploading an image requires an attachment', async () => {
+        await supertest(BASE_URL)
+            .post(`/nations/${nation.oid}/upload`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send({ randomData: 'hello' })
+            .expect(422)
+    })
+
+    test('ensure that uploading images to a non-existant nation fails', async () => {
+        await supertest(BASE_URL)
+            .post(`/nations/${INVALID_NATION_OID}/upload`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .attach('cover', coverImagePath)
+            .expect(404)
     })
 })

@@ -1,6 +1,7 @@
 import { DateTime } from 'luxon'
 import User from 'App/Models/User'
 import Location from 'App/Models/Location'
+import { toAbsolutePath } from 'App/Utils/Serialize'
 import { hasMany, HasMany, column, BaseModel } from '@ioc:Adonis/Lucid/Orm'
 
 export default class Nation extends BaseModel {
@@ -28,10 +29,10 @@ export default class Nation extends BaseModel {
     @column()
     public description: string
 
-    @column()
+    @column({ serialize: toAbsolutePath })
     public iconImgSrc: string
 
-    @column()
+    @column({ serialize: toAbsolutePath })
     public coverImgSrc: string
 
     @column()

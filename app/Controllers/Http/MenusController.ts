@@ -1,7 +1,7 @@
 import Menu from 'App/Models/Menu'
-import MenuValidator from 'App/Validators/MenuValidator'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import MenuUpdateValidator from 'App/Validators/MenuUpdateValidator'
+import MenuUpdateValidator from 'App/Validators/Menus/UpdateValidator'
+import MenuCreateController from 'App/Validators/Menus/CreateValidator'
 import { getLocation, getMenu, getValidatedData } from 'App/Utils/Request'
 
 export default class MenusController {
@@ -17,7 +17,7 @@ export default class MenusController {
     }
 
     public async create({ request }: HttpContextContract) {
-        const data = await getValidatedData(request, MenuValidator)
+        const data = await getValidatedData(request, MenuCreateController)
         const location = getLocation(request)
 
         // We need to explicitly set the nationId before saving it,
