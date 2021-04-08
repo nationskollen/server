@@ -1,6 +1,6 @@
 import Location from 'App/Models/Location'
-import { attemptFileUpload } from 'App/Utils/Upload'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import { attemptFileUpload, attemptFileRemoval } from 'App/Utils/Upload'
 import ActivityValidator from 'App/Validators/Locations/ActivityValidator'
 import { getNation, getLocation, getValidatedData } from 'App/Utils/Request'
 import LocationUpdateValidator from 'App/Validators/Locations/UpdateValidator'
@@ -76,10 +76,7 @@ export default class LocationsController {
         const filename = await attemptFileUpload(cover)
 
         if (filename) {
-            if (location.coverImgSrc) {
-                // TODO: Remove file
-            }
-
+            attemptFileRemoval(location.coverImgSrc)
             location.coverImgSrc = filename
         }
 

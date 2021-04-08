@@ -1,7 +1,7 @@
 import Nation from 'App/Models/Nation'
-import { attemptFileUpload } from 'App/Utils/Upload'
 import { getNation, getValidatedData } from 'App/Utils/Request'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import { attemptFileUpload, attemptFileRemoval } from 'App/Utils/Upload'
 import NationUpdateValidator from 'App/Validators/Nations/UpdateValidator'
 import NationUploadValidator from 'App/Validators/Nations/UploadValidator'
 
@@ -33,18 +33,12 @@ export default class NationsController {
         const coverName = await attemptFileUpload(cover)
 
         if (iconName) {
-            if (nation.iconImgSrc) {
-                // TODO: Remove file
-            }
-
+            attemptFileRemoval(nation.iconImgSrc)
             nation.iconImgSrc = iconName
         }
 
         if (coverName) {
-            if (nation.coverImgSrc) {
-                // TODO: Remove file
-            }
-
+            attemptFileRemoval(nation.coverImgSrc)
             nation.coverImgSrc = coverName
         }
 
