@@ -141,3 +141,19 @@ test.group('Nation update', (group) => {
         }
     })
 })
+
+test.group('Nation upload', (group) => {
+    let nation: TestNationContract
+
+    group.before(async () => {
+        nation = await createTestNation()
+    })
+
+    test('ensure that uploading an image requires an attachment', async () => {
+        await supertest(BASE_URL)
+            .post(`/nations/${nation.oid}/upload`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send({ randomData: 'hello' })
+            .expect(422)
+    })
+})

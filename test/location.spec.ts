@@ -1,6 +1,7 @@
 import test from 'japa'
 import supertest from 'supertest'
-import { BASE_URL } from 'App/Utils/Constants'
+import Location from 'App/Models/Location'
+import { BASE_URL, HOSTNAME } from 'App/Utils/Constants'
 import { TestNationContract, createTestNation, createTestLocation } from 'App/Utils/Test'
 
 test.group('Locations create', async (group) => {
@@ -240,5 +241,23 @@ test.group('Location delete', async (group) => {
             .get(`/nations/${nation.oid}/locations/${location2.id}`)
             .set('Authorization', 'Bearer ' + nation.token)
             .expect(404)
+    })
+})
+
+test.group('Location upload', (group) => {
+    let nation: TestNationContract
+    let location: Location
+
+    group.before(async () => {
+        nation = await createTestNation()
+        location = await createTestLocation(nation.oid)
+    })
+
+    test('ensure that uploading an image requires an attachment', async () => {
+        await supertest(BASE_URL)
+            .post(`/locations/${location.id}/upload`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send({ randomData: 'hello' })
+            .expect(422)
     })
 })
