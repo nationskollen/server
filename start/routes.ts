@@ -140,4 +140,30 @@ Route.group(() => {
         'menu',
         'scope:admin',
     ])
+
+    // ----------------------------------------------------------
+    // Location menu items
+    // ----------------------------------------------------------
+    Route.get('/menus/:mid/items', 'MenuItemsController.index').middleware(['menu'])
+    Route.get('/menus/:mid/items/:miid', 'MenuItemsController.single').middleware([
+        'menu',
+        'menuItem',
+    ])
+    Route.post('/menus/:mid/items', 'MenuItemsController.create').middleware([
+        'auth',
+        'menu',
+        'scope:admin',
+    ])
+    Route.put('/menus/:mid/items/:miid', 'MenuItemsController.update').middleware([
+        'auth',
+        'menu',
+        'menuItem',
+        'scope:admin',
+    ])
+    Route.delete('/menus/:mid/items/:miid', 'MenuItemsController.delete').middleware([
+        'auth',
+        'menu',
+        'menuItem',
+        'scope:admin',
+    ])
 }).prefix('/api/v1')
