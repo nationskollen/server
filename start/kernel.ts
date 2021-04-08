@@ -46,6 +46,7 @@ Server.middleware.registerNamed({
     // Resources
     nation: 'App/Middleware/Nation',
     menu: 'App/Middleware/Menu',
+    menuItem: 'App/Middleware/MenuItem',
     location: 'App/Middleware/Location',
     openinghour: 'App/Middleware/OpeningHour',
 })
