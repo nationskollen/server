@@ -1,8 +1,14 @@
 import test from 'japa'
+import path from 'path'
 import supertest from 'supertest'
 import Location from 'App/Models/Location'
 import { BASE_URL, HOSTNAME } from 'App/Utils/Constants'
-import { TestNationContract, createTestNation, createTestLocation } from 'App/Utils/Test'
+import {
+    TestNationContract,
+    createTestNation,
+    createTestLocation,
+    toRelativePath,
+} from 'App/Utils/Test'
 
 test.group('Locations create', async (group) => {
     let nation: TestNationContract
@@ -259,5 +265,91 @@ test.group('Location upload', (group) => {
             .set('Authorization', 'Bearer ' + nation.token)
             .send({ randomData: 'hello' })
             .expect(422)
+    })
+})
+
+test.group('Location upload', (group) => {
+    const coverImagePath = path.join(__dirname, 'data/cover.png')
+    let nation: TestNationContract
+    let location: Location
+
+    group.before(async () => {
+        nation = await createTestNation()
+        location = await createTestLocation(nation.oid)
+    })
+
+    test('ensure that uploading images requires a valid token', async (assert) => {
+        const { text } = await supertest(BASE_URL)
+            .post(`/locations/${location.id}/upload`)
+            .set('Authorization', 'Bearer ' + 'invalidToken')
+            .attach('cover', coverImagePath)
+            .expect(401)
+
+        const data = JSON.parse(text)
+        assert.isArray(data.errors)
+        assert.isNotEmpty(data.errors)
+    })
+
+    test('ensure that updating a nation with a non-admin token fails', async () => {
+        await supertest(BASE_URL)
+            .post(`/locations/${location.id}/upload`)
+            .set('Authorization', 'Bearer ' + nation.staffToken)
+            .attach('cover', coverImagePath)
+            .expect(401)
+    })
+
+    test('ensure that admins can upload cover image and icon', async (assert) => {
+        const { text } = await supertest(BASE_URL)
+            .post(`/locations/${location.id}/upload`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .attach('cover', coverImagePath)
+            .expect(200)
+
+        const data = JSON.parse(text)
+
+        assert.isNotNull(data.cover_img_src)
+
+        // Ensure that the uploaded images can be accessed via the specified URL
+        await supertest(HOSTNAME).get(toRelativePath(data.cover_img_src)).expect(200)
+    })
+
+    test('ensure that old uploads are removed', async (assert) => {
+        const { text } = await supertest(BASE_URL)
+            .post(`/locations/${location.id}/upload`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .attach('cover', coverImagePath)
+            .expect(200)
+
+        const data = JSON.parse(text)
+
+        assert.isNotNull(data.cover_img_src)
+
+        await supertest(HOSTNAME).get(toRelativePath(data.cover_img_src)).expect(200)
+
+        // Upload new images
+        await supertest(BASE_URL)
+            .post(`/locations/${location.id}/upload`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .attach('cover', coverImagePath)
+            .expect(200)
+
+        // Ensure that the previously uploaded images have been removed
+        await supertest(HOSTNAME).get(toRelativePath(data.cover_img_src)).expect(404)
+    })
+
+    test('ensure that uploading an image requires an attachment', async () => {
+        await supertest(BASE_URL)
+            .post(`/locations/${location.id}/upload`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send({ randomData: 'hello' })
+            .expect(422)
+    })
+
+    test('ensure that uploading images to a non-existant location fails', async () => {
+        await supertest(BASE_URL)
+            .post(`/locations/99999/upload`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .attach('cover', coverImagePath)
+            .expect(404)
     })
 })

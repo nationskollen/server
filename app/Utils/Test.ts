@@ -69,3 +69,7 @@ export async function createTestMenu(oid: number, lid: number) {
 export async function createTestMenuItem(mid: number) {
     return MenuItemFactory.merge({ menuId: mid }).create()
 }
+
+export function toRelativePath(absolutePath: string) {
+    return absolutePath.substring(absolutePath.lastIndexOf('/'))
+}

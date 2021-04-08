@@ -27,6 +27,12 @@ async function rollbackMigrations() {
     })
 }
 
+async function clearAssets() {
+    await execa.node('ace', ['clear:assets'], {
+        stdio: 'inherit',
+    })
+}
+
 async function startHttpServer() {
     const { Ignitor } = await import('@adonisjs/core/build/src/Ignitor')
     process.env.PORT = String(await getPort())
@@ -36,6 +42,6 @@ async function startHttpServer() {
 // Configure test runner
 configure({
     files: ['test/**/*.spec.ts'],
-    before: [rollbackMigrations, runMigrations, startHttpServer],
-    after: [rollbackMigrations, runMigrations, runSeeding],
+    before: [clearAssets, rollbackMigrations, runMigrations, startHttpServer],
+    after: [rollbackMigrations, runMigrations, runSeeding, clearAssets],
 })
