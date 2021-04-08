@@ -1,7 +1,6 @@
 import Location from 'App/Models/Location'
 import { attemptFileUpload } from 'App/Utils/Upload'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import InternalErrorException from 'App/Exceptions/InternalErrorException'
 import ActivityValidator from 'App/Validators/Locations/ActivityValidator'
 import { getNation, getLocation, getValidatedData } from 'App/Utils/Request'
 import LocationUpdateValidator from 'App/Validators/Locations/UpdateValidator'
@@ -76,16 +75,15 @@ export default class LocationsController {
         const { cover } = await getValidatedData(request, LocationUploadValidator)
         const filename = await attemptFileUpload(cover)
 
-        if (!filename) {
-            throw new InternalErrorException('Could not save uploaded file')
-        }
+        if (filename) {
+            if (location.coverImgSrc) {
+                // TODO: Remove file
+            }
 
-        if (location.coverImgSrc) {
-            // TODO: Remove file
+            location.coverImgSrc = filename
         }
 
         // Update cover image
-        location.coverImgSrc = filename
         await location.save()
 
         return location.toJSON()

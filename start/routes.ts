@@ -29,6 +29,11 @@ Route.group(() => {
         'nation',
         'scope:admin',
     ])
+    Route.post('/nations/:id/upload', 'NationsController.upload').middleware([
+        'auth',
+        'nation',
+        'scope:admin',
+    ])
 
     // ----------------------------------------------------------
     // Locations
