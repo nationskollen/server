@@ -386,7 +386,7 @@ test.group('Menu item upload', (group) => {
 
     test('ensure that uploading images to a non-existant menu item fails', async () => {
         await supertest(BASE_URL)
-            .post(`/menus/${menu.id}/items/${menuItem.id}/upload`)
+            .post(`/menus/${menu.id}/items/9999999999/upload`)
             .set('Authorization', 'Bearer ' + nation.token)
             .attach('cover', coverImagePath)
             .expect(404)

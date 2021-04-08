@@ -95,7 +95,7 @@ Route.group(() => {
     Route.get('/locations/:lid/hours', 'OpeningHoursController.index').middleware(['location'])
     Route.get('/locations/:lid/hours/:hid', 'OpeningHoursController.single').middleware([
         'location',
-        'openinghour:preload',
+        'openingHour:preload',
     ])
     Route.post('/locations/:lid/hours', 'OpeningHoursController.create').middleware([
         'auth',
@@ -105,13 +105,13 @@ Route.group(() => {
     Route.put('/locations/:lid/hours/:hid', 'OpeningHoursController.update').middleware([
         'auth',
         'location',
-        'openinghour',
+        'openingHour',
         'scope:admin',
     ])
     Route.delete('/locations/:lid/hours/:hid', 'OpeningHoursController.delete').middleware([
         'auth',
         'location',
-        'openinghour',
+        'openingHour',
         'scope:admin',
     ])
 
@@ -145,14 +145,14 @@ Route.group(() => {
     // Location menu items
     // ----------------------------------------------------------
     Route.get('/menus/:mid/items', 'MenuItemsController.index').middleware(['menu'])
-    Route.get('/menus/:mid/items/:miid', 'MenuItemsController.single').middleware([
-        'menu',
-        'menuItem',
-    ])
     Route.post('/menus/:mid/items', 'MenuItemsController.create').middleware([
         'auth',
         'menu',
         'scope:admin',
+    ])
+    Route.get('/menus/:mid/items/:miid', 'MenuItemsController.single').middleware([
+        'menu',
+        'menuItem',
     ])
     Route.put('/menus/:mid/items/:miid', 'MenuItemsController.update').middleware([
         'auth',
@@ -161,6 +161,12 @@ Route.group(() => {
         'scope:admin',
     ])
     Route.delete('/menus/:mid/items/:miid', 'MenuItemsController.delete').middleware([
+        'auth',
+        'menu',
+        'menuItem',
+        'scope:admin',
+    ])
+    Route.post('/menus/:mid/items/:miid/upload', 'MenuItemsController.upload').middleware([
         'auth',
         'menu',
         'menuItem',

@@ -1,19 +1,21 @@
-import Menu from 'App/Models/Menu'
+import MenuItem from 'App/Models/MenuItem'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import { attemptFileUpload, attemptFileRemoval } from 'App/Utils/Upload'
+import { getMenu, getMenuItem, getValidatedData } from 'App/Utils/Request'
 import MenuItemUpdateValidator from 'App/Validators/MenuItems/UpdateValidator'
 import MenuItemCreateValidator from 'App/Validators/MenuItems/CreateValidator'
-import { getLocation, getMenu, getMenuItem, getValidatedData } from 'App/Utils/Request'
+import MenuItemUploadValidator from 'App/Validators/MenuItems/UploadValidator'
 
 export default class MenuItemsController {
     public async index({ request }: HttpContextContract) {
-        const location = getLocation(request)
-        const menus = await Menu.allWithItems(location.id)
+        const menu = getMenu(request)
+        const items = await MenuItem.query().where('menu_id', menu.id)
 
-        return menus.map((menu) => menu.toJSON())
+        return items.map((item) => item.toJSON())
     }
 
     public async single({ request }: HttpContextContract) {
-        return getMenu(request).toJSON()
+        return getMenuItem(request).toJSON()
     }
 
     public async create({ request }: HttpContextContract) {
@@ -36,5 +38,21 @@ export default class MenuItemsController {
 
     public async delete({ request }: HttpContextContract) {
         await getMenuItem(request).delete()
+    }
+
+    public async upload({ request }: HttpContextContract) {
+        const menuItem = getMenuItem(request)
+        const { cover } = await getValidatedData(request, MenuItemUploadValidator)
+        const filename = await attemptFileUpload(cover)
+
+        if (filename) {
+            attemptFileRemoval(menuItem.coverImgSrc)
+            menuItem.coverImgSrc = filename
+        }
+
+        // Update cover image
+        await menuItem.save()
+
+        return menuItem.toJSON()
     }
 }

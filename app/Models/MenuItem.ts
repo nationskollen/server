@@ -1,6 +1,6 @@
 import { DateTime } from 'luxon'
-import { toBoolean } from 'App/Utils/Serialize'
 import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
+import { toBoolean, toAbsolutePath } from 'App/Utils/Serialize'
 
 export default class MenuItem extends BaseModel {
     @column({ isPrimary: true })
@@ -18,7 +18,7 @@ export default class MenuItem extends BaseModel {
     @column()
     public price: number
 
-    @column()
+    @column({ serialize: toAbsolutePath })
     public coverImgSrc: string
 
     @column({ consume: toBoolean })
