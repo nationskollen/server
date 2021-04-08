@@ -44,8 +44,9 @@ Server.middleware.registerNamed({
     scope: 'App/Middleware/Scope',
 
     // Resources
-    nation: 'App/Middleware/Nation',
     menu: 'App/Middleware/Menu',
+    nation: 'App/Middleware/Nation',
+    menuItem: 'App/Middleware/MenuItem',
     location: 'App/Middleware/Location',
-    openinghour: 'App/Middleware/OpeningHour',
+    openingHour: 'App/Middleware/OpeningHour',
 })
