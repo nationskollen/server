@@ -14,13 +14,12 @@ test.group('Menu fetch', async (group) => {
     let nation: TestNationContract
     let location: Location
     let menuOne: Menu
-    let menuTwo: Menu
 
     group.before(async () => {
         nation = await createTestNation()
         location = await createTestLocation(nation.oid)
         menuOne = await createTestMenu(nation.oid, location.id)
-        menuTwo = await createTestMenu(nation.oid, location.id)
+        await createTestMenu(nation.oid, location.id)
     })
 
     test('ensure that you can fetch all menus of a location', async (assert) => {
