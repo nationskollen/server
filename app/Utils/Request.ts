@@ -3,12 +3,12 @@ import Nation from 'App/Models/Nation'
 import Location from 'App/Models/Location'
 import OpeningHour from 'App/Models/OpeningHour'
 import { RequestContract } from '@ioc:Adonis/Core/Request'
-import { RequestValidatorNode } from '@ioc:Adonis/Core/Validator'
 import BadRequestException from 'App/Exceptions/BadRequestException'
 import MenuNotFoundException from 'App/Exceptions/MenuNotFoundException'
 import NationNotFoundException from 'App/Exceptions/NationNotFoundException'
 import LocationNotFoundException from 'App/Exceptions/LocationNotFoundException'
 import OpeningHourNotFoundException from 'App/Exceptions/OpeningHourNotFoundException'
+import { RequestValidatorNode, ParsedTypedSchema, TypedSchema } from '@ioc:Adonis/Core/Validator'
 
 export function getLocation(request: RequestContract): Location {
     const { location } = request
@@ -50,9 +50,9 @@ export function getMenu(request: RequestContract): Menu {
     return menu
 }
 
-export async function getValidatedData(
+export async function getValidatedData<T extends ParsedTypedSchema<TypedSchema>>(
     request: RequestContract,
-    validator: RequestValidatorNode<any>
+    validator: RequestValidatorNode<T>
 ) {
     const changes = await request.validate(validator)
 

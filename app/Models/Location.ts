@@ -1,8 +1,8 @@
 import Ws from 'App/Services/Ws'
 import { DateTime } from 'luxon'
 import Menu from 'App/Models/Menu'
-import { toBoolean } from 'App/Utils/Serialize'
 import OpeningHour from 'App/Models/OpeningHour'
+import { toBoolean, toAbsolutePath } from 'App/Utils/Serialize'
 import { ActivityLevels, MAX_ACTIVITY_LEVEL } from 'App/Utils/Activity'
 import { BaseModel, column, hasMany, HasMany, beforeUpdate } from '@ioc:Adonis/Lucid/Orm'
 
@@ -37,7 +37,7 @@ export default class Location extends BaseModel {
     @column({ consume: toBoolean })
     public isOpen: boolean
 
-    @column()
+    @column({ serialize: toAbsolutePath })
     public coverImgSrc: string
 
     @column.dateTime({ autoCreate: true, serializeAs: null })

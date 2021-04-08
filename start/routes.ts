@@ -78,6 +78,11 @@ Route.group(() => {
         'location',
         'scope:staff',
     ])
+    Route.post('/locations/:lid/upload', 'LocationsController.upload').middleware([
+        'auth',
+        'location',
+        'scope:admin',
+    ])
 
     // ----------------------------------------------------------
     // Location opening hours
@@ -111,7 +116,7 @@ Route.group(() => {
     Route.get('/locations/:lid/menus', 'MenusController.index').middleware(['location'])
     Route.get('/locations/:lid/menus/:mid', 'MenusController.single').middleware([
         'location',
-        'menu',
+        'menu:preload',
     ])
     Route.post('/locations/:lid/menus', 'MenusController.create').middleware([
         'auth',
