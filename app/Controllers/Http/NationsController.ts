@@ -2,7 +2,7 @@ import Nation from 'App/Models/Nation'
 import { attemptFileUpload } from 'App/Utils/Upload'
 import { getNation, getValidatedData } from 'App/Utils/Request'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import NationCreateValidator from 'App/Validators/Nations/CreateValidator'
+import NationUpdateValidator from 'App/Validators/Nations/UpdateValidator'
 import NationUploadValidator from 'App/Validators/Nations/UploadValidator'
 
 export default class NationsController {
@@ -17,7 +17,7 @@ export default class NationsController {
     }
 
     public async update({ request }: HttpContextContract) {
-        const changes = await getValidatedData(request, NationCreateValidator)
+        const changes = await getValidatedData(request, NationUpdateValidator)
         const nation = getNation(request)
 
         nation.merge(changes)
