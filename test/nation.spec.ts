@@ -8,7 +8,7 @@ import { TestNationContract, createTestNation } from 'App/Utils/Test'
 
 const INVALID_NATION_OID = 9999999999
 
-test.group('Information fetch', () => {
+test.group('Nation fetch', () => {
     test('ensure you can fetch all nations', async (assert) => {
         await NationFactory.createMany(5)
 
@@ -59,7 +59,7 @@ test.group('Information fetch', () => {
     })
 })
 
-test.group('Information update', (group) => {
+test.group('Nation update', (group) => {
     let nation: TestNationContract
 
     group.before(async () => {

@@ -45,7 +45,7 @@ test.group('Locations create', async (group) => {
     })
 })
 
-test.group('Locations activity handling', async (group) => {
+test.group('Locations update', async (group) => {
     let nation: TestNationContract
 
     group.before(async () => {
@@ -168,7 +168,7 @@ test.group('Locations activity handling', async (group) => {
     })
 })
 
-test.group('Location deletion', async (group) => {
+test.group('Location delete', async (group) => {
     let nation: TestNationContract
 
     group.before(async () => {

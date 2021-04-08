@@ -2,7 +2,7 @@ import { DatabaseTables } from 'App/Utils/Database'
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
-export default class InformationValidator {
+export default class NationCreateValidator {
     constructor(protected ctx: HttpContextContract) {}
 
     public schema = schema.create({

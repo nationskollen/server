@@ -1,12 +1,12 @@
 import Location from 'App/Models/Location'
 import { attemptFileUpload } from 'App/Utils/Upload'
-import ActivityValidator from 'App/Validators/ActivityValidator'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import InternalErrorException from 'App/Exceptions/InternalErrorException'
+import ActivityValidator from 'App/Validators/Locations/ActivityValidator'
 import { getNation, getLocation, getValidatedData } from 'App/Utils/Request'
-import LocationUpdateValidator from 'App/Validators/LocationUpdateValidator'
-import LocationCreateValidator from 'App/Validators/LocationCreateValidator'
-import LocationUploadValidator from 'App/Validators/LocationUploadValidator'
+import LocationUpdateValidator from 'App/Validators/Locations/UpdateValidator'
+import LocationCreateValidator from 'App/Validators/Locations/CreateValidator'
+import LocationUploadValidator from 'App/Validators/Locations/UploadValidator'
 
 export default class LocationsController {
     public async index({ request }: HttpContextContract) {

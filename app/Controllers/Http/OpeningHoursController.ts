@@ -1,10 +1,10 @@
 import OpeningHour from 'App/Models/OpeningHour'
 import { OpeningHourTypes } from 'App/Utils/Time'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import OpeningHourValidator from 'App/Validators/OpeningHourValidator'
-import { getLocation, getOpeningHour, getValidatedData } from 'App/Utils/Request'
-import OpeningHourUpdateValidator from 'App/Validators/OpeningHourUpdateValidator'
 import InternalErrorException from 'App/Exceptions/InternalErrorException'
+import { getLocation, getOpeningHour, getValidatedData } from 'App/Utils/Request'
+import OpeningHourCreateValidator from 'App/Validators/OpeningHours/CreateValidator'
+import OpeningHourUpdateValidator from 'App/Validators/OpeningHours/UpdateValidator'
 
 export default class OpeningHoursController {
     public async index({ request }: HttpContextContract) {
@@ -19,7 +19,7 @@ export default class OpeningHoursController {
     }
 
     public async create({ request }: HttpContextContract) {
-        const data = await getValidatedData(request, OpeningHourValidator)
+        const data = await getValidatedData(request, OpeningHourCreateValidator)
         const location = getLocation(request)
 
         const relation =

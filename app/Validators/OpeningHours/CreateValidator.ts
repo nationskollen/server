@@ -2,7 +2,7 @@ import { Days, OpeningHourTypes } from 'App/Utils/Time'
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
-export default class OpeningHourValidator {
+export default class OpeningHourCreateValidator {
     constructor(protected ctx: HttpContextContract) {}
 
     public schema = schema.create({

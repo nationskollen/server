@@ -1,12 +1,16 @@
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
-export default class UserValidator {
+export default class MenuCreateValidator {
     constructor(protected ctx: HttpContextContract) {}
 
     public schema = schema.create({
-        email: schema.string({}, [rules.email()]),
-        password: schema.string({}, [rules.minLength(8), rules.maxLength(256)]),
+        name: schema.string({}, [
+            rules.alpha({
+                allow: ['space', 'dash'],
+            }),
+        ]),
+        hidden: schema.boolean(),
     })
 
     public messages = {}
