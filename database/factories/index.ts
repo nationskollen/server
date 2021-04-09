@@ -88,8 +88,6 @@ export const NationFactory = Factory.define(Nation, async ({ faker }) => {
         shortName: faker.company.companyName(),
         description: faker.lorem.paragraph(),
         accentColor: faker.internet.color(),
-        coverImgSrc: faker.image.imageUrl(),
-        iconImgSrc: faker.image.avatar(),
     }
 })
     .relation('staff', () => UserFactory)
