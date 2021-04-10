@@ -255,8 +255,8 @@ test.group('Activity update', (group) => {
                 type: WebSocketDataTypes.Activity,
                 data: {
                     oid: nation.oid,
-                    location: testLocation.id,
-                    activity: ActivityLevels.Low,
+                    location_id: testLocation.id,
+                    activity_level: ActivityLevels.Low,
                 },
             })
             .close()
@@ -285,8 +285,8 @@ test.group('Activity update', (group) => {
                 type: WebSocketDataTypes.Activity,
                 data: {
                     oid: nation.oid,
-                    location: testLocation.id,
-                    activity: ActivityLevels.Closed,
+                    location_id: testLocation.id,
+                    activity_level: ActivityLevels.Closed,
                 },
             })
             .close()
@@ -324,8 +324,8 @@ test.group('Activity update', (group) => {
                 type: WebSocketDataTypes.Activity,
                 data: {
                     oid: nation.oid,
-                    location: testLocation.id,
-                    activity: ActivityLevels.Full,
+                    location_id: testLocation.id,
+                    activity_level: ActivityLevels.Full,
                 },
             })
             .close()
