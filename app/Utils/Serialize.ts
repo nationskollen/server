@@ -1,4 +1,3 @@
-import path from 'path'
 import { HOSTNAME } from 'App/Utils/Constants'
 
 export function toBoolean(value: number) {
@@ -6,5 +5,5 @@ export function toBoolean(value: number) {
 }
 
 export function toAbsolutePath(value: string) {
-    return value ? path.join(HOSTNAME, value) : value
+    return value ? HOSTNAME + '/' + value : value
 }
