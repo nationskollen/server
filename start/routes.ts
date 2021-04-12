@@ -13,7 +13,7 @@ Route.group(() => {
     // ----------------------------------------------------------
     // Authentication
     // ----------------------------------------------------------
-    Route.post('/user/login', 'AuthController.login')
+    Route.post('/users/login', 'AuthController.login')
 
     // ----------------------------------------------------------
     // Nations

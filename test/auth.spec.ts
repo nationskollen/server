@@ -13,7 +13,7 @@ test.group('Auth', () => {
         const user = await UserFactory.merge({ password }).create()
 
         const { text } = await supertest(BASE_URL)
-            .post('/user/login')
+            .post('/users/login')
             .expect('Content-Type', /json/)
             .send({
                 email: user.email,
@@ -31,7 +31,7 @@ test.group('Auth', () => {
 
     test('ensure email is validated', async () => {
         await supertest(BASE_URL)
-            .post('/user/login')
+            .post('/users/login')
             .expect('Content-Type', /json/)
             .send({
                 email: 'admin',
@@ -42,7 +42,7 @@ test.group('Auth', () => {
 
     test('ensure password is validated', async () => {
         await supertest(BASE_URL)
-            .post('/user/login')
+            .post('/users/login')
             .expect('Content-Type', /json/)
             .send({
                 email: 'admin@test.com',
@@ -53,7 +53,7 @@ test.group('Auth', () => {
 
     test('ensure both email and password is validated', async () => {
         await supertest(BASE_URL)
-            .post('/user/login')
+            .post('/users/login')
             .expect('Content-Type', /json/)
             .send({
                 email: 'admin',

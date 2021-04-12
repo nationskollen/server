@@ -22,7 +22,7 @@ export async function createStaffUser(nationId: number, nationAdmin: boolean) {
     const user = await UserFactory.merge({ password, nationId, nationAdmin }).create()
 
     const { text } = await supertest(BASE_URL)
-        .post(`/user/login`)
+        .post(`/users/login`)
         .send({ email: user.email, password })
         .expect(200)
 
