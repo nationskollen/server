@@ -179,7 +179,8 @@ Route.group(() => {
     // ----------------------------------------------------------
     //TODO Set routes for different queries
     Route.get('/nations/:id/events', 'EventsController.index').middleware([
-        'nation','event'])
+        // TODO Removed "event" middleware from here and it seems to work...
+        'nation'])
     Route.post('/nations/:id/events', 'EventsController.create').middleware([
         'auth',
         'nation',
