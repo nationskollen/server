@@ -10,6 +10,7 @@ import LocationUploadValidator from 'App/Validators/Locations/UploadValidator'
 export default class LocationsController {
     public async index({ request }: HttpContextContract) {
         const { oid } = getNation(request)
+        // TODO check the preload thingy
         const locations = await Location.withPreloads().where('nationId', oid)
 
         return locations.map((location: Location) => location.toJSON())

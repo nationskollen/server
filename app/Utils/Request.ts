@@ -3,6 +3,7 @@ import MenuItem from 'App/Models/MenuItem'
 import Nation from 'App/Models/Nation'
 import Location from 'App/Models/Location'
 import OpeningHour from 'App/Models/OpeningHour'
+import Event from 'App/Models/Event'
 import { RequestContract } from '@ioc:Adonis/Core/Request'
 import BadRequestException from 'App/Exceptions/BadRequestException'
 import MenuNotFoundException from 'App/Exceptions/MenuNotFoundException'
@@ -60,6 +61,16 @@ export function getMenuItem(request: RequestContract): MenuItem {
     }
 
     return menuItem
+}
+
+export function getEvent(request: RequestContract): Event {
+    const { event } = request
+
+    if (!event) {
+        throw new EventNotFoundException()
+    }
+
+    return event
 }
 
 export async function getValidatedData<T extends ParsedTypedSchema<TypedSchema>>(
