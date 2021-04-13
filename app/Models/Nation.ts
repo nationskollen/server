@@ -1,7 +1,7 @@
 import { DateTime } from 'luxon'
 import User from 'App/Models/User'
 import Location from 'App/Models/Location'
-import Event from 'App/Models/Events'
+import Event from 'App/Models/Event'
 import { toAbsolutePath } from 'App/Utils/Serialize'
 import { hasMany, HasMany, column, BaseModel } from '@ioc:Adonis/Lucid/Orm'
 
