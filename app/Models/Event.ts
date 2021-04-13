@@ -1,7 +1,7 @@
-import { DateTime } from 'luxon'
 import OpeningHour from 'App/Models/OpeningHour'
+import { DateTime } from 'luxon'
 import { toAbsolutePath } from 'App/Utils/Serialize'
-import { hasMany, HasMany, column, BaseModel } from '@ioc:Adonis/Lucid/Orm'
+import { column, BaseModel } from '@ioc:Adonis/Lucid/Orm'
 
 export default class Event extends BaseModel {
     @column({ isPrimary: true, serializeAs: null })
@@ -28,10 +28,9 @@ export default class Event extends BaseModel {
     @column.dateTime({ autoCreate: true, serializeAs: null })
     public createdAt: DateTime
 
-    @column.dateTime({ autoCreate: true, autoUpdate: true, serializeAs: null })
+    @column.dateTime({ serialize: OpeningHour.toHour })
     public occursAt: DateTime
 
-    // Specified opening hour for the event
-    @hasMany(() => OpeningHour, { serializeAs: 'opening_hours' })
-    public openingHours: HasMany<typeof OpeningHour>
+    @column.dateTime({ serialize: OpeningHour.toHour })
+    public endAt: DateTime
 }

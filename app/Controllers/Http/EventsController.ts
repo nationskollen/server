@@ -9,8 +9,7 @@ import EventUploadValidator from 'App/Validators/Events/UploadValidator'
 export default class EventsController {
     public async index({ request }: HttpContextContract) {
         const { oid } = getNation(request)
-        // TODO check the preload thingy, not necessarily part of Event
-        const event = await Event.withPreloads().where('nationId', oid)
+        const event = await Event.query().where('nationId', oid)
 
         return event.map((event: Event) => event.toJSON())
     }

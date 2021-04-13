@@ -2,7 +2,7 @@ import { schema } from '@ioc:Adonis/Core/Validator'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { MAX_FILE_SIZE, ALLOWED_FILE_EXTS } from 'App/Utils/Upload'
 
-export default class LocationUploadValidator {
+export default class EventUploadValidator {
     constructor(protected ctx: HttpContextContract) {}
 
     public schema = schema.create({
@@ -14,3 +14,4 @@ export default class LocationUploadValidator {
 
     public messages = {}
 }
+

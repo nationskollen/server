@@ -5,14 +5,15 @@ export default class LocationUpdateValidator {
     constructor(protected ctx: HttpContextContract) {}
 
     public schema = schema.create({
-        name: schema.string.optional({}, [
-            rules.alpha({
-                allow: ['space', 'dash'],
-            }),
-        ]),
+        name: schema.string.optional(),
         description: schema.string.optional(),
-        address: schema.string.optional(),
-        max_capacity: schema.number.optional([rules.unsigned(), rules.range(1, 5000)]),
+        locationId: schema.number.optional(),
+        occursAt: schema.date.optional({ format: 'HH:mm' }, [
+            rules.beforeField('endAt'),
+        ]),
+        endAt: schema.date.optional({ format: 'HH:mm' }, [
+            rules.afterField('occursAt'),
+        ]),
     })
 
     public messages = {}

@@ -1,19 +1,24 @@
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
-export default class LocationCreateValidator {
+export default class EventCreateValidator {
     constructor(protected ctx: HttpContextContract) {}
 
     public schema = schema.create({
         name: schema.string({}, [
-            rules.alpha({
-                allow: ['space', 'dash'],
-            }),
+            rules.alpha(),
         ]),
         description: schema.string(),
-        address: schema.string(),
-        max_capacity: schema.number([rules.unsigned(), rules.range(1, 5000)]),
+        locationId: schema.number.optional(),
+
+        occursAt: schema.date({ format: 'HH:mm' }, [
+            rules.beforeField('endAt'),
+        ]),
+        endAt: schema.date({ format: 'HH:mm' }, [
+            rules.afterField('occursAt'),
+        ]),
     })
 
     public messages = {}
 }
+
