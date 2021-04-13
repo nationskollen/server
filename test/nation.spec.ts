@@ -225,7 +225,7 @@ test.group('Nation upload', (group) => {
             .post(`/nations/${nation.oid}/upload`)
             .set('Authorization', 'Bearer ' + nation.token)
             .send({ randomData: 'hello' })
-            .expect(422)
+            .expect(400)
     })
 
     test('ensure that uploading images to a non-existant nation fails', async () => {
