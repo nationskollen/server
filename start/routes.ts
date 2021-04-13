@@ -178,27 +178,32 @@ Route.group(() => {
     // Event
     // ----------------------------------------------------------
     //TODO Set routes for different queries
-    Route.get('/nation/:oid/events', 'EventController.index').middleware(['event'])
-    Route.post('/nation/:oid/events', 'EventController.create').middleware([
+    Route.get('/nations/:id/events', 'EventsController.index').middleware([
+        'nation','event'])
+    Route.post('/nations/:id/events', 'EventsController.create').middleware([
         'auth',
+        'nation',
+        'scope:admin',
+    ])
+    Route.get('/nations/:id/events/:eid', 'EventsController.single').middleware(['nation',
+                                                                                'event'])
+    Route.put('/nations/:id/events/:eid', 'EventsController.update').middleware([
+        'auth',
+        'nation',
         'event',
         'scope:admin',
     ])
-    Route.get('/nation/:oid/events', 'EventController.single').middleware(['event'])
-    Route.put('/nation/:oid/events/:eid', 'EventController.update').middleware([
+    Route.delete('/nations/:id/events/:eid', 'EventsController.delete').middleware([
         'auth',
+        'nation',
         'event',
-        'scope:admin'
+        'scope:admin',
     ])
-    Route.delete('/nation/:oid/events/:eid', 'EventController.delete').middleware([
+    Route.post('/nations/:id/events/:eid/upload', 'EventsController.upload').middleware([
         'auth',
+        'nation',
         'event',
-        'scope:admin'
-    ])
-    Route.post('/nation/:oid/events/:eid/upload', 'EventController.upload').middleware([
-        'auth',
-        'event',
-        'scope:admin'
+        'scope:admin',
     ])
 }).prefix('/api/v1')
 

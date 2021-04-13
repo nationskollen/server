@@ -49,4 +49,5 @@ Server.middleware.registerNamed({
     menuItem: 'App/Middleware/MenuItem',
     location: 'App/Middleware/Location',
     openingHour: 'App/Middleware/OpeningHour',
+    event: 'App/Middleware/Event',
 })

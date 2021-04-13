@@ -5,17 +5,15 @@ export default class EventCreateValidator {
     constructor(protected ctx: HttpContextContract) {}
 
     public schema = schema.create({
-        name: schema.string({}, [
-            rules.alpha(),
-        ]),
+        name: schema.string(),
         description: schema.string(),
-        locationId: schema.number.optional(),
+        location_id: schema.number.optional(),
 
-        occursAt: schema.date({ format: 'HH:mm' }, [
-            rules.beforeField('endAt'),
+        occurs_at: schema.date({ format: 'HH:mm' }, [
+            rules.beforeField('end_at'),
         ]),
-        endAt: schema.date({ format: 'HH:mm' }, [
-            rules.afterField('occursAt'),
+        end_at: schema.date({ format: 'HH:mm' }, [
+            rules.afterField('occurs_at'),
         ]),
     })
 

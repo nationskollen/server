@@ -25,6 +25,9 @@ export default class Event extends BaseModel {
     @column({ serialize: toAbsolutePath })
     public coverImgSrc: string
 
+    @column.dateTime({ autoCreate: true, autoUpdate: true, serializeAs: null })
+    public updatedAt: DateTime
+
     @column.dateTime({ autoCreate: true, serializeAs: null })
     public createdAt: DateTime
 
