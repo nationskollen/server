@@ -2,7 +2,6 @@ import Route from '@ioc:Adonis/Core/Route'
 import HealthCheck from '@ioc:Adonis/Core/HealthCheck'
 
 Route.group(() => {
-
     // ----------------------------------------------------------
     // System health
     // ----------------------------------------------------------
@@ -180,14 +179,14 @@ Route.group(() => {
     //TODO Set routes for different queries
     Route.get('/nations/:id/events', 'EventsController.index').middleware([
         // TODO Removed "event" middleware from here and it seems to work...
-        'nation'])
+        'nation',
+    ])
     Route.post('/nations/:id/events', 'EventsController.create').middleware([
         'auth',
         'nation',
         'scope:admin',
     ])
-    Route.get('/nations/:id/events/:eid', 'EventsController.single').middleware(['nation',
-                                                                                'event'])
+    Route.get('/nations/:id/events/:eid', 'EventsController.single').middleware(['nation', 'event'])
     Route.put('/nations/:id/events/:eid', 'EventsController.update').middleware([
         'auth',
         'nation',
@@ -207,4 +206,3 @@ Route.group(() => {
         'scope:admin',
     ])
 }).prefix('/api/v1')
-

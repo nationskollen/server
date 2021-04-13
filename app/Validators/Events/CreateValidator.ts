@@ -9,14 +9,9 @@ export default class EventCreateValidator {
         description: schema.string(),
         location_id: schema.number.optional(),
 
-        occurs_at: schema.date({ format: 'HH:mm' }, [
-            rules.beforeField('end_at'),
-        ]),
-        end_at: schema.date({ format: 'HH:mm' }, [
-            rules.afterField('occurs_at'),
-        ]),
+        occurs_at: schema.date({ format: 'HH:mm' }, [rules.beforeField('end_at')]),
+        end_at: schema.date({ format: 'HH:mm' }, [rules.afterField('occurs_at')]),
     })
 
     public messages = {}
 }
-

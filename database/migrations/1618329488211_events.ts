@@ -2,9 +2,9 @@ import BaseSchema from '@ioc:Adonis/Lucid/Schema'
 import { DatabaseTables } from 'App/Utils/Database'
 
 export default class Events extends BaseSchema {
-  protected tableName = 'events'
+    protected tableName = 'events'
 
-  public async up () {
+    public async up() {
         this.schema.createTable(this.tableName, (table) => {
             table.increments('id')
             table
@@ -25,10 +25,10 @@ export default class Events extends BaseSchema {
             table.date('end_at').notNullable()
             table.string('cover_img_src')
             table.timestamps(true)
-    })
-  }
+        })
+    }
 
-  public async down () {
-    this.schema.dropTable(this.tableName)
-  }
+    public async down() {
+        this.schema.dropTable(this.tableName)
+    }
 }

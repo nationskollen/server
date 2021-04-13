@@ -14,4 +14,3 @@ export default class EventUploadValidator {
 
     public messages = {}
 }
-

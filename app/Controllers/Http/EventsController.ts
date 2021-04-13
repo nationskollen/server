@@ -25,14 +25,13 @@ export default class EventsController {
         const data = await getValidatedData(request, EventCreateValidator)
 
         // Check wether the event has a location or not
-        if (data.location_id){
-
+        if (data.location_id) {
             const location = await Location.find(data.location_id)
 
             // Make sure the location that is the event is to be added to
             // exists as part of the nation
             if (!location || location.nationId !== nation.oid) {
-                throw new EventNotApplicableException();
+                throw new EventNotApplicableException()
             }
         }
 
