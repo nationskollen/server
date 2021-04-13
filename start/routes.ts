@@ -2,6 +2,7 @@ import Route from '@ioc:Adonis/Core/Route'
 import HealthCheck from '@ioc:Adonis/Core/HealthCheck'
 
 Route.group(() => {
+
     // ----------------------------------------------------------
     // System health
     // ----------------------------------------------------------
@@ -172,8 +173,32 @@ Route.group(() => {
         'menuItem',
         'scope:admin',
     ])
+
     // ----------------------------------------------------------
     // Event
     // ----------------------------------------------------------
+    //TODO Set routes for different queries
+    Route.get('/nation/:oid/events', 'EventController.index').middleware(['event'])
+    Route.post('/nation/:oid/events', 'EventController.create').middleware([
+        'auth',
+        'event',
+        'scope:admin',
+    ])
+    Route.get('/nation/:oid/events', 'EventController.single').middleware(['event'])
+    Route.put('/nation/:oid/events/:eid', 'EventController.update').middleware([
+        'auth',
+        'event',
+        'scope:admin'
+    ])
+    Route.delete('/nation/:oid/events/:eid', 'EventController.delete').middleware([
+        'auth',
+        'event',
+        'scope:admin'
+    ])
+    Route.post('/nation/:oid/events/:eid/upload', 'EventController.upload').middleware([
+        'auth',
+        'event',
+        'scope:admin'
+    ])
 }).prefix('/api/v1')
 
