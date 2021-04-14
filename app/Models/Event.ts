@@ -1,6 +1,5 @@
-import OpeningHour from 'App/Models/OpeningHour'
 import { DateTime } from 'luxon'
-import { toAbsolutePath } from 'App/Utils/Serialize'
+import { toAbsolutePath, toHour } from 'App/Utils/Serialize'
 import { column, BaseModel } from '@ioc:Adonis/Lucid/Orm'
 
 export default class Event extends BaseModel {
@@ -19,6 +18,9 @@ export default class Event extends BaseModel {
     @column()
     public locationId: number
 
+    // TODO: Depends on if we want to keep this or not, maybe have event
+    // filtering in the mapview and display icon uploaded for currently ongoing
+    // event
     @column({ serialize: toAbsolutePath })
     public iconImgSrc: string
 
@@ -31,9 +33,9 @@ export default class Event extends BaseModel {
     @column.dateTime({ autoCreate: true, serializeAs: null })
     public createdAt: DateTime
 
-    @column.dateTime({ serialize: OpeningHour.toHour })
+    @column.dateTime({ serialize: toHour })
     public occursAt: DateTime
 
-    @column.dateTime({ serialize: OpeningHour.toHour })
-    public endAt: DateTime
+    @column.dateTime({ serialize: toHour })
+    public endsAt: DateTime
 }

@@ -6,6 +6,7 @@ import {
     NationFactory,
     MenuItemFactory,
     LocationFactory,
+    EventFactory,
     OpeningHourFactory,
     OpeningHourExceptionFactory,
 } from 'Database/factories/index'
@@ -48,6 +49,10 @@ export async function createTestNation(): Promise<TestNationContract> {
         staffToken: staff.token,
         adminOtherToken: adminOther.token,
     }
+}
+
+export async function createTestEvent(oid: number) {
+    return EventFactory.merge({ nationId: oid }).create()
 }
 
 export async function createTestLocation(oid: number) {

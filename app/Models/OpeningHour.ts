@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon'
-import { toBoolean } from 'App/Utils/Serialize'
+import { toBoolean, toHour } from 'App/Utils/Serialize'
 import { Days, OpeningHourTypes } from 'App/Utils/Time'
 import { BaseModel, column, scope } from '@ioc:Adonis/Lucid/Orm'
 
@@ -14,10 +14,6 @@ export default class OpeningHour extends BaseModel {
 
     public static toDate(value: DateTime) {
         return value ? value.toFormat('d/M') : value
-    }
-
-    public static toHour(value: DateTime) {
-        return value ? value.toFormat('HH:mm') : value
     }
 
     @column({ isPrimary: true })
@@ -38,10 +34,10 @@ export default class OpeningHour extends BaseModel {
     @column.dateTime({ serialize: OpeningHour.toDate })
     public daySpecialDate: DateTime
 
-    @column.dateTime({ serialize: OpeningHour.toHour })
+    @column.dateTime({ serialize: toHour })
     public open: DateTime
 
-    @column.dateTime({ serialize: OpeningHour.toHour })
+    @column.dateTime({ serialize: toHour })
     public close: DateTime
 
     @column({ serialize: toBoolean })

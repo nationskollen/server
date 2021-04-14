@@ -4,4 +4,5 @@ export enum DatabaseTables {
     Nations = 'nations',
     Locations = 'locations',
     OpeningHours = 'opening_hours',
+    Events = 'events',
 }

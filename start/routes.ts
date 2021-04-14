@@ -199,9 +199,8 @@ Route.group(() => {
         'event',
         'scope:admin',
     ])
-    Route.post('/nations/:id/events/:eid/upload', 'EventsController.upload').middleware([
+    Route.post('/events/:eid/upload', 'EventsController.upload').middleware([
         'auth',
-        'nation',
         'event',
         'scope:admin',
     ])
