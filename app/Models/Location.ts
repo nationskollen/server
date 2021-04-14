@@ -25,11 +25,11 @@ export default class Location extends BaseModel {
     @column({ consume: toBoolean })
     public showOnMap: boolean
 
-    @column({ prepare: toString })
-    public latitude: string
+    @column()
+    public latitude: number
 
-    @column({ prepare: toString })
-    public longitude: string
+    @column()
+    public longitude: number
 
     // Max people capacity of the location
     @column()
