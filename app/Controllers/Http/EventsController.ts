@@ -7,6 +7,12 @@ import EventCreateValidator from 'App/Validators/Events/CreateValidator'
 import EventUploadValidator from 'App/Validators/Events/UploadValidator'
 
 export default class EventsController {
+    public async all({}: HttpContextContract) {
+        const events = await Event.all()
+
+        return events.map((event: Event) => event.toJSON())
+    }
+
     public async index({ request }: HttpContextContract) {
         const { oid } = getNation(request)
         const event = await Event.query().where('nationId', oid)
