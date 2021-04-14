@@ -4,10 +4,26 @@ import Menu from 'App/Models/Menu'
 import Nation from 'App/Models/Nation'
 import MenuItem from 'App/Models/MenuItem'
 import Location from 'App/Models/Location'
+import Event from 'App/Models/Event'
 import Factory from '@ioc:Adonis/Lucid/Factory'
 import OpeningHour from 'App/Models/OpeningHour'
 import { OpeningHourTypes } from 'App/Utils/Time'
 import { MAX_ACTIVITY_LEVEL } from 'App/Utils/Activity'
+
+export const EventFactory = Factory.define(Event, ({ faker }) => {
+    return {
+        name: faker.commerce.productName(),
+        description: faker.commerce.productDescription(),
+        occursAt: DateTime.fromObject({
+            hour: faker.datatype.number(12),
+            minute: faker.datatype.number(59),
+        }),
+        endsAt: DateTime.fromObject({
+            hour: faker.datatype.number({ min: 13, max: 23 }),
+            minute: faker.datatype.number(59),
+        }),
+    }
+}).build()
 
 export const MenuItemFactory = Factory.define(MenuItem, ({ faker }) => {
     return {
@@ -94,6 +110,7 @@ export const NationFactory = Factory.define(Nation, async ({ faker }) => {
 })
     .relation('staff', () => UserFactory)
     .relation('locations', () => LocationFactory)
+    .relation('events', () => EventFactory)
     .build()
 
 export const UserFactory = Factory.define(User, ({ faker }) => {

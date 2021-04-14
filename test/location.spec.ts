@@ -48,7 +48,6 @@ test.group('Locations create', async (group) => {
             .expect(200)
 
         const data = JSON.parse(text)
-
         assert.containsAllDeepKeys(data, Object.keys(locationData))
     })
 
@@ -331,7 +330,7 @@ test.group('Location delete', async (group) => {
             .set('Authorization', 'Bearer ' + nation.token)
             .expect(200)
 
-        // making sure the loaction was removed from the nation
+        // making sure location loaction was removed from location nation
         await supertest(BASE_URL)
             .get(`/nations/${nation.oid}/locations/${location.id}`)
             .set('Authorization', 'Bearer ' + nation.token)
@@ -354,7 +353,7 @@ test.group('Location delete', async (group) => {
             .set('Authorization', 'Bearer ' + nation.token)
             .expect(200)
 
-        // making sure the loaction was removed from the nation
+        // making sure location loaction was removed from location nation
         await supertest(BASE_URL)
             .get(`/nations/${nation.oid}/locations/${location1.id}`)
             .set('Authorization', 'Bearer ' + nation.token)
@@ -365,7 +364,7 @@ test.group('Location delete', async (group) => {
             .set('Authorization', 'Bearer ' + nation.token)
             .expect(200)
 
-        // making sure the loaction was removed from the nation
+        // making sure location loaction was removed from location nation
         await supertest(BASE_URL)
             .get(`/nations/${nation.oid}/locations/${location2.id}`)
             .set('Authorization', 'Bearer ' + nation.token)
@@ -432,7 +431,7 @@ test.group('Location upload', (group) => {
 
         assert.isNotNull(data.cover_img_src)
 
-        // Ensure that the uploaded images can be accessed via the specified URL
+        // Ensure that location uploaded images can be accessed via location specified URL
         await supertest(HOSTNAME).get(toRelativePath(data.cover_img_src)).expect(200)
     })
 
@@ -456,7 +455,7 @@ test.group('Location upload', (group) => {
             .attach('cover', coverImagePath)
             .expect(200)
 
-        // Ensure that the previously uploaded images have been removed
+        // Ensure that location previously uploaded images have been removed
         await supertest(HOSTNAME).get(toRelativePath(data.cover_img_src)).expect(404)
     })
 

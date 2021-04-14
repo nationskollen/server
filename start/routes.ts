@@ -172,4 +172,34 @@ Route.group(() => {
         'menuItem',
         'scope:admin',
     ])
+
+    // ----------------------------------------------------------
+    // Event
+    // ----------------------------------------------------------
+    //TODO Set routes for different queries
+    Route.get('/events', 'EventsController.all')
+    Route.get('/nations/:id/events', 'EventsController.index').middleware(['nation'])
+    Route.post('/nations/:id/events', 'EventsController.create').middleware([
+        'auth',
+        'nation',
+        'scope:admin',
+    ])
+    Route.get('/nations/:id/events/:eid', 'EventsController.single').middleware(['nation', 'event'])
+    Route.put('/nations/:id/events/:eid', 'EventsController.update').middleware([
+        'auth',
+        'nation',
+        'event',
+        'scope:admin',
+    ])
+    Route.delete('/nations/:id/events/:eid', 'EventsController.delete').middleware([
+        'auth',
+        'nation',
+        'event',
+        'scope:admin',
+    ])
+    Route.post('/events/:eid/upload', 'EventsController.upload').middleware([
+        'auth',
+        'event',
+        'scope:admin',
+    ])
 }).prefix('/api/v1')

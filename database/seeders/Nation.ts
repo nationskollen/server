@@ -5,9 +5,10 @@ export default class NationSeeder extends BaseSeeder {
     public static developmentOnly = true
 
     public async run() {
-        const nations = await NationFactory.with('locations', 3, (location) => {
-            location.with('openingHours', 2).with('openingHourExceptions', 1)
-        })
+        const nations = await NationFactory.with('events', 3)
+            .with('locations', 3, (location) => {
+                location.with('openingHours', 2).with('openingHourExceptions', 1)
+            })
             .merge([
                 {
                     oid: 400,
