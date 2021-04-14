@@ -22,6 +22,15 @@ export default class Location extends BaseModel {
     @column()
     public address: string
 
+    @column({ consume: toBoolean })
+    public showOnMap: boolean
+
+    @column()
+    public latitude: number
+
+    @column()
+    public longitude: number
+
     // Max people capacity of the location
     @column()
     public maxCapacity: number

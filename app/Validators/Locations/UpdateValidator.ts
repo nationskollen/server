@@ -12,6 +12,15 @@ export default class LocationUpdateValidator {
         ]),
         description: schema.string.optional(),
         address: schema.string.optional(),
+        show_on_map: schema.boolean.optional(),
+        latitude: schema.number.optional([
+            rules.requiredWhen('show_on_map', '=', true),
+            rules.range(-90, 90),
+        ]),
+        longitude: schema.number.optional([
+            rules.requiredWhen('show_on_map', '=', true),
+            rules.range(-180, 180),
+        ]),
         max_capacity: schema.number.optional([rules.unsigned(), rules.range(1, 5000)]),
     })
 

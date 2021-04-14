@@ -16,6 +16,11 @@ export default class Locations extends BaseSchema {
             table.string('name').notNullable()
             table.string('description')
             table.string('address').notNullable()
+            // https://developers.google.com/maps/documentation/javascript/mysql-to-maps?csw=1#creating-a-table-in-mysql
+            // If we in the future wants to use geographical spatiality
+            table.float('latitude', 10, 6)
+            table.float('longitude', 10, 6)
+            table.boolean('show_on_map').notNullable().defaultTo(false)
             table.integer('max_capacity').notNullable().unsigned()
             table.integer('estimated_people_count').defaultTo(0)
             table.integer('activity_level').defaultTo(0)

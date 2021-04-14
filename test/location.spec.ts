@@ -17,6 +17,7 @@ test.group('Locations create', async (group) => {
         description: 'Lunchplats',
         address: 'Dragarbrunnsgatan 27B',
         max_capacity: 250,
+        show_on_map: false,
     }
 
     group.before(async () => {
@@ -49,6 +50,65 @@ test.group('Locations create', async (group) => {
         const data = JSON.parse(text)
 
         assert.containsAllDeepKeys(data, Object.keys(locationData))
+    })
+
+    test('ensure that latitude only accepts valid coordinates', async () => {
+        await supertest(BASE_URL)
+            .post(`/nations/${nation.oid}/locations`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send({
+                ...locationData,
+                show_on_map: true,
+                latitude: -91.0,
+                longitude: 0.0,
+            })
+            .expect(422)
+    })
+
+    test('ensure that longitude only accepts valid coordinates', async () => {
+        await supertest(BASE_URL)
+            .post(`/nations/${nation.oid}/locations`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send({
+                ...locationData,
+                show_on_map: true,
+                latitude: 0.0,
+                longitude: -181.0,
+            })
+            .expect(422)
+    })
+
+    test('ensure that coordinates are required if show on map is true', async () => {
+        await supertest(BASE_URL)
+            .post(`/nations/${nation.oid}/locations`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send({
+                ...locationData,
+                show_on_map: true,
+            })
+            .expect(422)
+    })
+
+    test('ensure that you can set coordinates', async (assert) => {
+        const latitude = 59.856227
+        const longitude = 17.6378425
+
+        const { text } = await supertest(BASE_URL)
+            .post(`/nations/${nation.oid}/locations`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send({
+                ...locationData,
+                show_on_map: true,
+                latitude,
+                longitude,
+            })
+            .expect(200)
+
+        const data = JSON.parse(text)
+
+        assert.equal(data.latitude, latitude)
+        assert.equal(data.longitude, longitude)
+        assert.equal(data.show_on_map, true)
     })
 })
 
@@ -172,6 +232,69 @@ test.group('Locations update', async (group) => {
 
         const data2 = JSON.parse(text2.text)
         assert.equal(data2.name, 'TheNewName')
+    })
+
+    test('ensure that latitude only accepts valid coordinates', async () => {
+        const location = await createTestLocation(nation.oid)
+
+        await supertest(BASE_URL)
+            .put(`/nations/${nation.oid}/locations/${location.id}`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send({
+                show_on_map: true,
+                latitude: -91.0,
+                longitude: 0,
+            })
+            .expect(422)
+    })
+
+    test('ensure that longitude only accepts valid coordinates', async () => {
+        const location = await createTestLocation(nation.oid)
+
+        await supertest(BASE_URL)
+            .put(`/nations/${nation.oid}/locations/${location.id}`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send({
+                show_on_map: true,
+                latitude: 0,
+                longitude: -181.0,
+            })
+            .expect(422)
+    })
+
+    test('ensure that coordinates are required if show on map is true', async () => {
+        const location = await createTestLocation(nation.oid)
+
+        await supertest(BASE_URL)
+            .put(`/nations/${nation.oid}/locations/${location.id}`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send({
+                show_on_map: true,
+            })
+            .expect(422)
+    })
+
+    test('ensure that you can update coordinates', async (assert) => {
+        const latitude = 59.856227
+        const longitude = 17.6378425
+
+        const location = await createTestLocation(nation.oid)
+
+        const { text } = await supertest(BASE_URL)
+            .put(`/nations/${nation.oid}/locations/${location.id}`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send({
+                show_on_map: true,
+                latitude,
+                longitude,
+            })
+            .expect(200)
+
+        const data = JSON.parse(text)
+
+        assert.equal(data.latitude, latitude)
+        assert.equal(data.longitude, longitude)
+        assert.equal(data.show_on_map, true)
     })
 })
 

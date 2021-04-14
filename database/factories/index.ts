@@ -71,9 +71,11 @@ export const LocationFactory = Factory.define(Location, ({ faker }) => {
         name: faker.company.companyName(),
         description: faker.lorem.paragraph(),
         address: faker.address.streetAddress(),
+        latitude: faker.address.latitude(),
+        longitude: faker.address.longitude(),
+        showOnMap: faker.datatype.boolean(),
         maxCapacity,
         estimatedPeopleCount: faker.datatype.number(maxCapacity),
-        activityLevel: faker.datatype.number(MAX_ACTIVITY_LEVEL),
         isOpen: faker.datatype.boolean(),
     }
 })
