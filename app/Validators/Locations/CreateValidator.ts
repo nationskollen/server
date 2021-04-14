@@ -12,6 +12,15 @@ export default class LocationCreateValidator {
         ]),
         description: schema.string(),
         address: schema.string(),
+        show_on_map: schema.boolean(),
+        latitude: schema.number.optional([
+            rules.requiredWhen('show_on_map', '=', true),
+            rules.range(-90, 90),
+        ]),
+        longitude: schema.number.optional([
+            rules.requiredWhen('show_on_map', '=', true),
+            rules.range(-180, 180),
+        ]),
         max_capacity: schema.number([rules.unsigned(), rules.range(1, 5000)]),
     })
 
