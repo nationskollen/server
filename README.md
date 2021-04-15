@@ -24,7 +24,7 @@ database with test data (only in development mode).
 ### Commands
 * `npm run setup` - Run database migrations and seeders
 * `npm run build` - Build the application for production
-* `npm run start` - Start thes server in production mode
+* `npm run start` - Start the server in production mode
 * `npm run dev` - Start the server in development mode
 * `npm run lint` - Run ESLint on all source files
 * `npm run format` - Format all source files using Prettier
