@@ -7,7 +7,6 @@ export default class EventUpdateValidator {
     constructor(protected ctx: HttpContextContract) {}
 
     public refs = schema.refs({ nationId: getOidRef(this.ctx) })
-
     public schema = schema.create({
         name: schema.string.optional(),
         description: schema.string.optional(),
@@ -19,8 +18,8 @@ export default class EventUpdateValidator {
             }),
         ]),
 
-        occurs_at: schema.date.optional({ format: 'HH:mm' }, [rules.beforeField('ends_at')]),
-        ends_at: schema.date.optional({ format: 'HH:mm' }, [rules.afterField('occurs_at')]),
+        occurs_at: schema.date.optional({ format: 'iso' }, [rules.beforeField('ends_at')]),
+        ends_at: schema.date.optional({ format: 'iso' }, [rules.afterField('occurs_at')]),
     })
 
     public messages = {}

@@ -12,3 +12,7 @@ export function toAbsolutePath(value: string) {
 export function toHour(value: DateTime) {
     return value ? value.toFormat('HH:mm') : value
 }
+
+export function toISO(value?: DateTime) {
+    return value ? value.setZone('utc').toISO() : value
+}
