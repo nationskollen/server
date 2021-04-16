@@ -39,9 +39,23 @@ async function startHttpServer() {
     await new Ignitor(__dirname).httpServer().start()
 }
 
+function getTestFilesPattern() {
+    // Check the current database connections
+    const postgresql = process.env.DB_CONNECTION === 'pg'
+    const defaultPattern = 'test/**/*.spec.ts'
+
+    if (postgresql) {
+        return [defaultPattern]
+    }
+
+    // Ignore events filtering on SQLite3 since it does not
+    // support datetime filtering.
+    return [defaultPattern, '!test/events-filter.spec.ts']
+}
+
 // Configure test runner
 configure({
-    files: ['test/**/*.spec.ts'],
+    files: getTestFilesPattern(),
     before: [clearAssets, rollbackMigrations, runMigrations, startHttpServer],
     after: [rollbackMigrations, runMigrations, runSeeding, clearAssets],
 })

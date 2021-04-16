@@ -10,7 +10,10 @@ import EventUploadValidator from 'App/Validators/Events/UploadValidator'
 import EventFilterValidator from 'App/Validators/Events/FilterValidator'
 
 export default class EventsController {
-    private applyFilters(scopes: ExtractScopes<typeof Event>, filters: Record<string, DateTime | undefined>) {
+    private applyFilters(
+        scopes: ExtractScopes<typeof Event>,
+        filters: Record<string, DateTime | undefined>
+    ) {
         // Skip any other filters if we filter for events on a certain date
         if (filters.date) {
             scopes.onDate(filters.date)
@@ -37,8 +40,7 @@ export default class EventsController {
     public async index({ request }: HttpContextContract) {
         const { oid } = getNation(request)
         const filters = await getValidatedData(request, EventFilterValidator, true)
-        const events = await Event
-            .query()
+        const events = await Event.query()
             .where('nation_id', oid)
             .apply((scopes) => this.applyFilters(scopes, filters))
 

@@ -176,7 +176,7 @@ test.group('Events update', async (group) => {
             .put(`/nations/${nation.oid}/events/${event.id}`)
             .set('Authorization', 'Bearer ' + nation.token)
             .send({
-                location_id: 999999999999,
+                location_id: 99999,
             })
             .expect(422)
     })
@@ -195,7 +195,7 @@ test.group('Events update', async (group) => {
 
     test('ensure that it is not possible to update a non-existing event', async () => {
         await supertest(BASE_URL)
-            .put(`/nations/${nation.oid}/events/999999999999`)
+            .put(`/nations/${nation.oid}/events/99999`)
             .set('Authorization', 'Bearer ' + nation.token)
             .send({
                 name: 'TheNew',
@@ -246,7 +246,7 @@ test.group('Event delete', async (group) => {
 
     test('ensure that deletion of a non-existing event is not viable', async () => {
         await supertest(BASE_URL)
-            .delete(`/nations/${nation.oid}/events/999999999999`)
+            .delete(`/nations/${nation.oid}/events/99999`)
             .set('Authorization', 'Bearer ' + nation.token)
             .expect(404)
     })
@@ -376,7 +376,7 @@ test.group('Event upload', (group) => {
 
     test('ensure that uploading images to a non-existant event fails', async () => {
         await supertest(BASE_URL)
-            .post(`/events/999999999999/upload`)
+            .post(`/events/99999/upload`)
             .set('Authorization', 'Bearer ' + nation.token)
             .attach('cover', coverImagePath)
             .expect(404)

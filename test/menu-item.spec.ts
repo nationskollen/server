@@ -62,7 +62,7 @@ test.group('Menu item fetch', async (group) => {
     })
 
     test('ensure that you get an error if fetching a non-existant menu item', async () => {
-        await supertest(BASE_URL).get(`/menus/${menu.id}/items/99999999`).expect(404)
+        await supertest(BASE_URL).get(`/menus/${menu.id}/items/99999`).expect(404)
     })
 })
 
@@ -386,7 +386,7 @@ test.group('Menu item upload', (group) => {
 
     test('ensure that uploading images to a non-existant menu item fails', async () => {
         await supertest(BASE_URL)
-            .post(`/menus/${menu.id}/items/9999999999/upload`)
+            .post(`/menus/${menu.id}/items/99999/upload`)
             .set('Authorization', 'Bearer ' + nation.token)
             .attach('cover', coverImagePath)
             .expect(404)

@@ -1,8 +1,9 @@
 import BaseSchema from '@ioc:Adonis/Lucid/Schema'
 import { OpeningHourTypes } from 'App/Utils/Time'
+import { DatabaseTables } from 'App/Utils/Database'
 
 export default class OpeningHours extends BaseSchema {
-    protected tableName = 'opening_hours'
+    protected tableName = DatabaseTables.OpeningHours
 
     public async up() {
         this.schema.createTable(this.tableName, (table) => {
@@ -12,7 +13,7 @@ export default class OpeningHours extends BaseSchema {
                 .notNullable()
                 .unsigned()
                 .references('id')
-                .inTable('locations')
+                .inTable(DatabaseTables.Locations)
                 .onDelete('CASCADE')
             table.integer('type').notNullable().unsigned().defaultTo(OpeningHourTypes.Default)
             table.integer('day').unsigned()

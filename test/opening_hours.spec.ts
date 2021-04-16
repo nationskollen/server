@@ -73,7 +73,7 @@ test.group('Opening hours fetch', async (group) => {
     })
 
     test('ensure that you get an error if fetching a non-existant opening hour', async () => {
-        await supertest(BASE_URL).get(`/locations/${location.id}/hours/99999999`).expect(404)
+        await supertest(BASE_URL).get(`/locations/${location.id}/hours/999`).expect(404)
     })
 })
 
@@ -295,7 +295,7 @@ test.group('Opening hours update', async (group) => {
 
     test('ensure that the opening hour id is validated before the data', async () => {
         await supertest(BASE_URL)
-            .put(`/locations/${location.id}/hours/9999999999`)
+            .put(`/locations/${location.id}/hours/999`)
             .set('Authorization', 'Bearer ' + nation.token)
             .expect(404)
     })
@@ -371,7 +371,7 @@ test.group('Opening hours update', async (group) => {
 
     test('ensure that you can not update a non-existing opening hour', async () => {
         await supertest(BASE_URL)
-            .put(`/locations/${location.id}/hours/99999999999`)
+            .put(`/locations/${location.id}/hours/999`)
             .set('Authorization', 'Bearer ' + nation.token)
             .send({
                 type: OpeningHourTypes.Exception,
@@ -499,7 +499,7 @@ test.group('Opening hours delete', async (group) => {
 
     test('ensure that you can not delete a non-existing opening hour', async () => {
         await supertest(BASE_URL)
-            .delete(`/locations/${location.id}/hours/999999999999`)
+            .delete(`/locations/${location.id}/hours/999`)
             .set('Authorization', 'Bearer ' + nation.token)
             .expect(404)
     })
