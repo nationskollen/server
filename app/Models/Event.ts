@@ -1,8 +1,36 @@
 import { DateTime } from 'luxon'
 import { toAbsolutePath, toISO } from 'App/Utils/Serialize'
-import { column, BaseModel } from '@ioc:Adonis/Lucid/Orm'
+import { column, BaseModel, scope } from '@ioc:Adonis/Lucid/Orm'
 
 export default class Event extends BaseModel {
+    public static beforeDate = scope((query, date?: DateTime) => {
+        if (!date) {
+            return
+        }
+
+        query.where('occurs_at', '<=', date.toSQLDate())
+    })
+
+    public static afterDate = scope((query, date?: DateTime) => {
+        if (!date) {
+            return
+        }
+
+        query.where('occurs_at', '>=', date.toSQLDate())
+    })
+
+    public static onDate = scope((query, date?: DateTime) => {
+        if (!date) {
+            return
+        }
+
+        query.where('occurs_at', '=', date.toSQLDate())
+    })
+
+    public static inOrder = scope((query) => {
+        query.where('occurs_at', 'asc')
+    })
+
     @column({ isPrimary: true })
     public id: number
 
