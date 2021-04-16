@@ -103,7 +103,7 @@ export const NationFactory = Factory.define(Nation, async ({ faker }) => {
         oid: faker.unique(faker.datatype.number, [{ min: 0, max: 1000 }]),
         name: faker.company.companyName(),
         shortName: faker.company.companyName(),
-        description: faker.lorem.paragraph(),
+        description: faker.lorem.lines(1),
         accentColor: faker.internet.color(),
     }
 })

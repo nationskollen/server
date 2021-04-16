@@ -13,7 +13,7 @@ export default class EventsController {
     private applyFilters(scopes: ExtractScopes<typeof Event>, filters: Record<string, DateTime | undefined>) {
         // Skip any other filters if we filter for events on a certain date
         if (filters.date) {
-            return scopes.onDate(filters.date)
+            scopes.onDate(filters.date)
         }
 
         // Filter based on when the event ends, i.e. all events before a certain date
