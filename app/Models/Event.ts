@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon'
-import { toAbsolutePath, toHour } from 'App/Utils/Serialize'
+import { toAbsolutePath, toISO } from 'App/Utils/Serialize'
 import { column, BaseModel } from '@ioc:Adonis/Lucid/Orm'
 
 export default class Event extends BaseModel {
@@ -27,15 +27,15 @@ export default class Event extends BaseModel {
     @column({ serialize: toAbsolutePath })
     public coverImgSrc: string
 
+    @column.dateTime({ serialize: toISO })
+    public occursAt: DateTime
+
+    @column.dateTime({ serialize: toISO })
+    public endsAt: DateTime
+
     @column.dateTime({ autoCreate: true, autoUpdate: true, serializeAs: null })
     public updatedAt: DateTime
 
     @column.dateTime({ autoCreate: true, serializeAs: null })
     public createdAt: DateTime
-
-    @column.dateTime({ serialize: toHour })
-    public occursAt: DateTime
-
-    @column.dateTime({ serialize: toHour })
-    public endsAt: DateTime
 }

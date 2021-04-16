@@ -5,7 +5,7 @@ import Application from '@ioc:Adonis/Core/Application'
 import { MultipartFileContract } from '@ioc:Adonis/Core/BodyParser'
 
 export const MAX_FILE_SIZE = '3mb'
-// TODO: add .svg? 
+// TODO: add .svg?
 export const ALLOWED_FILE_EXTS = ['jpg', 'png', 'jpeg', 'gif']
 
 export async function attemptFileUpload(file: MultipartFileContract | null) {
