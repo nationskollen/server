@@ -14,6 +14,7 @@ Route.group(() => {
     // Authentication
     // ----------------------------------------------------------
     Route.post('/users/login', 'AuthController.login')
+    Route.post('/users/logout', 'AuthController.logout').middleware(['auth'])
 
     // ----------------------------------------------------------
     // Nations
