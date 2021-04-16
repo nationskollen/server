@@ -105,4 +105,31 @@ test.group('Auth', () => {
         assert.equal(NationOwnerScopes.None, data.scope)
         assert.equal(oid, data.oid)
     })
+
+    test('ensure that a user is logged out when "logout" action is applied', async () => {
+        const nation = await NationFactory.create()
+        const { token } = await createStaffUser(nation.oid, true)
+        const newNationData = {
+            name: 'logoutNation',
+        }
+
+        await supertest(BASE_URL)
+            .post('/users/logout')
+            .set('Authorization', 'Bearer ' + token)
+            .expect(200)
+
+        await supertest(BASE_URL)
+            .put(`/nations/${nation.oid}`)
+            .set('Authorization', 'Bearer ' + token)
+            .send(newNationData)
+            .expect(401)
+    })
+
+    test('ensure logout route is protected when logging out when not logged in', async () => {
+        await supertest(BASE_URL)
+            .post('/users/logout')
+            .set('Authorization', 'Bearer 000000000000000')
+            .expect(401)
+
+    })
 })
