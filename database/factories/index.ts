@@ -8,7 +8,6 @@ import Event from 'App/Models/Event'
 import Factory from '@ioc:Adonis/Lucid/Factory'
 import OpeningHour from 'App/Models/OpeningHour'
 import { OpeningHourTypes } from 'App/Utils/Time'
-import { MAX_ACTIVITY_LEVEL } from 'App/Utils/Activity'
 
 export const EventFactory = Factory.define(Event, ({ faker }) => {
     return {
@@ -87,8 +86,8 @@ export const LocationFactory = Factory.define(Location, ({ faker }) => {
         name: faker.company.companyName(),
         description: faker.lorem.paragraph(),
         address: faker.address.streetAddress(),
-        latitude: faker.address.latitude(),
-        longitude: faker.address.longitude(),
+        latitude: parseFloat(faker.address.latitude()),
+        longitude: parseFloat(faker.address.longitude()),
         showOnMap: faker.datatype.boolean(),
         maxCapacity,
         estimatedPeopleCount: faker.datatype.number(maxCapacity),
