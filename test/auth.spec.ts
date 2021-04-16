@@ -130,6 +130,5 @@ test.group('Auth', () => {
             .post('/users/logout')
             .set('Authorization', 'Bearer 000000000000000')
             .expect(401)
-
     })
 })
