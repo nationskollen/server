@@ -17,8 +17,8 @@ test.group('Events create', async (group) => {
     let eventData = {
         name: 'testEvent',
         description: 'Lunchevent',
-        occurs_at: '12:30',
-        ends_at: '21:30',
+        occurs_at: new Date(2020, 3, 16, 12).toISOString(),
+        ends_at: new Date(2020, 3, 16, 15).toISOString(),
     }
 
     group.before(async () => {
@@ -62,11 +62,8 @@ test.group('Events create', async (group) => {
             .post(`/nations/${nation.oid}/events`)
             .set('Authorization', 'Bearer ' + nation.token)
             .send({
-                name: 'name',
-                description: 'description',
+                ...eventData,
                 location_id: location2.id,
-                occurs_at: '20:30',
-                ends_at: '21:30',
             })
             .expect(422)
 
@@ -74,11 +71,8 @@ test.group('Events create', async (group) => {
             .post(`/nations/${nation.oid}/events`)
             .set('Authorization', 'Bearer ' + nation.token)
             .send({
-                name: 'name',
-                description: 'description',
+                ...eventData,
                 location_id: location.id,
-                occurs_at: '20:30',
-                ends_at: '21:30',
             })
             .expect(200)
 
@@ -103,11 +97,7 @@ test.group('Events update', async (group) => {
             .put(`/nations/${nation.oid}/events/${event.id}`)
             .set('Authorization', 'Bearer ' + 'invalidToken')
             .send({
-                name: event.name,
-                description: event.description,
-                occurs_at: event.occursAt,
-                location_id: location.id,
-                ends_at: event.endsAt,
+                name: 'new name',
             })
             .expect(401)
     })
@@ -119,23 +109,34 @@ test.group('Events update', async (group) => {
             .put(`/nations/${nation.oid}/events/${event.id}`)
             .set('Authorization', 'Bearer ' + nation.staffToken)
             .send({
-                name: event.name,
-                description: event.description,
-                occurs_at: event.occursAt,
-                location_id: location.id,
-                ends_at: event.endsAt,
+                name: 'new name',
             })
             .expect(401)
     })
 
-    test('ensure that admins can update an event, making the event part of a location', async (assert) => {
+    test('ensure that admins can update an event', async (assert) => {
+        const event = await createTestEvent(nation.oid)
+        const newName = 'hello world'
+
+        const { text } = await supertest(BASE_URL)
+            .put(`/nations/${nation.oid}/events/${event.id}`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send({
+                name: newName,
+            })
+            .expect(200)
+
+        const data = JSON.parse(text)
+        assert.equal(data.name, newName)
+    })
+
+    test('ensure that admins can add a location to an existing event', async (assert) => {
         const event = await createTestEvent(nation.oid)
 
         const { text } = await supertest(BASE_URL)
             .put(`/nations/${nation.oid}/events/${event.id}`)
             .set('Authorization', 'Bearer ' + nation.token)
             .send({
-                name: event.name,
                 location_id: location.id,
             })
             .expect(200)
@@ -146,35 +147,41 @@ test.group('Events update', async (group) => {
 
     test('ensure that admins can update an events different fields', async (assert) => {
         const event = await createTestEvent(nation.oid)
+        const newName = 'new event'
+        const occursAt = new Date(2020, 3, 12, 20).toISOString()
+        const endsAt = new Date(2021, 3, 15, 20).toISOString()
 
         const { text } = await supertest(BASE_URL)
             .put(`/nations/${nation.oid}/events/${event.id}`)
             .set('Authorization', 'Bearer ' + nation.token)
             .send({
-                name: 'NewEvent',
+                name: newName,
+                occurs_at: occursAt,
+                ends_at: endsAt,
                 location_id: location.id,
             })
             .expect(200)
 
         const data = JSON.parse(text)
-        assert.equal(data.name, 'NewEvent')
+        assert.equal(data.name, newName)
         assert.equal(data.location_id, location.id)
+        assert.equal(data.occurs_at, occursAt)
+        assert.equal(data.ends_at, endsAt)
     })
 
-    test('ensure that admins cannot update an events location id falsely', async () => {
+    test('ensure that updating the location requires a valid location id', async () => {
         const event = await createTestEvent(nation.oid)
 
         await supertest(BASE_URL)
             .put(`/nations/${nation.oid}/events/${event.id}`)
             .set('Authorization', 'Bearer ' + nation.token)
             .send({
-                name: 'NewEvent',
                 location_id: 999999999999,
             })
             .expect(422)
     })
 
-    test('ensure that admins cannot update an event name falsely', async () => {
+    test('ensure that the name of an event must be a string', async () => {
         const event = await createTestEvent(nation.oid)
 
         await supertest(BASE_URL)
@@ -194,33 +201,6 @@ test.group('Events update', async (group) => {
                 name: 'TheNew',
             })
             .expect(404)
-    })
-
-    test('ensure that admins can update multiple locations in a nation', async (assert) => {
-        const event1 = await createTestEvent(nation.oid)
-        const event2 = await createTestEvent(nation.oid)
-
-        const text1 = await supertest(BASE_URL)
-            .put(`/nations/${nation.oid}/events/${event1.id}`)
-            .set('Authorization', 'Bearer ' + nation.token)
-            .send({
-                name: 'Event1',
-            })
-            .expect(200)
-
-        const data1 = JSON.parse(text1.text)
-        assert.equal(data1.name, 'Event1')
-
-        const text2 = await supertest(BASE_URL)
-            .put(`/nations/${nation.oid}/events/${event2.id}`)
-            .set('Authorization', 'Bearer ' + nation.token)
-            .send({
-                location_id: location.id,
-            })
-            .expect(200)
-
-        const data2 = JSON.parse(text2.text)
-        assert.equal(data2.location_id, location.id)
     })
 })
 

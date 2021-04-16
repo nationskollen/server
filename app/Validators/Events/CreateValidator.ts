@@ -6,6 +6,7 @@ export default class EventCreateValidator {
     constructor(protected ctx: HttpContextContract) {}
 
     public refs = schema.refs({ nationId: this.ctx.request?.nation?.oid })
+
     public schema = schema.create({
         name: schema.string(),
         description: schema.string(),
@@ -17,8 +18,8 @@ export default class EventCreateValidator {
             }),
         ]),
 
-        occurs_at: schema.date({ format: 'HH:mm' }, [rules.beforeField('ends_at')]),
-        ends_at: schema.date({ format: 'HH:mm' }, [rules.afterField('occurs_at')]),
+        occurs_at: schema.date({ format: 'iso' }, [rules.beforeField('ends_at')]),
+        ends_at: schema.date({ format: 'iso' }, [rules.afterField('occurs_at')]),
     })
 
     public messages = {}
