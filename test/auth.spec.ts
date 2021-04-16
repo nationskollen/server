@@ -124,4 +124,12 @@ test.group('Auth', () => {
             .send(newNationData)
             .expect(401)
     })
+
+    test('ensure logout route is protected when logging out when not logged in', async () => {
+        await supertest(BASE_URL)
+            .post('/users/logout')
+            .set('Authorization', 'Bearer 000000000000000')
+            .expect(401)
+
+    })
 })
