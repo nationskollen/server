@@ -1,3 +1,4 @@
+import { DateTime } from 'luxon'
 import supertest from 'supertest'
 import { BASE_URL } from 'App/Utils/Constants'
 import {
@@ -51,8 +52,14 @@ export async function createTestNation(): Promise<TestNationContract> {
     }
 }
 
-export async function createTestEvent(oid: number) {
-    return EventFactory.merge({ nationId: oid }).create()
+export async function createTestEvent(oid: number, occursAt?: DateTime) {
+    const mergeData = { nationId: oid }
+
+    if (occursAt) {
+        mergeData['occursAt'] = occursAt
+    }
+
+    return EventFactory.merge(mergeData).create()
 }
 
 export async function createTestLocation(oid: number) {

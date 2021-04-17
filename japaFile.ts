@@ -1,3 +1,6 @@
+// Import current environment
+require('dotenv').config()
+
 import 'reflect-metadata'
 import execa from 'execa'
 import { join } from 'path'
@@ -50,7 +53,7 @@ function getTestFilesPattern() {
 
     // Ignore events filtering on SQLite3 since it does not
     // support datetime filtering.
-    return [defaultPattern, '!test/events-filter.spec.ts']
+    return [defaultPattern, '!test/events-filtering.spec.ts']
 }
 
 // Configure test runner

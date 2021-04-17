@@ -52,7 +52,9 @@ export default class Event extends BaseModel {
             return
         }
 
-        query.where('occurs_at', '>', date.toISO())
+        // NOTE: Simply filtering by '>' with 'date.toISO()' does not work.
+        // No idea why this is, but I don't really care either.
+        query.where('occurs_at', '>=', date.plus({ day: 1 }).toISO())
     })
 
     public static onDate = scope((query, date?: DateTime) => {
@@ -67,7 +69,6 @@ export default class Event extends BaseModel {
     })
 
     public static inOrder = scope((query) => {
-        query.where('occurs_at', 'asc')
+        query.orderBy('occurs_at', 'asc')
     })
-
 }
