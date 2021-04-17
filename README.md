@@ -30,8 +30,8 @@ Before starting the database, make sure the following is installed:
 - docker
 - docker-compose
 
-For mac (what is known at least):
-    * Have the Docker Desktop application running while executing commands in the terminal.
+##### For mac (what is known at least):
+* Have the Docker Desktop application running while executing commands in the terminal.
 
 Install the dependencies and make sure that the docker service is running (e.g.
 by enabling the docker daemon in systemd services or by starting Docker Desktop)
