@@ -25,8 +25,18 @@ Set `DB_CONNECTION` to `sqlite` in `.env`. Now everything should work as
 expected.
 
 #### PostgreSQL setup
-Install docker and start the PostgreSQL container using `npm run pg:start`.
+##### Requirements
+Before starting the database, make sure the following is installed:
+- docker
+- docker-compose
+
+Install the dependencies and make sure that the docker service is running (e.g.
+by enabling the docker daemon in systemd services or by starting Docker Desktop)
+and start the PostgreSQL container using `npm run pg:start`.
 If you want to stop the container you can run `npm run pg:stop`.
+
+> Note that you will most likely need to prefix the `pg:start` and `pg:stop`
+commands with `sudo` to be able to start the container.
 
 #### Creating the required tables
 Before you can start the server using `npm run dev` you must run migrations and
