@@ -17,12 +17,14 @@ export default class EventsController {
         if (filters.date) {
             // Filter based on selected date
             scopes.onDate(filters.date)
-        } else if (filters.before) {
-            // Filter based on when the event ends, i.e. all events before a certain date
-            scopes.beforeDate(filters.before)
-        } else if (filters.after) {
-            // Filter based on when the event start, i.e. all events after a certain date
-            scopes.afterDate(filters.after)
+        } else {
+            if (filters.before) {
+                // Filter based on when the event ends, i.e. all events before a certain date
+                scopes.beforeDate(filters.before)
+            } else if (filters.after) {
+                // Filter based on when the event start, i.e. all events after a certain date
+                scopes.afterDate(filters.after)
+            }
         }
 
         // Order events based on the 'occurs_at' field
