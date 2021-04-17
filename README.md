@@ -10,18 +10,32 @@ All documentation for Nationskollen is available [here](https://github.com/dsp-k
 
 ## Development
 1. `npm install`
-2. `npm run setup`
+2. Setup the database as described below (for your chosen database)
 3. `npm run dev`
 
 The API will now be available at `localhost:3333`.
 
 ### Database
-During development, SQLite3 is used as database. This means that no additional
-setup is needed. All dependencies and setup will be made automatically after
-running `npm install`. `npm run setup` will run database migrations and seed the
-database with test data (only in development mode).
+During development you can use either SQLite3 or PostgreSQL. Note that SQLite3
+does not support datetime filtering and event filtering does not work. Because
+of this, the default database is PostgreSQL.
+
+#### SQLite3 setup
+Set `DB_CONNECTION` to `sqlite` in `.env`. Now everything should work as
+expected.
+
+#### PostgreSQL setup
+Install docker and start the PostgreSQL container using `npm run pg:start`.
+If you want to stop the container you can run `npm run pg:stop`.
+
+#### Creating the required tables
+Before you can start the server using `npm run dev` you must run migrations and
+seeders using `npm run setup`. Note that this is **not required** to run tests,
+since it will automatically do this.
 
 ### Commands
+* `npm run pg:start` - Starts the PostgreSQL database in docker
+* `npm run pg:stop` - Stops the PostgreSQL database docker container
 * `npm run setup` - Run database migrations and seeders
 * `npm run build` - Build the application for production
 * `npm run start` - Start the server in production mode
