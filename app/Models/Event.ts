@@ -1,36 +1,8 @@
 import { DateTime } from 'luxon'
-import { toAbsolutePath } from 'App/Utils/Serialize'
 import { column, BaseModel, scope } from '@ioc:Adonis/Lucid/Orm'
+import { toAbsolutePath, toISO } from 'App/Utils/Serialize'
 
 export default class Event extends BaseModel {
-    public static beforeDate = scope((query, date?: DateTime) => {
-        if (!date) {
-            return
-        }
-
-        query.where('occurs_at', '<=', date.toSQLDate())
-    })
-
-    public static afterDate = scope((query, date?: DateTime) => {
-        if (!date) {
-            return
-        }
-
-        query.where('occurs_at', '>=', date.toSQLDate())
-    })
-
-    public static onDate = scope((query, date?: DateTime) => {
-        if (!date) {
-            return
-        }
-
-        query.where('occurs_at', '=', date.toSQLDate())
-    })
-
-    public static inOrder = scope((query) => {
-        query.where('occurs_at', 'asc')
-    })
-
     @column({ isPrimary: true })
     public id: number
 
@@ -55,15 +27,47 @@ export default class Event extends BaseModel {
     @column({ serialize: toAbsolutePath })
     public coverImgSrc: string
 
-    @column.dateTime()
+    @column.dateTime({ serialize: toISO })
     public occursAt: DateTime
 
-    @column.dateTime()
+    @column.dateTime({ serialize: toISO })
     public endsAt: DateTime
 
-    @column.dateTime({ autoCreate: true, autoUpdate: true })
+    @column.dateTime({ autoCreate: true, autoUpdate: true, serializeAs: null })
     public updatedAt: DateTime
 
-    @column.dateTime({ autoCreate: true })
+    @column.dateTime({ autoCreate: true, serializeAs: null })
     public createdAt: DateTime
+
+    public static beforeDate = scope((query, date?: DateTime) => {
+        if (!date) {
+            return
+        }
+
+        query.where('occurs_at', '<', date.toISO())
+    })
+
+    public static afterDate = scope((query, date?: DateTime) => {
+        if (!date) {
+            return
+        }
+
+        query.where('occurs_at', '>', date.toISO())
+    })
+
+    public static onDate = scope((query, date?: DateTime) => {
+        if (!date) {
+            return
+        }
+
+        query.whereBetween('occurs_at', [
+            date.set({ hour: 0, minute: 0 }).toISO(),
+            date.set({ hour: 23, minute: 59 }).toISO(),
+        ])
+    })
+
+    public static inOrder = scope((query) => {
+        query.where('occurs_at', 'asc')
+    })
+
 }

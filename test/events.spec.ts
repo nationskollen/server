@@ -1,5 +1,6 @@
 import test from 'japa'
 import path from 'path'
+import { DateTime } from 'luxon'
 import supertest from 'supertest'
 import Location from 'App/Models/Location'
 import Event from 'App/Models/Event'
@@ -17,8 +18,20 @@ test.group('Events create', async (group) => {
     let eventData = {
         name: 'testEvent',
         description: 'Lunchevent',
-        occurs_at: new Date(2020, 3, 16, 12).toISOString(),
-        ends_at: new Date(2020, 3, 16, 15).toISOString(),
+        occurs_at: DateTime.fromObject({
+            year: 2021,
+            month: 3,
+            day: 16,
+            hour: 15,
+            minute: 20,
+        }).toISO(),
+        ends_at: DateTime.fromObject({
+            year: 2021,
+            month: 3,
+            day: 16,
+            hour: 20,
+            minute: 0,
+        }).toISO(),
     }
 
     group.before(async () => {
@@ -148,8 +161,20 @@ test.group('Events update', async (group) => {
     test('ensure that admins can update an events different fields', async (assert) => {
         const event = await createTestEvent(nation.oid)
         const newName = 'new event'
-        const occursAt = new Date(2020, 3, 12, 20).toISOString()
-        const endsAt = new Date(2021, 3, 15, 20).toISOString()
+        const occursAt = DateTime.fromObject({
+            year: 2021,
+            month: 3,
+            day: 16,
+            hour: 15,
+            minute: 20,
+        }).toISO()
+        const endsAt = DateTime.fromObject({
+            year: 2021,
+            month: 3,
+            day: 16,
+            hour: 20,
+            minute: 0,
+        }).toISO()
 
         const { text } = await supertest(BASE_URL)
             .put(`/nations/${nation.oid}/events/${event.id}`)

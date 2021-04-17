@@ -16,17 +16,17 @@ export default class EventsController {
     ) {
         // Skip any other filters if we filter for events on a certain date
         if (filters.date) {
-            scopes.onDate(filters.date)
+            return scopes.onDate(filters.date)
         }
 
         // Filter based on when the event ends, i.e. all events before a certain date
         if (filters.before) {
-            scopes.beforeDate(filters.before)
+            return scopes.beforeDate(filters.before)
         }
 
         // Filter based on when the event start, i.e. all events after a certain date
         if (filters.after) {
-            scopes.afterDate(filters.after)
+            return scopes.afterDate(filters.after)
         }
     }
 
@@ -40,7 +40,8 @@ export default class EventsController {
     public async index({ request }: HttpContextContract) {
         const { oid } = getNation(request)
         const filters = await getValidatedData(request, EventFilterValidator, true)
-        const events = await Event.query()
+        const events = await Event
+            .query()
             .where('nation_id', oid)
             .apply((scopes) => this.applyFilters(scopes, filters))
 
