@@ -1,18 +1,24 @@
 import BaseSchema from '@ioc:Adonis/Lucid/Schema'
+import { DatabaseTables } from 'App/Utils/Database'
 
 export default class Menus extends BaseSchema {
-    protected tableName = 'menus'
+    protected tableName = DatabaseTables.Menus
 
     public async up() {
         this.schema.createTable(this.tableName, (table) => {
             table.increments('id')
-            table.integer('nation_id').notNullable().unsigned().references('oid').inTable('nations')
+            table
+                .integer('nation_id')
+                .notNullable()
+                .unsigned()
+                .references('oid')
+                .inTable(DatabaseTables.Nations)
             table
                 .integer('location_id')
                 .notNullable()
                 .unsigned()
                 .references('id')
-                .inTable('locations')
+                .inTable(DatabaseTables.Locations)
             table.string('name').notNullable()
             table.boolean('hidden').notNullable().defaultTo(false)
             table.timestamps(true)

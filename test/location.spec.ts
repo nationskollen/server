@@ -198,7 +198,7 @@ test.group('Locations update', async (group) => {
 
     test('ensure that it is not possible to update a non-existing location', async () => {
         await supertest(BASE_URL)
-            .put(`/nations/${nation.oid}/locations/999999999999`)
+            .put(`/nations/${nation.oid}/locations/99999`)
             .set('Authorization', 'Bearer ' + nation.token)
             .send({
                 name: 'TheNew',
@@ -339,7 +339,7 @@ test.group('Location delete', async (group) => {
 
     test('ensure that deletion of a non-existing location is not viable', async () => {
         await supertest(BASE_URL)
-            .delete(`/nations/${nation.oid}/locations/999999999999`)
+            .delete(`/nations/${nation.oid}/locations/99999`)
             .set('Authorization', 'Bearer ' + nation.token)
             .expect(404)
     })

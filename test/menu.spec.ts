@@ -58,7 +58,7 @@ test.group('Menu fetch', async (group) => {
     })
 
     test('ensure that you get an error if fetching a non-existant menu', async () => {
-        await supertest(BASE_URL).get(`/locations/${location.id}/menus/99999999`).expect(404)
+        await supertest(BASE_URL).get(`/locations/${location.id}/menus/99999`).expect(404)
     })
 })
 
@@ -247,7 +247,7 @@ test.group('Menu update', async (group) => {
 
     test('ensure that you can not update non-existing menu', async () => {
         await supertest(BASE_URL)
-            .put(`/locations/${location.id}/menus/9999999999999`)
+            .put(`/locations/${location.id}/menus/99999`)
             .set('Authorization', 'Bearer ' + nation.token)
             .send({
                 name: 'new name',
@@ -319,7 +319,7 @@ test.group('Menu delete', async (group) => {
 
     test('ensure that you can not delete non-existing menu', async () => {
         await supertest(BASE_URL)
-            .delete(`/locations/${location.id}/menus/99999999`)
+            .delete(`/locations/${location.id}/menus/99999`)
             .set('Authorization', 'Bearer ' + nation.token)
             .expect(404)
     })

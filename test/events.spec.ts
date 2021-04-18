@@ -1,5 +1,6 @@
 import test from 'japa'
 import path from 'path'
+import { DateTime } from 'luxon'
 import supertest from 'supertest'
 import Location from 'App/Models/Location'
 import Event from 'App/Models/Event'
@@ -17,8 +18,20 @@ test.group('Events create', async (group) => {
     let eventData = {
         name: 'testEvent',
         description: 'Lunchevent',
-        occurs_at: new Date(2020, 3, 16, 12).toISOString(),
-        ends_at: new Date(2020, 3, 16, 15).toISOString(),
+        occurs_at: DateTime.fromObject({
+            year: 2021,
+            month: 3,
+            day: 16,
+            hour: 15,
+            minute: 20,
+        }).toISO(),
+        ends_at: DateTime.fromObject({
+            year: 2021,
+            month: 3,
+            day: 16,
+            hour: 20,
+            minute: 0,
+        }).toISO(),
     }
 
     group.before(async () => {
@@ -78,6 +91,26 @@ test.group('Events create', async (group) => {
 
         const data = JSON.parse(text)
         assert.equal(data.location_id, location.id)
+    })
+
+    test('ensure that an datetimes are converted into UTC+2', async (assert) => {
+        const { text } = await supertest(BASE_URL)
+            .post(`/nations/${nation.oid}/events`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send({
+                name: 'utc test',
+                description: 'timezones',
+                // Specify times in Zulu-time (UTC).
+                // These should be converted into UTC+2 (Swedish time).
+                occurs_at: '2021-02-10T20:00:00.000Z',
+                ends_at: '2021-02-10T22:00:00.000Z',
+            })
+            .expect(200)
+
+        const data = JSON.parse(text)
+
+        assert.equal(data.occurs_at, '2021-02-10T22:00:00.000+02:00')
+        assert.equal(data.ends_at, '2021-02-11T00:00:00.000+02:00')
     })
 })
 
@@ -148,8 +181,24 @@ test.group('Events update', async (group) => {
     test('ensure that admins can update an events different fields', async (assert) => {
         const event = await createTestEvent(nation.oid)
         const newName = 'new event'
-        const occursAt = new Date(2020, 3, 12, 20).toISOString()
-        const endsAt = new Date(2021, 3, 15, 20).toISOString()
+        const occursAt = DateTime.fromObject({
+            year: 2021,
+            month: 3,
+            day: 16,
+            hour: 15,
+            minute: 20,
+        })
+            .setZone('utc+2')
+            .toISO()
+        const endsAt = DateTime.fromObject({
+            year: 2021,
+            month: 3,
+            day: 16,
+            hour: 20,
+            minute: 0,
+        })
+            .setZone('utc+2')
+            .toISO()
 
         const { text } = await supertest(BASE_URL)
             .put(`/nations/${nation.oid}/events/${event.id}`)
@@ -176,7 +225,7 @@ test.group('Events update', async (group) => {
             .put(`/nations/${nation.oid}/events/${event.id}`)
             .set('Authorization', 'Bearer ' + nation.token)
             .send({
-                location_id: 999999999999,
+                location_id: 99999,
             })
             .expect(422)
     })
@@ -195,12 +244,32 @@ test.group('Events update', async (group) => {
 
     test('ensure that it is not possible to update a non-existing event', async () => {
         await supertest(BASE_URL)
-            .put(`/nations/${nation.oid}/events/999999999999`)
+            .put(`/nations/${nation.oid}/events/99999`)
             .set('Authorization', 'Bearer ' + nation.token)
             .send({
                 name: 'TheNew',
             })
             .expect(404)
+    })
+
+    test('ensure that an datetimes are converted into UTC+2', async (assert) => {
+        const event = await createTestEvent(nation.oid)
+
+        const { text } = await supertest(BASE_URL)
+            .put(`/nations/${nation.oid}/events/${event.id}`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send({
+                // Specify times in Zulu-time (UTC).
+                // These should be converted into UTC+2 (Swedish time).
+                occurs_at: '2021-02-10T20:00:00.000Z',
+                ends_at: '2021-02-10T22:00:00.000Z',
+            })
+            .expect(200)
+
+        const data = JSON.parse(text)
+
+        assert.equal(data.occurs_at, '2021-02-10T22:00:00.000+02:00')
+        assert.equal(data.ends_at, '2021-02-11T00:00:00.000+02:00')
     })
 })
 
@@ -246,7 +315,7 @@ test.group('Event delete', async (group) => {
 
     test('ensure that deletion of a non-existing event is not viable', async () => {
         await supertest(BASE_URL)
-            .delete(`/nations/${nation.oid}/events/999999999999`)
+            .delete(`/nations/${nation.oid}/events/99999`)
             .set('Authorization', 'Bearer ' + nation.token)
             .expect(404)
     })
@@ -376,7 +445,7 @@ test.group('Event upload', (group) => {
 
     test('ensure that uploading images to a non-existant event fails', async () => {
         await supertest(BASE_URL)
-            .post(`/events/999999999999/upload`)
+            .post(`/events/99999/upload`)
             .set('Authorization', 'Bearer ' + nation.token)
             .attach('cover', coverImagePath)
             .expect(404)

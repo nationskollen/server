@@ -47,10 +47,12 @@ export default class LocationsController {
         const location = getLocation(request)
         const { change } = await getValidatedData(request, ActivityValidator)
 
-        // Clamp value between 0 and maxCapacity
-        location.estimatedPeopleCount = Math.min(
-            Math.max(0, location.estimatedPeopleCount + change),
-            location.maxCapacity
+        // Clamp value between 0 and maxCapacity.
+        // NOTE: We must make sure that the resulting value is an integer.
+        // If this value would be a non-integer, the insert query will fail
+        // when using PostgreSQL (production database).
+        location.estimatedPeopleCount = Math.round(
+            Math.min(Math.max(0, location.estimatedPeopleCount + change), location.maxCapacity)
         )
 
         await location.save()

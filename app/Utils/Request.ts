@@ -7,12 +7,14 @@ import Event from 'App/Models/Event'
 import { RequestContract } from '@ioc:Adonis/Core/Request'
 import BadRequestException from 'App/Exceptions/BadRequestException'
 import MenuNotFoundException from 'App/Exceptions/MenuNotFoundException'
-import MenuItemNotFoundException from 'App/Exceptions/MenuItemNotFoundException'
+import EventNotFoundException from 'App/Exceptions/EventNotFoundException'
 import NationNotFoundException from 'App/Exceptions/NationNotFoundException'
+import MenuItemNotFoundException from 'App/Exceptions/MenuItemNotFoundException'
 import LocationNotFoundException from 'App/Exceptions/LocationNotFoundException'
 import OpeningHourNotFoundException from 'App/Exceptions/OpeningHourNotFoundException'
 import { RequestValidatorNode, ParsedTypedSchema, TypedSchema } from '@ioc:Adonis/Core/Validator'
 
+// TODO: Combine all of these into single function
 export function getLocation(request: RequestContract): Location {
     const { location } = request
 
@@ -75,13 +77,18 @@ export function getEvent(request: RequestContract): Event {
 
 export async function getValidatedData<T extends ParsedTypedSchema<TypedSchema>>(
     request: RequestContract,
-    validator: RequestValidatorNode<T>
+    validator: RequestValidatorNode<T>,
+    skipLengthCheck?: boolean
 ) {
     const changes = await request.validate(validator)
 
-    // Make sure that there is updated data from the request
-    if (Object.keys(changes).length === 0) {
-        throw new BadRequestException('Could not update, validated request body is empty')
+    // Sometime we don't want to throw if the data is empty,
+    // e.g. filtering with query strings
+    if (!skipLengthCheck) {
+        // Make sure that there is updated data from the request
+        if (Object.keys(changes).length === 0) {
+            throw new BadRequestException('Could not update, validated request body is empty')
+        }
     }
 
     return changes

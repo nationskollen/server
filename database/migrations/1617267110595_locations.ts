@@ -14,8 +14,8 @@ export default class Locations extends BaseSchema {
                 .references('oid')
                 .inTable(DatabaseTables.Nations)
             table.string('name').notNullable()
-            table.string('description')
-            table.string('address').notNullable()
+            table.text('description')
+            table.text('address').notNullable()
             // https://developers.google.com/maps/documentation/javascript/mysql-to-maps?csw=1#creating-a-table-in-mysql
             // If we in the future wants to use geographical spatiality
             table.float('latitude', 10, 6)

@@ -7,7 +7,7 @@ import { BASE_URL, HOSTNAME } from 'App/Utils/Constants'
 import { NationFactory } from 'Database/factories/index'
 import { TestNationContract, createTestNation, toRelativePath } from 'App/Utils/Test'
 
-const INVALID_NATION_OID = 9999999999
+const INVALID_NATION_OID = 99999
 
 test.group('Nation fetch', () => {
     test('ensure you can fetch all nations', async (assert) => {

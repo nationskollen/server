@@ -14,5 +14,5 @@ export function toHour(value: DateTime) {
 }
 
 export function toISO(value?: DateTime) {
-    return value ? value.setZone('utc').toISO() : value
+    return value ? value.setZone('utc+2').toISO() : value
 }

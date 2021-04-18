@@ -20,8 +20,11 @@ const databaseConfig: DatabaseConfig & { orm: Partial<OrmConfig> } = {
     | You can use any key from the `connections` object defined in this same
     | file.
     |
+    | Use SQLite in Github Actions so that we can skip expensive docker and PostgreSQL setup.
+    | When the tests are executed in the workflow, CI is set 'yes'.
     */
-    connection: Env.get('DB_CONNECTION', 'sqlite') as string,
+    connection:
+        process.env.CI === 'yes' ? 'sqlite' : (Env.get('DB_CONNECTION', 'sqlite') as string),
 
     connections: {
         /*
@@ -43,6 +46,17 @@ const databaseConfig: DatabaseConfig & { orm: Partial<OrmConfig> } = {
             useNullAsDefault: true,
             healthCheck: true,
             debug: false,
+        },
+        pg: {
+            client: 'pg',
+            connection: {
+                host: Env.get('DB_HOST', '127.0.0.1') as string,
+                port: Number(Env.get('DB_PORT', 5432)),
+                user: Env.get('DB_USER', 'lucid') as string,
+                password: Env.get('DB_PASSWORD', 'lucid') as string,
+                database: Env.get('DB_NAME', 'lucid') as string,
+            },
+            healthCheck: false,
         },
     },
 
