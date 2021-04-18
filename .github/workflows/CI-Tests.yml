@@ -42,7 +42,7 @@ jobs:
           sudo apt-get install nodejs
 
       - name: Installing API
-        run: npm ci --no-optional
+        run: npm install --no-optional
 
       - name: Running tests on API
         run: npm run ci:test
