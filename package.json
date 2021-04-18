@@ -13,6 +13,7 @@
         "lint": "eslint . --ext=.ts",
         "format": "prettier --write .",
         "test": "node -r @adonisjs/assembler/build/register japaFile.ts",
+        "ci:test": "CI=yes node -r @adonisjs/assembler/build/register japaFile.ts",
         "coverage": "nyc npm run test"
     },
     "devDependencies": {

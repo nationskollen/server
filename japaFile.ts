@@ -44,10 +44,11 @@ async function startHttpServer() {
 
 function getTestFilesPattern() {
     // Check the current database connections
+    const ci = process.env.CI === 'yes'
     const postgresql = process.env.DB_CONNECTION === 'pg'
     const defaultPattern = 'test/**/*.spec.ts'
 
-    if (postgresql) {
+    if (postgresql && !ci) {
         return [defaultPattern]
     }
 
