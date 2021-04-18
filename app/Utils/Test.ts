@@ -56,7 +56,7 @@ export async function createTestEvent(oid: number, occursAt?: DateTime) {
     const mergeData = { nationId: oid }
 
     if (occursAt) {
-        mergeData['occursAt'] = occursAt
+        mergeData['occursAt'] = occursAt.setZone('utc+2')
     }
 
     return EventFactory.merge(mergeData).create()

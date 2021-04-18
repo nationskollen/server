@@ -92,6 +92,26 @@ test.group('Events create', async (group) => {
         const data = JSON.parse(text)
         assert.equal(data.location_id, location.id)
     })
+
+    test('ensure that an datetimes are converted into UTC+2', async (assert) => {
+        const { text } = await supertest(BASE_URL)
+            .post(`/nations/${nation.oid}/events`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send({
+                name: 'utc test',
+                description: 'timezones',
+                // Specify times in Zulu-time (UTC).
+                // These should be converted into UTC+2 (Swedish time).
+                occurs_at: '2021-02-10T20:00:00.000Z',
+                ends_at: '2021-02-10T22:00:00.000Z',
+            })
+            .expect(200)
+
+        const data = JSON.parse(text)
+
+        assert.equal(data.occurs_at, '2021-02-10T22:00:00.000+02:00')
+        assert.equal(data.ends_at, '2021-02-11T00:00:00.000+02:00')
+    })
 })
 
 test.group('Events update', async (group) => {
@@ -167,14 +187,18 @@ test.group('Events update', async (group) => {
             day: 16,
             hour: 15,
             minute: 20,
-        }).toISO()
+        })
+            .setZone('utc+2')
+            .toISO()
         const endsAt = DateTime.fromObject({
             year: 2021,
             month: 3,
             day: 16,
             hour: 20,
             minute: 0,
-        }).toISO()
+        })
+            .setZone('utc+2')
+            .toISO()
 
         const { text } = await supertest(BASE_URL)
             .put(`/nations/${nation.oid}/events/${event.id}`)
@@ -226,6 +250,26 @@ test.group('Events update', async (group) => {
                 name: 'TheNew',
             })
             .expect(404)
+    })
+
+    test('ensure that an datetimes are converted into UTC+2', async (assert) => {
+        const event = await createTestEvent(nation.oid)
+
+        const { text } = await supertest(BASE_URL)
+            .put(`/nations/${nation.oid}/events/${event.id}`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send({
+                // Specify times in Zulu-time (UTC).
+                // These should be converted into UTC+2 (Swedish time).
+                occurs_at: '2021-02-10T20:00:00.000Z',
+                ends_at: '2021-02-10T22:00:00.000Z',
+            })
+            .expect(200)
+
+        const data = JSON.parse(text)
+
+        assert.equal(data.occurs_at, '2021-02-10T22:00:00.000+02:00')
+        assert.equal(data.ends_at, '2021-02-11T00:00:00.000+02:00')
     })
 })
 

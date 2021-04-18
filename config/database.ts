@@ -23,7 +23,8 @@ const databaseConfig: DatabaseConfig & { orm: Partial<OrmConfig> } = {
     | Use SQLite in Github Actions so that we can skip expensive docker and PostgreSQL setup.
     | When the tests are executed in the workflow, CI is set 'yes'.
     */
-    connection: process.env.CI === 'yes' ? 'sqlite' : Env.get('DB_CONNECTION', 'sqlite') as string,
+    connection:
+        process.env.CI === 'yes' ? 'sqlite' : (Env.get('DB_CONNECTION', 'sqlite') as string),
 
     connections: {
         /*
