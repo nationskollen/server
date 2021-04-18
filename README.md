@@ -57,6 +57,8 @@ since it will automatically do this.
 * `npm run format` - Format all source files using Prettier
 * `npm run test` - Run all tests defined in `test/`
 * `npm run coverage` - Get test coverage as HTML in `coverage/index.html`
+* `npm run docs` - Generate documentation
+* `npm run docs` - Generate documentation and watch for changes
 
 ### Insomnia
 Insomnia can be setup by importing the workspace file in

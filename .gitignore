@@ -8,3 +8,5 @@ package-lock.json
 tmp/db.sqlite3
 tmp/db.sqlite3-journal
 public/*
+yarn-error.log
+docs/
