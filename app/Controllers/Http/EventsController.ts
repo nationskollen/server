@@ -9,6 +9,9 @@ import EventCreateValidator from 'App/Validators/Events/CreateValidator'
 import EventUploadValidator from 'App/Validators/Events/UploadValidator'
 import EventFilterValidator from 'App/Validators/Events/FilterValidator'
 
+/**
+ * Event controller
+ */
 export default class EventsController {
     private applyFilters(
         scopes: ExtractScopes<typeof Event>,
