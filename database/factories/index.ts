@@ -83,6 +83,7 @@ export const LocationFactory = Factory.define(Location, ({ faker }) => {
     const maxCapacity = faker.datatype.number({ min: 40, max: 1000 })
 
     return {
+	nation_id : faker.datatype.number(maxCapacity),
         name: faker.company.companyName(),
         description: faker.lorem.paragraph(),
         address: faker.address.streetAddress(),
