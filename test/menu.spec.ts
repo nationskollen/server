@@ -47,9 +47,7 @@ test.group('Menu fetch', async (group) => {
     })
 
     test('ensure that you can fetch a single menu', async (assert) => {
-        const { text } = await supertest(BASE_URL)
-            .get(`/locations/${location.id}/menus/${menuOne.id}`)
-            .expect(200)
+        const { text } = await supertest(BASE_URL).get(`/menus/${menuOne.id}`).expect(200)
 
         const data = JSON.parse(text)
 
@@ -58,7 +56,7 @@ test.group('Menu fetch', async (group) => {
     })
 
     test('ensure that you get an error if fetching a non-existant menu', async () => {
-        await supertest(BASE_URL).get(`/locations/${location.id}/menus/99999`).expect(404)
+        await supertest(BASE_URL).get(`/menus/99999`).expect(404)
     })
 })
 
@@ -314,7 +312,7 @@ test.group('Menu delete', async (group) => {
             .set('Authorization', 'Bearer ' + nation.adminOtherToken)
             .expect(401)
 
-        await supertest(BASE_URL).get(`/locations/${location.id}/menus/${menu.id}`).expect(200)
+        await supertest(BASE_URL).get(`/menus/${menu.id}`).expect(200)
     })
 
     test('ensure that you can not delete non-existing menu', async () => {

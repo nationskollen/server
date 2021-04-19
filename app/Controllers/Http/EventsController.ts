@@ -24,7 +24,9 @@ export default class EventsController {
             if (filters.before) {
                 // Filter based on when the event ends, i.e. all events before a certain date
                 scopes.beforeDate(filters.before)
-            } else if (filters.after) {
+            }
+
+            if (filters.after) {
                 // Filter based on when the event start, i.e. all events after a certain date
                 scopes.afterDate(filters.after)
             }
@@ -41,6 +43,10 @@ export default class EventsController {
         return events.map((event: Event) => event.toJSON())
     }
 
+    public async single({ request }: HttpContextContract) {
+        return getEvent(request).toJSON()
+    }
+
     public async index({ request }: HttpContextContract) {
         const { oid } = getNation(request)
         const filters = await getValidatedData(request, EventFilterValidator, true)
@@ -49,10 +55,6 @@ export default class EventsController {
             .apply((scopes) => this.applyFilters(scopes, filters))
 
         return events.map((event: Event) => event.toJSON())
-    }
-
-    public async single({ request }: HttpContextContract) {
-        return getEvent(request).toJSON()
     }
 
     public async create({ request }: HttpContextContract) {

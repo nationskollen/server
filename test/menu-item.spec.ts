@@ -51,9 +51,7 @@ test.group('Menu item fetch', async (group) => {
     })
 
     test('ensure that you can fetch a single menu item', async (assert) => {
-        const { text } = await supertest(BASE_URL)
-            .get(`/menus/${menu.id}/items/${menuItemOne.id}`)
-            .expect(200)
+        const { text } = await supertest(BASE_URL).get(`/items/${menuItemOne.id}`).expect(200)
 
         const data = JSON.parse(text)
 
@@ -62,7 +60,7 @@ test.group('Menu item fetch', async (group) => {
     })
 
     test('ensure that you get an error if fetching a non-existant menu item', async () => {
-        await supertest(BASE_URL).get(`/menus/${menu.id}/items/99999`).expect(404)
+        await supertest(BASE_URL).get(`/items/99999`).expect(404)
     })
 })
 
@@ -293,7 +291,7 @@ test.group('Menu item delete', async (group) => {
             .set('Authorization', 'Bearer ' + nation.adminOtherToken)
             .expect(401)
 
-        await supertest(BASE_URL).get(`/menus/${menu.id}/items/${menuItem.id}`).expect(200)
+        await supertest(BASE_URL).get(`/items/${menuItem.id}`).expect(200)
     })
 
     test('ensure that you can not delete non-existing menu item', async () => {

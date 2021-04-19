@@ -24,10 +24,10 @@ Route.group(() => {
     // ----------------------------------------------------------
     // Single nation
     // ----------------------------------------------------------
-    Route.get('/nations/:id', 'NationsController.show').middleware(['nation:preload'])
+    Route.get('/nations/:id', 'NationsController.single').middleware(['nation'])
     Route.put('/nations/:id', 'NationsController.update').middleware([
         'auth',
-        'nation:preload',
+        'nation',
         'scope:admin',
     ])
     Route.post('/nations/:id/upload', 'NationsController.upload').middleware([
@@ -47,12 +47,8 @@ Route.group(() => {
     ])
 
     // ----------------------------------------------------------
-    // Single location
+    // Updating locations
     // ----------------------------------------------------------
-    Route.get('/nations/:id/locations/:lid', 'LocationsController.single').middleware([
-        'nation',
-        'location:preload',
-    ])
     Route.put('/nations/:id/locations/:lid', 'LocationsController.update').middleware([
         'auth',
         'nation',
@@ -69,6 +65,7 @@ Route.group(() => {
     // ----------------------------------------------------------
     // Location actions
     // ----------------------------------------------------------
+    Route.get('/locations/:lid', 'LocationsController.single').middleware(['location:preload'])
     Route.put('/locations/:lid/open', 'LocationsController.open').middleware([
         'auth',
         'location',
@@ -93,11 +90,8 @@ Route.group(() => {
     // ----------------------------------------------------------
     // Location opening hours
     // ----------------------------------------------------------
+    Route.get('/hours/:hid', 'OpeningHoursController.single').middleware(['openingHour:preload'])
     Route.get('/locations/:lid/hours', 'OpeningHoursController.index').middleware(['location'])
-    Route.get('/locations/:lid/hours/:hid', 'OpeningHoursController.single').middleware([
-        'location',
-        'openingHour:preload',
-    ])
     Route.post('/locations/:lid/hours', 'OpeningHoursController.create').middleware([
         'auth',
         'location',
@@ -119,11 +113,8 @@ Route.group(() => {
     // ----------------------------------------------------------
     // Location menus
     // ----------------------------------------------------------
+    Route.get('/menus/:mid', 'MenusController.single').middleware(['menu:preload'])
     Route.get('/locations/:lid/menus', 'MenusController.index').middleware(['location'])
-    Route.get('/locations/:lid/menus/:mid', 'MenusController.single').middleware([
-        'location',
-        'menu:preload',
-    ])
     Route.post('/locations/:lid/menus', 'MenusController.create').middleware([
         'auth',
         'location',
@@ -145,15 +136,12 @@ Route.group(() => {
     // ----------------------------------------------------------
     // Location menu items
     // ----------------------------------------------------------
+    Route.get('/items/:miid', 'MenuItemsController.single').middleware(['menuItem'])
     Route.get('/menus/:mid/items', 'MenuItemsController.index').middleware(['menu'])
     Route.post('/menus/:mid/items', 'MenuItemsController.create').middleware([
         'auth',
         'menu',
         'scope:admin',
-    ])
-    Route.get('/menus/:mid/items/:miid', 'MenuItemsController.single').middleware([
-        'menu',
-        'menuItem',
     ])
     Route.put('/menus/:mid/items/:miid', 'MenuItemsController.update').middleware([
         'auth',
@@ -179,13 +167,13 @@ Route.group(() => {
     // ----------------------------------------------------------
     //TODO Set routes for different queries
     Route.get('/events', 'EventsController.all')
+    Route.get('/events/:eid', 'EventsController.single').middleware(['event'])
     Route.get('/nations/:id/events', 'EventsController.index').middleware(['nation'])
     Route.post('/nations/:id/events', 'EventsController.create').middleware([
         'auth',
         'nation',
         'scope:admin',
     ])
-    Route.get('/nations/:id/events/:eid', 'EventsController.single').middleware(['nation', 'event'])
     Route.put('/nations/:id/events/:eid', 'EventsController.update').middleware([
         'auth',
         'nation',

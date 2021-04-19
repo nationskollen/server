@@ -7,12 +7,12 @@ import NationUploadValidator from 'App/Validators/Nations/UploadValidator'
 
 export default class NationsController {
     public async index({}: HttpContextContract) {
-        const nations = await Nation.allWithLocations()
+        const nations = await Nation.all()
 
         return nations.map((nation: Nation) => nation.toJSON())
     }
 
-    public async show({ request }: HttpContextContract) {
+    public async single({ request }: HttpContextContract) {
         return getNation(request).toJSON()
     }
 
