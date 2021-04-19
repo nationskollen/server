@@ -271,6 +271,106 @@ test.group('Events update', async (group) => {
         assert.equal(data.occurs_at, '2021-02-10T22:00:00.000+02:00')
         assert.equal(data.ends_at, '2021-02-11T00:00:00.000+02:00')
     })
+
+    test('ensure that an event is only for members', async (assert) => {
+        const event = await createTestEvent(nation.oid)
+
+        const { text } = await supertest(BASE_URL)
+            .put(`/nations/${nation.oid}/events/${event.id}`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send({
+                only_members: true,
+            })
+            .expect(200)
+
+        const data = JSON.parse(text)
+
+        assert.equal(data.only_members, true)
+    })
+
+    test('ensure that an event is only for students', async (assert) => {
+        const event = await createTestEvent(nation.oid)
+
+        const { text } = await supertest(BASE_URL)
+            .put(`/nations/${nation.oid}/events/${event.id}`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send({
+                only_students: true,
+            })
+            .expect(200)
+
+        const data = JSON.parse(text)
+
+        assert.equal(data.only_students, true)
+    })
+
+    test('ensure that an event is for both students and members', async (assert) => {
+        const event = await createTestEvent(nation.oid)
+
+        const { text } = await supertest(BASE_URL)
+            .put(`/nations/${nation.oid}/events/${event.id}`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send({
+                only_students: true,
+                only_members: true,
+            })
+            .expect(200)
+
+        const data = JSON.parse(text)
+
+        assert.equal(data.only_students, true)
+        assert.equal(data.only_members, true)
+    })
+
+    test('ensure that an event can change from only students to only members', async (assert) => {
+        const event = await createTestEvent(nation.oid)
+
+        const text1 = await supertest(BASE_URL)
+            .put(`/nations/${nation.oid}/events/${event.id}`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send({
+                only_students: true,
+                only_members: false,
+            })
+            .expect(200)
+
+        const data1 = JSON.parse(text1.text)
+
+        assert.equal(data1.only_students, true)
+        assert.equal(data1.only_members, false)
+
+        const text2 = await supertest(BASE_URL)
+            .put(`/nations/${nation.oid}/events/${event.id}`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send({
+                only_students: false,
+                only_members: true,
+            })
+            .expect(200)
+
+        const data2 = JSON.parse(text2.text)
+
+        assert.equal(data2.only_students, false)
+        assert.equal(data2.only_members, true)
+    })
+
+    test('ensure that an event can become for everyone', async (assert) => {
+        const event = await createTestEvent(nation.oid)
+
+        const { text } = await supertest(BASE_URL)
+            .put(`/nations/${nation.oid}/events/${event.id}`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send({
+                only_students: false,
+                only_members: false,
+            })
+            .expect(200)
+
+        const data = JSON.parse(text)
+
+        assert.equal(data.only_students, false)
+        assert.equal(data.only_members, false)
+    })
 })
 
 test.group('Event delete', async (group) => {

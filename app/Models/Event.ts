@@ -18,6 +18,12 @@ export default class Event extends BaseModel {
     @column()
     public locationId: number
 
+    @column()
+    public onlyMembers: boolean
+
+    @column()
+    public onlyStudents: boolean
+
     // TODO: Depends on if we want to keep this or not, maybe have event
     // filtering in the mapview and display icon uploaded for currently ongoing
     // event
