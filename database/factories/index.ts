@@ -13,6 +13,8 @@ export const EventFactory = Factory.define(Event, ({ faker }) => {
     return {
         name: faker.commerce.productName(),
         description: faker.commerce.productDescription(),
+        onlyMembers: faker.datatype.boolean(),
+        onlyStudents: faker.datatype.boolean(),
         occursAt: DateTime.fromObject({
             hour: faker.datatype.number(12),
             minute: faker.datatype.number(59),
