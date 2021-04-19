@@ -57,7 +57,7 @@
         "ws": "^7.4.4"
     },
     "optionalDependencies": {
-        "@dsp-krabby/typedoc-theme-overrides": "^1.0.0",
+        "@dsp-krabby/typedoc-theme-overrides": "^1.0.2",
         "typedoc": "^0.20.35"
     }
 }
