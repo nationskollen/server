@@ -1,0 +1,59 @@
+on:
+  push:
+    branches: [ main ]
+    paths:
+    - 'app/**/*'
+    - 'database/**/*'
+    - 'start/**/*'
+    - 'providers/**/*'
+    - 'contracts/**/*'
+    - 'config/**/*'
+    - 'contracts/**/*'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Deploying to staging
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          script_stop: true
+          script: |
+            # Copy and build new version
+            rm -rf server-new
+            cp -r server server-new
+            cd server-new
+            git checkout main
+            git reset --hard origin/main
+            git pull
+            npm rebuild
+            npm install
+
+            # Build the api
+
+            npm run build
+            cp ../server/build/.env ./build/.env
+
+            # Run migrations
+
+            node ace migration:run --force
+            node ace db:seed --force
+
+            # Replace current version with the new one
+
+            cd ..
+            mv server server-old
+            mv server-new server
+
+            # Restart server
+
+            cd server
+            pm2 delete API
+            pm2 start build/server.js --name API
+            rm -rf ../server-old
