@@ -50,9 +50,7 @@ test.group('Opening hours fetch', async (group) => {
     })
 
     test('ensure that you can fetch a single opening hour', async (assert) => {
-        const { text } = await supertest(BASE_URL)
-            .get(`/locations/${location.id}/hours/${openingHour.id}`)
-            .expect(200)
+        const { text } = await supertest(BASE_URL).get(`/hours/${openingHour.id}`).expect(200)
 
         const data = JSON.parse(text)
 
@@ -62,7 +60,7 @@ test.group('Opening hours fetch', async (group) => {
 
     test('ensure that you can fetch a single exception opening hour', async (assert) => {
         const { text } = await supertest(BASE_URL)
-            .get(`/locations/${location.id}/hours/${exceptionOpeningHour.id}`)
+            .get(`/hours/${exceptionOpeningHour.id}`)
             .expect(200)
 
         const data = JSON.parse(text)

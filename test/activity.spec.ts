@@ -224,7 +224,7 @@ test.group('Activity update', (group) => {
             .expect(422)
 
         const { text } = await supertest(BASE_URL)
-            .get(`/nations/${nation.oid}/locations/${testLocation.id}`)
+            .get(`/locations/${testLocation.id}`)
             .set('Authorization', 'Bearer ' + nation.token)
             .expect(200)
 

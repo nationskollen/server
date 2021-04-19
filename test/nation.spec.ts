@@ -33,30 +33,16 @@ test.group('Nation fetch', () => {
     })
 
     test('ensure that fetching a nation using a valid oid returns the nation', async (assert) => {
-        const openingHoursCount = 2
-        const openingHourExceptionsCount = 4
+        const nation = await NationFactory.create()
+        const { text } = await supertest(BASE_URL).get(`/nations/${nation.oid}`).expect(200)
+        const data = JSON.parse(text)
 
-        const nation = await NationFactory.with('locations', 1, (location) => {
-            location
-                .with('openingHours', openingHoursCount)
-                .with('openingHourExceptions', openingHourExceptionsCount)
-        }).create()
-
-        let nationData = await supertest(BASE_URL).get(`/nations/${nation.oid}`).expect(200)
-        let parsedNationData = JSON.parse(nationData.text)
-
-        assert.isArray(parsedNationData.locations)
-        assert.lengthOf(parsedNationData.locations, 1)
-
-        let locationData = await supertest(BASE_URL)
-            .get(`/nations/${nation.oid}/locations/${parsedNationData.locations[0].id}`)
-            .expect(200)
-        const parsedLocationData = JSON.parse(locationData.text)
-
-        assert.isArray(parsedLocationData.opening_hours)
-        assert.isArray(parsedLocationData.opening_hour_exceptions)
-        assert.lengthOf(parsedLocationData.opening_hours, openingHoursCount)
-        assert.lengthOf(parsedLocationData.opening_hour_exceptions, openingHourExceptionsCount)
+        assert.equal(data.name, nation.name)
+        assert.equal(data.short_name, nation.shortName)
+        assert.equal(data.description, nation.description)
+        assert.equal(data.cover_img_src, nation.coverImgSrc)
+        assert.equal(data.icon_img_src, nation.iconImgSrc)
+        assert.equal(data.accent_color, nation.accentColor)
     })
 })
 
