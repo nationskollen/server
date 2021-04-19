@@ -1,3 +1,11 @@
+/**
+ * A nation can have events in order to distribute information about something
+ * specific, for instance lunch, gathering or something similar.
+ *
+ * An event is dependent on which {@link Nation | nation} it relates to but wether it has a {@link Location | location} or not is optional.
+ *
+ * @module Event
+ */
 import { DateTime } from 'luxon'
 import { toAbsolutePath, toISO } from 'App/Utils/Serialize'
 import { column, BaseModel, scope } from '@ioc:Adonis/Lucid/Orm'
