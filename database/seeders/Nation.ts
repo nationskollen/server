@@ -188,7 +188,7 @@ export default class NationSeeder extends BaseSeeder {
             if (!nation.locations) continue
             for (const location of nation.locations) {
                 await MenuFactory.with('items', 3)
-                    .merge({ locationId: location.id, nationId: 300 })
+                    .merge({ locationId: location.id, nationId: nation.oid })
                     .createMany(3)
             }
         }
