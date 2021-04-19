@@ -1,3 +1,5 @@
+name: Staging deployment
+
 on:
   push:
     branches: [ main ]
@@ -36,23 +38,21 @@ jobs:
             npm install
 
             # Build the api
-
             npm run build
             cp ../server/build/.env ./build/.env
 
             # Run migrations
-
+            # Must navigate to the build folder so that we get the correct DB credentials
+            cd build
             node ace migration:run --force
             node ace db:seed --force
 
             # Replace current version with the new one
-
-            cd ..
+            cd ../..
             mv server server-old
             mv server-new server
 
             # Restart server
-
             cd server
             pm2 delete API
             pm2 start build/server.js --name API
