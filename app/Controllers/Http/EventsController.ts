@@ -1,6 +1,6 @@
 /**
- * The EventsController is the different methods that gives the ability to
- * operate upon {@link Event | Event} models.
+ * The EventsController contains the different methods that gives the ability
+ * to operate upon {@link Event | Event} models.
  *
  * @category Controller
  * @module EventsController
