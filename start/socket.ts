@@ -1,3 +1,7 @@
+/**
+ * @category Misc
+ * @module Socket
+ */
 import Ws, { WebSocketClient, WebSocketDataTypes } from 'App/Services/Ws'
 
 function onConnection(ws: WebSocketClient) {

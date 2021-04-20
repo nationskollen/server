@@ -2,6 +2,7 @@
  * The menu model which is specified at locations of nations.
  * Each menu can hold `n`-amount of {@link MenuItem} models.
  *
+ * @category Model
  * @module Menu
  */
 import { DateTime } from 'luxon'

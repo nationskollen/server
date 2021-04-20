@@ -15,7 +15,7 @@
         "test": "node -r @adonisjs/assembler/build/register japaFile.ts",
         "ci:test": "CI=yes node -r @adonisjs/assembler/build/register japaFile.ts",
         "coverage": "npx nyc npm run test",
-        "docs": "npx typedoc app/",
+        "docs": "npx typedoc app/**/** start/",
         "docs:watch": "npx typedoc app/**/** start/ --watch"
     },
     "devDependencies": {

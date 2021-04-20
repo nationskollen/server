@@ -1,3 +1,7 @@
+/**
+ * @category Exceptions
+ * @module NationNotFoundException
+ */
 import DefaultException from 'App/Exceptions/DefaultException'
 
 export default class NationNotFoundException extends DefaultException {

@@ -1,3 +1,7 @@
+/**
+ * @category Validator
+ * @module OpeningHourUpdateValidator
+ */
 import { Days, OpeningHourTypes } from 'App/Utils/Time'
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'

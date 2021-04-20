@@ -14,7 +14,7 @@
  * Documentation aobut the CRUD operations and how the different paths look
  * like can be found in the `insomnia` documenation.
  *
- * @category Paths
+ * @category Misc
  * @module Route
  */
 import Route from '@ioc:Adonis/Core/Route'

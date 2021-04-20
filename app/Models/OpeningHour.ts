@@ -19,10 +19,6 @@ import { toBoolean, toHour } from 'App/Utils/Serialize'
 import { Days, OpeningHourTypes } from 'App/Utils/Time'
 import { BaseModel, column, scope } from '@ioc:Adonis/Lucid/Orm'
 
-/**
- * Here begins the model for opening hours
- * @class OpeningHour
- */
 export default class OpeningHour extends BaseModel {
     public static default = scope((query) => {
         query.where('type', OpeningHourTypes.Default)
