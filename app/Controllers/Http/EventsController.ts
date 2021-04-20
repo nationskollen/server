@@ -8,6 +8,7 @@ import EventUpdateValidator from 'App/Validators/Events/UpdateValidator'
 import EventCreateValidator from 'App/Validators/Events/CreateValidator'
 import EventUploadValidator from 'App/Validators/Events/UploadValidator'
 import EventFilterValidator from 'App/Validators/Events/FilterValidator'
+import EventLimitValidator from 'App/Validators/Events/LimitValidator'
 
 /**
  * Event controller
@@ -36,9 +37,24 @@ export default class EventsController {
         scopes.inOrder()
     }
 
+    private applyLimit(
+        scopes: ExtractScopes<typeof Event>,
+        amount?: number | undefined,
+        pageAmount?: number | undefined
+    ) {
+        if (amount && pageAmount) {
+            scopes.limitAmount(pageAmount, amount)
+        }
+    }
+
     public async all({ request }: HttpContextContract) {
         const filters = await getValidatedData(request, EventFilterValidator, true)
-        const events = await Event.query().apply((scopes) => this.applyFilters(scopes, filters))
+        const specified = await getValidatedData(request, EventLimitValidator, true)
+
+        const events = await Event.query().apply((scopes) => {
+            this.applyLimit(scopes, specified?.amount)
+            this.applyFilters(scopes, filters)
+        })
 
         return events.map((event: Event) => event.toJSON())
     }
