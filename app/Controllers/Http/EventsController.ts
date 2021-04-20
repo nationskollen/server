@@ -39,11 +39,10 @@ export default class EventsController {
 
     private applyLimit(
         scopes: ExtractScopes<typeof Event>,
-        amount?: number | undefined,
-        pageAmount?: number | undefined
+        pageAmount?: number | undefined,
     ) {
-        if (amount && pageAmount) {
-            scopes.limitAmount(pageAmount, amount)
+        if (pageAmount) {
+            scopes.limitAmount(pageAmount)
         }
     }
 
@@ -52,7 +51,7 @@ export default class EventsController {
         const specified = await getValidatedData(request, EventLimitValidator, true)
 
         const events = await Event.query().apply((scopes) => {
-            this.applyLimit(scopes, specified?.amount)
+            this.applyLimit(scopes, specified?.pageAmount)
             this.applyFilters(scopes, filters)
         })
 
@@ -66,9 +65,14 @@ export default class EventsController {
     public async index({ request }: HttpContextContract) {
         const { oid } = getNation(request)
         const filters = await getValidatedData(request, EventFilterValidator, true)
+        const specified = await getValidatedData(request, EventLimitValidator, true)
+
         const events = await Event.query()
             .where('nation_id', oid)
-            .apply((scopes) => this.applyFilters(scopes, filters))
+            .apply((scopes) => {
+                this.applyLimit(scopes, specified?.pageAmount)
+                this.applyFilters(scopes, filters)
+            })
 
         return events.map((event: Event) => event.toJSON())
     }

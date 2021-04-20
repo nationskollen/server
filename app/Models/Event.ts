@@ -66,7 +66,7 @@ export default class Event extends BaseModel {
         query.orderBy('occurs_at', 'asc')
     })
 
-    public static limitAmount = scope((query, page: number, limit: number) => {
-        query.paginate(page, limit)
+    public static limitAmount = scope((query, page: number) => {
+        query.limit(page)
     })
 }

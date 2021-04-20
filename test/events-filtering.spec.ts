@@ -201,4 +201,50 @@ test.group('Events filtering', async () => {
             await supertest(BASE_URL).get(`/events?${filter}=asdasd`).expect(422)
         })
     })
+
+    test('ensure that filtering for 1 event in a request is viable', async (assert) => {
+        const testNation = await NationFactory.create()
+        await createTestEvent(testNation.oid)
+        await createTestEvent(testNation.oid)
+
+        const { text } = await supertest(BASE_URL)
+            .get(`/events?pageAmount=1`)
+            .expect(200)
+
+        const data = JSON.parse(text)
+        assert.equal(data.length, 1)
+    })
+
+    test('ensure that filtering for 2 events in a request is viable', async (assert) => {
+        const testNation = await NationFactory.create()
+        await createTestEvent(testNation.oid)
+        await createTestEvent(testNation.oid)
+
+        const { text } = await supertest(BASE_URL)
+            .get(`/events?pageAmount=2`)
+            .expect(200)
+
+        const data = JSON.parse(text)
+        assert.equal(data.length, 2)
+    })
+
+    test('ensure that filtering for incorrect type in url is not viable', async () => {
+        await supertest(BASE_URL).get(`/events?pageAmount=asdf`).expect(422)
+    })
+
+    test('ensure that filtering for 0 events returns all the events', async (assert) => {
+        const testNation = await NationFactory.create()
+        await createTestEvent(testNation.oid)
+        await createTestEvent(testNation.oid)
+        await createTestEvent(testNation.oid)
+        await createTestEvent(testNation.oid)
+        await createTestEvent(testNation.oid)
+
+        const { text } = await supertest(BASE_URL)
+            .get(`/nations/${testNation.oid}/events?pageAmount=0`)
+            .expect(200)
+
+        const data = JSON.parse(text)
+        assert.equal(data.length, 5)
+    })
 })

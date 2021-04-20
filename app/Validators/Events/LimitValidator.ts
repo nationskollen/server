@@ -5,7 +5,6 @@ export default class EventLimitValidator {
     constructor(protected ctx: HttpContextContract) {}
 
     public schema = schema.create({
-        amount: schema.number.optional(),
         pageAmount: schema.number.optional(),
     })
 
