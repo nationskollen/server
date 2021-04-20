@@ -1,25 +1,67 @@
+/**
+ * Scope middleware handles valid request made to the server and informs the
+ * requester if the request is invalid.
+ *
+ * Depending on what was invalid, an exception will be thrown.
+ *
+ * Exceptions in this middleware are:
+ *
+ * - {@link AuthenticationException}
+ * - {@link InternalErrorException}
+ *
+ * > You must register this middleware inside
+ *   `start/kernel.ts` file under the list of named middleware.
+ *
+ * @category Middleware
+ * @module ScopeMiddleware
+ *
+ */
+
 import User from 'App/Models/User'
 import { NationOwnerScopes } from 'App/Utils/Scopes'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { AuthenticationException } from '@adonisjs/auth/build/standalone'
 import InternalErrorException from 'App/Exceptions/InternalErrorException'
 
-// Verifies that the id param of a route is a valid oid of a student nation
+/**
+ * Verifies that the id param of a route is a valid oid of a student nation
+ */
 export default class ScopeMiddleware {
+    /**
+     * If the user is unathorized to perform a given action, throw {@link
+     * AuthenticationException}
+     */
     private throwUnauthorized() {
         throw new AuthenticationException('Unauthorized access', 'E_UNAUTHORIZED_ACCESS')
     }
 
+    /**
+     * Verify if the user is part of the nation
+     */
     private isStaff(oid: number, { nationId }: User) {
         return oid === nationId
     }
 
+    /**
+     * Verify if the user is part of the nation it wants to operate within AND
+     * is an admin user
+     */
     private isAdmin(oid: number, user: User) {
         return this.isStaff(oid, user) && user.nationAdmin
     }
 
+    /**
+     * Verify the scopes for a given user
+     * @param oid The nation id to verify within
+     * @param user The user to control its user priviliges
+     * @param scopes The scopes to check within
+     *
+     * {@link NationOwnerScopes} for more info about the scopes
+     */
     private async verifyScope(oid: number, user: User, scopes: string[]) {
-        // Get the selected scope
+        /**
+         * Get the selected scope
+         */
         const scope = scopes[0]
 
         switch (scope) {
@@ -34,6 +76,9 @@ export default class ScopeMiddleware {
         }
     }
 
+    /**
+     * Handle request
+     */
     public async handle(
         { request, auth }: HttpContextContract,
         next: () => Promise<void>,

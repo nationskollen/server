@@ -27,6 +27,7 @@
  * //
  * ```
  *
+ * @category Model
  * @module Location
  */
 

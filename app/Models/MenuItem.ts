@@ -6,6 +6,7 @@
  * A menu item cannot be created if there is no menu available at a location
  * that has been specified by a nation.
  *
+ * @category Model
  * @module MenuItem
  */
 

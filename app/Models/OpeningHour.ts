@@ -10,6 +10,7 @@
  * with the help of using the enum type {@link Days}
  * and the {@link OpeningHourTypes}.
  *
+ * @category Model
  * @module OpeningHour
  */
 

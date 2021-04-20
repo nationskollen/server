@@ -1,3 +1,22 @@
+/**
+ * Here are all the routes specified that can be used for the different `CRUD`
+ * operations on the models.
+ *
+ * In short; A route is often protected using a {@category Middleware |
+ * middleware} that authenticates the request and makes sure the operation that
+ * is requested is performed correctly.
+ *
+ * The routes have the characteristics like for e.g:
+ * ```json
+ * GET /api/v1/nations/400/locations/1
+ * ```
+ *
+ * Documentation aobut the CRUD operations and how the different paths look
+ * like can be found in the `insomnia` documenation.
+ *
+ * @category Paths
+ * @module Route
+ */
 import Route from '@ioc:Adonis/Core/Route'
 import HealthCheck from '@ioc:Adonis/Core/HealthCheck'
 
