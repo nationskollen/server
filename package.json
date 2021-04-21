@@ -16,7 +16,8 @@
         "ci:test": "CI=yes node -r @adonisjs/assembler/build/register japaFile.ts",
         "coverage": "npx nyc npm run test",
         "docs": "npx typedoc app/**/** start/",
-        "docs:watch": "npx typedoc app/**/** start/ --watch"
+        "docs:watch": "npx typedoc app/**/** start/ --watch",
+        "docs:api": "npx insomnia-documenter -o docs-api -c ./.insomnia/Workspace/nationskollen.json"
     },
     "devDependencies": {
         "@adonisjs/assembler": "^3.0.0",
@@ -58,6 +59,7 @@
     },
     "optionalDependencies": {
         "@dsp-krabby/typedoc-theme-overrides": "^1.0.2",
+        "insomnia-documenter": "^0.4.4",
         "typedoc": "^0.20.35"
     }
 }

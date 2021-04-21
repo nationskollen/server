@@ -44,6 +44,7 @@ jobs:
             # Run migrations
             # Must navigate to the build folder so that we get the correct DB credentials
             cd build
+            node ace migration:rollback --force
             node ace migration:run --force
             node ace db:seed --force
 

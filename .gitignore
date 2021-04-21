@@ -10,3 +10,4 @@ tmp/db.sqlite3-journal
 public/*
 yarn-error.log
 docs/
+docs-api/
