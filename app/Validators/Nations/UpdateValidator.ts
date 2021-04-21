@@ -1,3 +1,7 @@
+/**
+ * @category Validator
+ * @module NationUploadValidator
+ */
 import { DatabaseTables } from 'App/Utils/Database'
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'

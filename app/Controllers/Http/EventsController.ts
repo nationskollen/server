@@ -1,3 +1,10 @@
+/**
+ * The EventsController contains the different methods that gives the ability
+ * to operate upon {@link Event | Event} models.
+ *
+ * @category Controller
+ * @module EventsController
+ */
 import { DateTime } from 'luxon'
 import Event from 'App/Models/Event'
 import { ExtractScopes } from '@ioc:Adonis/Lucid/Model'
@@ -14,6 +21,12 @@ import PaginationValidator from 'App/Validators/PaginationValidator'
  * Event controller
  */
 export default class EventsController {
+    /**
+     * Method that applies given filters depedning on what type of event to
+     * filter after
+     * @param scopes - The different scopes that exists in the system
+     * @param filters - The filder to apply
+     */
     private applyFilters(
         scopes: ExtractScopes<typeof Event>,
         filters: Record<string, DateTime | undefined>
@@ -37,6 +50,11 @@ export default class EventsController {
         scopes.inOrder()
     }
 
+    /**
+     * Method to retrieve all the events in the system
+     * The actual function call is done by a request (CRUD) which are specified
+     * in `Routes.ts`
+     */
     public async all({ request }: HttpContextContract) {
         const filters = await getValidatedData(request, EventFilterValidator, true)
         const specified = await getValidatedData(request, PaginationValidator, true)
@@ -49,6 +67,9 @@ export default class EventsController {
         return events.toJSON()
     }
 
+    /**
+     * Method to retrieve a single event in the system
+     */
     public async single({ request }: HttpContextContract) {
         return getEvent(request).toJSON()
     }
@@ -68,6 +89,9 @@ export default class EventsController {
         return events.toJSON()
     }
 
+    /**
+     * Method to create a single event in the system
+     */
     public async create({ request }: HttpContextContract) {
         const nation = getNation(request)
         const data = await getValidatedData(request, EventCreateValidator)
@@ -76,6 +100,9 @@ export default class EventsController {
         return event.toJSON()
     }
 
+    /**
+     * Method to update a single event in the system
+     */
     public async update({ request }: HttpContextContract) {
         const event = getEvent(request)
         const changes = await getValidatedData(request, EventUpdateValidator)
@@ -87,11 +114,17 @@ export default class EventsController {
         return event.toJSON()
     }
 
+    /**
+     * Method to delete a single event in the system
+     */
     public async delete({ request }: HttpContextContract) {
         const event = getEvent(request)
         await event.delete()
     }
 
+    /**
+     * Method to upload an image to an event in the system
+     */
     public async upload({ request }: HttpContextContract) {
         const event = getEvent(request)
         const { cover } = await getValidatedData(request, EventUploadValidator)

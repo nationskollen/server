@@ -1,3 +1,9 @@
+/**
+ * @category Utils
+ * @module Database
+ *
+ * @enum DatabaseTables Specified tables in the database
+ */
 export enum DatabaseTables {
     Users = 'users',
     ApiTokens = 'api_tokens',

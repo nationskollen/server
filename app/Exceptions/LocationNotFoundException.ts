@@ -1,3 +1,7 @@
+/**
+ * @category Exceptions
+ * @module LocationNotFoundException
+ */
 import DefaultException from 'App/Exceptions/DefaultException'
 
 export default class LocationNotFoundException extends DefaultException {

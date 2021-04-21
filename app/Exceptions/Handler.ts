@@ -13,6 +13,11 @@
 |
 */
 
+/**
+ * @category Exceptions
+ * @module ExceptionHandler
+ */
+
 import { Exception } from '@poppinss/utils'
 import Logger from '@ioc:Adonis/Core/Logger'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
@@ -23,6 +28,9 @@ export default class ExceptionHandler extends HttpExceptionHandler {
         super(Logger)
     }
 
+    /**
+     * report exception
+     */
     public async report(error: Exception, ctx: HttpContextContract) {
         // Ignore all logging in tests. The test cases and their asserts is
         // more interesting than exceptions that has been thrown.

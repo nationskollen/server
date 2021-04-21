@@ -1,13 +1,39 @@
+/**
+ * ## Utils for uploading to the server.
+ * Here are different stub- or helper functions that are used in the system in
+ * order to implement the upload feature to the server.
+ *
+ * The allowed filetypes for uploading are specified in the `ALLOWED_FILE_EXTS`:
+ *
+ * - `jpg`
+ * - `png`
+ * - `jpeg`
+ * - `gif`
+ *
+ * @category Utils
+ * @module Upload
+ */
+
 import fs from 'fs'
 import crypto from 'crypto'
 import Logger from '@ioc:Adonis/Core/Logger'
 import Application from '@ioc:Adonis/Core/Application'
 import { MultipartFileContract } from '@ioc:Adonis/Core/BodyParser'
 
+/**
+ * @constant `MAX_FILE_SIZE` Specifies the maximum size for uploading a file
+ */
 export const MAX_FILE_SIZE = '3mb'
 // TODO: add .svg?
+/**
+ * @constant `ALLOWED_FILE_EXTS` Specifies which file extentions that are allowed in the system
+ */
 export const ALLOWED_FILE_EXTS = ['jpg', 'png', 'jpeg', 'gif']
 
+/**
+ * Attempts a file upload to the server with a given file
+ * @param file
+ */
 export async function attemptFileUpload(file?: MultipartFileContract) {
     if (!file) {
         return null
@@ -31,6 +57,10 @@ export async function attemptFileUpload(file?: MultipartFileContract) {
     return name
 }
 
+/**
+ * Attempts a file removal from the server with a given filename
+ * @param name name of the file to remove from the system
+ */
 export function attemptFileRemoval(name?: string) {
     if (!name) {
         return

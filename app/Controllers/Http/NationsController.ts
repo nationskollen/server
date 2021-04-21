@@ -1,3 +1,12 @@
+/**
+ * The NationsController contains all the methods that are available to perform
+ * on {@link Nation | nation models} in the system.
+ *
+ * Only an admin of a nation can perform the given operations on its own nation.
+ *
+ * @category Controller
+ * @module NationsController
+ */
 import Nation from 'App/Models/Nation'
 import { getNation, getValidatedData } from 'App/Utils/Request'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
@@ -6,16 +15,25 @@ import NationUpdateValidator from 'App/Validators/Nations/UpdateValidator'
 import NationUploadValidator from 'App/Validators/Nations/UploadValidator'
 
 export default class NationsController {
+    /**
+     * fetch all nations from system
+     */
     public async index({}: HttpContextContract) {
         const nations = await Nation.all()
 
         return nations.map((nation: Nation) => nation.toJSON())
     }
 
+    /**
+     * fetch a single nation from system
+     */
     public async single({ request }: HttpContextContract) {
         return getNation(request).toJSON()
     }
 
+    /**
+     * update a nation from system
+     */
     public async update({ request }: HttpContextContract) {
         const changes = await getValidatedData(request, NationUpdateValidator)
         const nation = getNation(request)
@@ -26,6 +44,9 @@ export default class NationsController {
         return nation.toJSON()
     }
 
+    /**
+     * upload a file to a nation from system
+     */
     public async upload({ request }: HttpContextContract) {
         const nation = getNation(request)
         const { cover, icon } = await getValidatedData(request, NationUploadValidator)
