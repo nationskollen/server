@@ -33,10 +33,10 @@ test.group('Events filtering', async () => {
 
         const dataOne = JSON.parse(eventOne.text)
 
-        assert.isArray(dataOne)
-        assert.lengthOf(dataOne, 1)
-        assert.equal(dataOne[0].name, testEventOne.name)
-        assert.equal(dataOne[0].occurs_at, testEventOne.occursAt.toISO())
+        assert.isArray(dataOne.data)
+        assert.lengthOf(dataOne.data, 1)
+        assert.equal(dataOne.data[0].name, testEventOne.name)
+        assert.equal(dataOne.data[0].occurs_at, testEventOne.occursAt.toISO())
 
         const eventTwo = await supertest(BASE_URL)
             .get(`/nations/${testNation.oid}/events?date=${testEventTwo.occursAt.toISODate()}`)
@@ -44,10 +44,10 @@ test.group('Events filtering', async () => {
 
         const dataTwo = JSON.parse(eventTwo.text)
 
-        assert.isArray(dataTwo)
-        assert.lengthOf(dataTwo, 1)
-        assert.equal(dataTwo[0].name, testEventTwo.name)
-        assert.equal(dataTwo[0].occurs_at, testEventTwo.occursAt.toISO())
+        assert.isArray(dataTwo.data)
+        assert.lengthOf(dataTwo.data, 1)
+        assert.equal(dataTwo.data[0].name, testEventTwo.name)
+        assert.equal(dataTwo.data[0].occurs_at, testEventTwo.occursAt.toISO())
     })
 
     test('ensure that you can filter by all before date', async (assert) => {
@@ -81,12 +81,12 @@ test.group('Events filtering', async () => {
 
         const data = JSON.parse(text)
 
-        assert.isArray(data)
-        assert.lengthOf(data, 2)
-        assert.equal(data[0].name, testEventOne.name)
-        assert.equal(data[0].occurs_at, testEventOne.occursAt.toISO())
-        assert.equal(data[1].name, testEventTwo.name)
-        assert.equal(data[1].occurs_at, testEventTwo.occursAt.toISO())
+        assert.isArray(data.data)
+        assert.lengthOf(data.data, 2)
+        assert.equal(data.data[0].name, testEventOne.name)
+        assert.equal(data.data[0].occurs_at, testEventOne.occursAt.toISO())
+        assert.equal(data.data[1].name, testEventTwo.name)
+        assert.equal(data.data[1].occurs_at, testEventTwo.occursAt.toISO())
     })
 
     test('ensure that filtering by all before date return empty array if no events exists', async (assert) => {
@@ -116,8 +116,8 @@ test.group('Events filtering', async () => {
 
         const data = JSON.parse(text)
 
-        assert.isArray(data)
-        assert.lengthOf(data, 0)
+        assert.isArray(data.data)
+        assert.lengthOf(data.data, 0)
     })
 
     test('ensure that you can filter by all after date', async (assert) => {
@@ -151,12 +151,12 @@ test.group('Events filtering', async () => {
 
         const data = JSON.parse(text)
 
-        assert.isArray(data)
-        assert.lengthOf(data, 2)
-        assert.equal(data[0].name, testEventOne.name)
-        assert.equal(data[0].occurs_at, testEventOne.occursAt.toISO())
-        assert.equal(data[1].name, testEventTwo.name)
-        assert.equal(data[1].occurs_at, testEventTwo.occursAt.toISO())
+        assert.isArray(data.data)
+        assert.lengthOf(data.data, 2)
+        assert.equal(data.data[0].name, testEventOne.name)
+        assert.equal(data.data[0].occurs_at, testEventOne.occursAt.toISO())
+        assert.equal(data.data[1].name, testEventTwo.name)
+        assert.equal(data.data[1].occurs_at, testEventTwo.occursAt.toISO())
     })
 
     test('ensure that filtering by all after date return empty array if no events exists', async (assert) => {
@@ -186,8 +186,8 @@ test.group('Events filtering', async () => {
 
         const data = JSON.parse(text)
 
-        assert.isArray(data)
-        assert.lengthOf(data, 0)
+        assert.isArray(data.data)
+        assert.lengthOf(data.data, 0)
     })
 
     test('ensure that filters only accepts the correct format', async () => {
@@ -206,11 +206,10 @@ test.group('Events filtering', async () => {
         const testNation = await NationFactory.create()
         await createTestEvent(testNation.oid)
         await createTestEvent(testNation.oid)
-
-        const { text } = await supertest(BASE_URL).get(`/events?pageAmount=1`).expect(200)
+        const { text } = await supertest(BASE_URL).get(`/events?page=1&amount=1`).expect(200)
 
         const data = JSON.parse(text)
-        assert.equal(data.length, 1)
+        assert.equal(data.meta.per_page, 1)
     })
 
     test('ensure that filtering for 2 events in a request is viable', async (assert) => {
@@ -218,17 +217,17 @@ test.group('Events filtering', async () => {
         await createTestEvent(testNation.oid)
         await createTestEvent(testNation.oid)
 
-        const { text } = await supertest(BASE_URL).get(`/events?pageAmount=2`).expect(200)
+        const { text } = await supertest(BASE_URL).get(`/events?page=2&amount=2`).expect(200)
 
         const data = JSON.parse(text)
-        assert.equal(data.length, 2)
+        assert.equal(data.meta.per_page, 2)
     })
 
     test('ensure that filtering for incorrect type in url is not viable', async () => {
-        await supertest(BASE_URL).get(`/events?pageAmount=asdf`).expect(422)
+        await supertest(BASE_URL).get(`/events?page=asdf`).expect(422)
     })
 
-    test('ensure that filtering for 0 events returns all the events', async (assert) => {
+    test('ensure that filtering for 0 events returns all no event', async (assert) => {
         const testNation = await NationFactory.create()
         await createTestEvent(testNation.oid)
         await createTestEvent(testNation.oid)
@@ -237,10 +236,14 @@ test.group('Events filtering', async () => {
         await createTestEvent(testNation.oid)
 
         const { text } = await supertest(BASE_URL)
-            .get(`/nations/${testNation.oid}/events?pageAmount=0`)
+            .get(`/nations/${testNation.oid}/events?page=1&amount=0`)
             .expect(200)
 
         const data = JSON.parse(text)
-        assert.equal(data.length, 5)
+        assert.equal(data.meta.per_page, 0)
+    })
+
+    test('ensure that filtering for 0 pages is not viable', async () => {
+        await supertest(BASE_URL).get(`/events?page=0&amount=0`).expect(422)
     })
 })
