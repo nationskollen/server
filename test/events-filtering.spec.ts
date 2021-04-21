@@ -207,9 +207,7 @@ test.group('Events filtering', async () => {
         await createTestEvent(testNation.oid)
         await createTestEvent(testNation.oid)
 
-        const { text } = await supertest(BASE_URL)
-            .get(`/events?pageAmount=1`)
-            .expect(200)
+        const { text } = await supertest(BASE_URL).get(`/events?pageAmount=1`).expect(200)
 
         const data = JSON.parse(text)
         assert.equal(data.length, 1)
@@ -220,9 +218,7 @@ test.group('Events filtering', async () => {
         await createTestEvent(testNation.oid)
         await createTestEvent(testNation.oid)
 
-        const { text } = await supertest(BASE_URL)
-            .get(`/events?pageAmount=2`)
-            .expect(200)
+        const { text } = await supertest(BASE_URL).get(`/events?pageAmount=2`).expect(200)
 
         const data = JSON.parse(text)
         assert.equal(data.length, 2)

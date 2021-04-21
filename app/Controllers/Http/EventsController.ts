@@ -8,7 +8,7 @@ import EventUpdateValidator from 'App/Validators/Events/UpdateValidator'
 import EventCreateValidator from 'App/Validators/Events/CreateValidator'
 import EventUploadValidator from 'App/Validators/Events/UploadValidator'
 import EventFilterValidator from 'App/Validators/Events/FilterValidator'
-import EventLimitValidator from 'App/Validators/Events/LimitValidator'
+import PaginationValidator from 'App/Validators/PaginationValidator'
 
 /**
  * Event controller
@@ -37,25 +37,16 @@ export default class EventsController {
         scopes.inOrder()
     }
 
-    private applyLimit(
-        scopes: ExtractScopes<typeof Event>,
-        pageAmount?: number | undefined,
-    ) {
-        if (pageAmount) {
-            scopes.limitAmount(pageAmount)
-        }
-    }
-
     public async all({ request }: HttpContextContract) {
         const filters = await getValidatedData(request, EventFilterValidator, true)
-        const specified = await getValidatedData(request, EventLimitValidator, true)
+        const specified = await getValidatedData(request, PaginationValidator, true)
 
-        const events = await Event.query().apply((scopes) => {
-            this.applyLimit(scopes, specified?.pageAmount)
+        const query = Event.query().apply((scopes) => {
             this.applyFilters(scopes, filters)
         })
 
-        return events.map((event: Event) => event.toJSON())
+        const events = await query.paginate(specified.page ?? 1, specified.amount)
+        return events.toJSON()
     }
 
     public async single({ request }: HttpContextContract) {
@@ -65,16 +56,16 @@ export default class EventsController {
     public async index({ request }: HttpContextContract) {
         const { oid } = getNation(request)
         const filters = await getValidatedData(request, EventFilterValidator, true)
-        const specified = await getValidatedData(request, EventLimitValidator, true)
+        const specified = await getValidatedData(request, PaginationValidator, true)
 
-        const events = await Event.query()
+        const query = Event.query()
             .where('nation_id', oid)
             .apply((scopes) => {
-                this.applyLimit(scopes, specified?.pageAmount)
                 this.applyFilters(scopes, filters)
             })
 
-        return events.map((event: Event) => event.toJSON())
+        const events = await query.paginate(specified.page ?? 1, specified.amount)
+        return events.toJSON()
     }
 
     public async create({ request }: HttpContextContract) {
