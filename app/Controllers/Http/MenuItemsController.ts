@@ -1,3 +1,12 @@
+/**
+ * The MenuItemsController contains all the methods that are available to perform
+ * on {@link MenuItem | menu item models} in the system.
+ *
+ * Only an admin of a nation can perform the given operations on its own nation.
+ *
+ * @category Controller
+ * @module MenuItemsController
+ */
 import MenuItem from 'App/Models/MenuItem'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { attemptFileUpload, attemptFileRemoval } from 'App/Utils/Upload'
@@ -7,6 +16,9 @@ import MenuItemCreateValidator from 'App/Validators/MenuItems/CreateValidator'
 import MenuItemUploadValidator from 'App/Validators/MenuItems/UploadValidator'
 
 export default class MenuItemsController {
+    /**
+     * Fetch all menu items in a menu
+     */
     public async index({ request }: HttpContextContract) {
         const menu = getMenu(request)
         const items = await MenuItem.query().where('menu_id', menu.id)
@@ -14,10 +26,16 @@ export default class MenuItemsController {
         return items.map((item) => item.toJSON())
     }
 
+    /**
+     * Fetch a single menu item
+     */
     public async single({ request }: HttpContextContract) {
         return getMenuItem(request).toJSON()
     }
 
+    /**
+     * create a menu item
+     */
     public async create({ request }: HttpContextContract) {
         const data = await getValidatedData(request, MenuItemCreateValidator)
         const menu = getMenu(request)
@@ -26,6 +44,9 @@ export default class MenuItemsController {
         return newMenu.toJSON()
     }
 
+    /**
+     * update a menu item
+     */
     public async update({ request }: HttpContextContract) {
         const data = await getValidatedData(request, MenuItemUpdateValidator)
         const menuItem = getMenuItem(request)
@@ -36,10 +57,16 @@ export default class MenuItemsController {
         return menuItem.toJSON()
     }
 
+    /**
+     * delete a menu item
+     */
     public async delete({ request }: HttpContextContract) {
         await getMenuItem(request).delete()
     }
 
+    /**
+     * upload a file to a menu item
+     */
     public async upload({ request }: HttpContextContract) {
         const menuItem = getMenuItem(request)
         const { cover } = await getValidatedData(request, MenuItemUploadValidator)

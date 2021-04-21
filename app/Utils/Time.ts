@@ -1,3 +1,11 @@
+/**
+ * Time enums to use in the system
+ *
+ * @category Utils
+ * @module Time
+ *
+ * @enum Days
+ */
 export enum Days {
     Monday,
     Tuesday,
@@ -8,6 +16,9 @@ export enum Days {
     Sunday,
 }
 
+/**
+ * @enum OpeningHourTypes
+ */
 export enum OpeningHourTypes {
     Default,
     Exception,

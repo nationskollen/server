@@ -1,3 +1,13 @@
+/**
+ * This module provides the ability to send a "request" with ease internally
+ * for the system in order to achieve cleaner, readable and more maintanable
+ * code
+ *
+ * (**REFACTORING**) Combine all function below into single function
+ *
+ * @category Utils
+ * @module Request
+ */
 import Menu from 'App/Models/Menu'
 import MenuItem from 'App/Models/MenuItem'
 import Nation from 'App/Models/Nation'
@@ -14,7 +24,6 @@ import MenuItemNotFoundException from 'App/Exceptions/MenuItemNotFoundException'
 import OpeningHourNotFoundException from 'App/Exceptions/OpeningHourNotFoundException'
 import { RequestValidatorNode, ParsedTypedSchema, TypedSchema } from '@ioc:Adonis/Core/Validator'
 
-// TODO: Combine all of these into single function
 export function getLocation(request: RequestContract): Location {
     const { location } = request
 

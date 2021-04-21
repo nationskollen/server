@@ -1,3 +1,10 @@
+/**
+ * The registered middlewares are placed in this file
+ *
+ * @category Misc
+ * @module Kernel
+ */
+
 /*
 |--------------------------------------------------------------------------
 | Application middleware

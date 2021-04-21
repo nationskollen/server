@@ -1,3 +1,12 @@
+/**
+ * The OpeningHoursController contains all the methods that are available to perform
+ * on {@link OpeningHour | opening hours models} in the system.
+ *
+ * Only an admin of a nation can perform the given operations on its own nation.
+ *
+ * @category Controller
+ * @module MenusController
+ */
 import OpeningHour from 'App/Models/OpeningHour'
 import { OpeningHourTypes } from 'App/Utils/Time'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
@@ -7,6 +16,9 @@ import OpeningHourCreateValidator from 'App/Validators/OpeningHours/CreateValida
 import OpeningHourUpdateValidator from 'App/Validators/OpeningHours/UpdateValidator'
 
 export default class OpeningHoursController {
+    /**
+     * Fetch all opening hours in a location
+     */
     public async index({ request }: HttpContextContract) {
         const location = getLocation(request)
         const hours = await OpeningHour.query().where('location_id', location.id)
@@ -14,10 +26,16 @@ export default class OpeningHoursController {
         return hours.map((hour) => hour.toJSON())
     }
 
+    /**
+     * Fetch a single opening hour in a location
+     */
     public async single({ request }: HttpContextContract) {
         return getOpeningHour(request).toJSON()
     }
 
+    /**
+     * create opening hour for a location
+     */
     public async create({ request }: HttpContextContract) {
         const data = await getValidatedData(request, OpeningHourCreateValidator)
         const location = getLocation(request)
@@ -36,6 +54,9 @@ export default class OpeningHoursController {
         return model.toJSON()
     }
 
+    /**
+     * Update opening hour in a location
+     */
     public async update({ request }: HttpContextContract) {
         const changes = await getValidatedData(request, OpeningHourUpdateValidator)
         const openingHour = getOpeningHour(request)
@@ -46,6 +67,9 @@ export default class OpeningHoursController {
         return openingHour.toJSON()
     }
 
+    /**
+     * Delete opening hour
+     */
     public async delete({ request }: HttpContextContract) {
         await getOpeningHour(request).delete()
     }

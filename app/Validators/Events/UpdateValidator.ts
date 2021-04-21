@@ -1,3 +1,7 @@
+/**
+ * @category Validator
+ * @module EventUpdateValidator
+ */
 import { getOidRef } from 'App/Utils/Validator'
 import { DatabaseTables } from 'App/Utils/Database'
 import { schema, rules } from '@ioc:Adonis/Core/Validator'

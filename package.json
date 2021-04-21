@@ -15,8 +15,8 @@
         "test": "node -r @adonisjs/assembler/build/register japaFile.ts",
         "ci:test": "CI=yes node -r @adonisjs/assembler/build/register japaFile.ts",
         "coverage": "npx nyc npm run test",
-        "docs": "npx typedoc app/",
-        "docs:watch": "npx typedoc app/ --watch",
+        "docs": "npx typedoc app/**/** start/",
+        "docs:watch": "npx typedoc app/**/** start/ --watch",
         "docs:api": "npx insomnia-documenter -o docs-api -c ./.insomnia/Workspace/nationskollen.json"
     },
     "devDependencies": {

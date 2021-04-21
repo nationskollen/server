@@ -1,3 +1,7 @@
+/**
+ * @category Exceptions
+ * @module BadRequestException
+ */
 import DefaultException from 'App/Exceptions/DefaultException'
 
 export default class BadRequestException extends DefaultException {

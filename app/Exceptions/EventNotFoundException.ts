@@ -1,3 +1,7 @@
+/**
+ * @category Exceptions
+ * @module EventNotFoundException
+ */
 import DefaultException from 'App/Exceptions/DefaultException'
 
 export default class EventNotFoundException extends DefaultException {
