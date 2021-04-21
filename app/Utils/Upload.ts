@@ -19,7 +19,7 @@ import crypto from 'crypto'
 import Logger from '@ioc:Adonis/Core/Logger'
 import Application from '@ioc:Adonis/Core/Application'
 import { MultipartFileContract } from '@ioc:Adonis/Core/BodyParser'
-import * as sharp from 'sharp'
+import sharp from 'sharp'
 
 /**
  * @constant `MAX_FILE_SIZE` Specifies the maximum size for uploading a file
@@ -50,12 +50,17 @@ export async function attemptFileUpload(file?: MultipartFileContract) {
         .digest('hex')
     const name = `${hash}.${file.extname}`
 
+    if (!file.tmpPath) {
+        // TODO: Throw error?
+        return
+    }
 
-    await compressFile(file.tmpPath, file.extname)
+    await compressFile(file.tmpPath, name, file.extname)
 
     // Note that this will throw exceptions if it fails.
     // Since they are not caught, the request will error out.
     // @link https://github.com/adonisjs/bodyparser/blob/bd1891c392865f5fe77546e8ecd488b4309b1eee/src/Multipart/File.ts#L164
+    // TODO: Must be enabled if file ext is gif
     // await file?.move(Application.publicPath(), { name })
 
     return name
@@ -86,14 +91,14 @@ export function attemptFileRemoval(name?: string) {
 
 /**
  * Compresses a file
+ * @todo Add new field in models for a mobile optimized image
+ *
  * @param name name of the file to compress
  */
-export async function compressFile(filePath?: string, extName?: string) {
-    if (extName != 'gif') {
-
-        console.log(sharp(filePath))
-        await sharp(filePath)
-            .quality(25)
-            .toFile(Application.publicPath)
+export async function compressFile(tmpPath: string, outName: string, extName?: string) {
+    if (extName === 'png') {
+        await sharp(tmpPath).png({ quality: 45 }).toFile(Application.publicPath(outName))
+    } else {
+        await sharp(tmpPath).jpeg({ quality: 45 }).toFile(Application.publicPath(outName))
     }
 }
