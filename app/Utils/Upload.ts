@@ -19,6 +19,7 @@ import crypto from 'crypto'
 import Logger from '@ioc:Adonis/Core/Logger'
 import Application from '@ioc:Adonis/Core/Application'
 import { MultipartFileContract } from '@ioc:Adonis/Core/BodyParser'
+import * as sharp from 'sharp'
 
 /**
  * @constant `MAX_FILE_SIZE` Specifies the maximum size for uploading a file
@@ -49,10 +50,13 @@ export async function attemptFileUpload(file?: MultipartFileContract) {
         .digest('hex')
     const name = `${hash}.${file.extname}`
 
+
+    await compressFile(file.tmpPath, file.extname)
+
     // Note that this will throw exceptions if it fails.
     // Since they are not caught, the request will error out.
     // @link https://github.com/adonisjs/bodyparser/blob/bd1891c392865f5fe77546e8ecd488b4309b1eee/src/Multipart/File.ts#L164
-    await file.move(Application.publicPath(), { name })
+    // await file?.move(Application.publicPath(), { name })
 
     return name
 }
@@ -77,5 +81,19 @@ export function attemptFileRemoval(name?: string) {
         fs.unlinkSync(path)
     } catch (e) {
         Logger.error('Could not remove uploaded file:', e)
+    }
+}
+
+/**
+ * Compresses a file
+ * @param name name of the file to compress
+ */
+export async function compressFile(filePath?: string, extName?: string) {
+    if (extName != 'gif') {
+
+        console.log(sharp(filePath))
+        await sharp(filePath)
+            .quality(25)
+            .toFile(Application.publicPath)
     }
 }
