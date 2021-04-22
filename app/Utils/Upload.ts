@@ -61,7 +61,7 @@ export async function attemptFileUpload(file?: MultipartFileContract) {
         // Since they are not caught, the request will error out.
         // @link https://github.com/adonisjs/bodyparser/blob/bd1891c392865f5fe77546e8ecd488b4309b1eee/src/Multipart/File.ts#L164
         // TODO: Must be enabled if file ext is gif
-        await file?.move(Application.publicPath(), { name })
+        await file.move(Application.publicPath(), { name })
         return name
     }
 
