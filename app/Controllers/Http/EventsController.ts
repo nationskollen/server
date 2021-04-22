@@ -7,6 +7,7 @@
  */
 import { DateTime } from 'luxon'
 import Event from 'App/Models/Event'
+import { MINIMUM_PAGE } from 'App/Utils/Constants'
 import { ExtractScopes } from '@ioc:Adonis/Lucid/Model'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { attemptFileUpload, attemptFileRemoval } from 'App/Utils/Upload'
@@ -15,6 +16,7 @@ import EventUpdateValidator from 'App/Validators/Events/UpdateValidator'
 import EventCreateValidator from 'App/Validators/Events/CreateValidator'
 import EventUploadValidator from 'App/Validators/Events/UploadValidator'
 import EventFilterValidator from 'App/Validators/Events/FilterValidator'
+import PaginationValidator from 'App/Validators/PaginationValidator'
 
 /**
  * Event controller
@@ -56,9 +58,14 @@ export default class EventsController {
      */
     public async all({ request }: HttpContextContract) {
         const filters = await getValidatedData(request, EventFilterValidator, true)
-        const events = await Event.query().apply((scopes) => this.applyFilters(scopes, filters))
+        const specified = await getValidatedData(request, PaginationValidator, true)
 
-        return events.map((event: Event) => event.toJSON())
+        const query = Event.query().apply((scopes) => {
+            this.applyFilters(scopes, filters)
+        })
+
+        const events = await query.paginate(specified.page ?? MINIMUM_PAGE, specified.amount)
+        return events.toJSON()
     }
 
     /**
@@ -71,11 +78,16 @@ export default class EventsController {
     public async index({ request }: HttpContextContract) {
         const { oid } = getNation(request)
         const filters = await getValidatedData(request, EventFilterValidator, true)
-        const events = await Event.query()
-            .where('nation_id', oid)
-            .apply((scopes) => this.applyFilters(scopes, filters))
+        const specified = await getValidatedData(request, PaginationValidator, true)
 
-        return events.map((event: Event) => event.toJSON())
+        const query = Event.query()
+            .where('nation_id', oid)
+            .apply((scopes) => {
+                this.applyFilters(scopes, filters)
+            })
+
+        const events = await query.paginate(specified.page ?? MINIMUM_PAGE, specified.amount)
+        return events.toJSON()
     }
 
     /**

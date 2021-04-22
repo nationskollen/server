@@ -11,3 +11,5 @@ export const HOSTNAME = process.env.ASSET_HOSTNAME
     : `http://${process.env.HOST}:${process.env.PORT}`
 
 export const BASE_URL = `${HOSTNAME}/api/v1`
+
+export const MINIMUM_PAGE = 1
