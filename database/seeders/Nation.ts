@@ -7,7 +7,7 @@ export default class NationSeeder extends BaseSeeder {
     public static developmentOnly = true
 
     public async run() {
-        for (const category in Object.values(Categories)) {
+        for (const category in Categories) {
             await Category.create({
                 name: category
             })
