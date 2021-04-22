@@ -18,6 +18,7 @@ import fs from 'fs'
 import sharp from 'sharp'
 import crypto from 'crypto'
 import Logger from '@ioc:Adonis/Core/Logger'
+import UPLOAD_QUALITY_VALUE from 'App/Utils/Constants'
 import Application from '@ioc:Adonis/Core/Application'
 import { MultipartFileContract } from '@ioc:Adonis/Core/BodyParser'
 import FileNotFoundException from 'App/Exceptions/FileNotFoundException'
@@ -102,8 +103,8 @@ export function attemptFileRemoval(name?: string) {
  */
 export async function compressFile(tmpPath: string, outName: string, extName?: string) {
     if (extName === 'png') {
-        await sharp(tmpPath).png({ quality: 45 }).toFile(Application.publicPath(outName))
+        await sharp(tmpPath).png({ quality: UPLOAD_QUALITY_VALUE }).toFile(Application.publicPath(outName))
     } else {
-        await sharp(tmpPath).jpeg({ quality: 45 }).toFile(Application.publicPath(outName))
+        await sharp(tmpPath).jpeg({ quality: UPLOAD_QUALITY_VALUE }).toFile(Application.publicPath(outName))
     }
 }
