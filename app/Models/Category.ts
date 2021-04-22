@@ -4,7 +4,6 @@
  */
 import { DateTime } from 'luxon'
 import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
-import { Categories } from 'App/Utils/Categories'
 
 export default class Category extends BaseModel {
     /**
@@ -17,7 +16,7 @@ export default class Category extends BaseModel {
      * The category
      */
     @column()
-    public name: Categories
+    public name: string
 
     /**
      * The date the model was created
