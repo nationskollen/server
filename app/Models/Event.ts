@@ -10,7 +10,8 @@
  */
 import { DateTime } from 'luxon'
 import { toAbsolutePath, toISO } from 'App/Utils/Serialize'
-import { column, BaseModel, scope } from '@ioc:Adonis/Lucid/Orm'
+import { column, BaseModel, scope, belongsTo, BelongsTo } from '@ioc:Adonis/Lucid/Orm'
+import Category from 'App/Models/Category'
 
 export default class Event extends BaseModel {
     /**
@@ -54,6 +55,15 @@ export default class Event extends BaseModel {
      */
     @column()
     public onlyStudents: boolean
+
+    @column()
+    public categoryId: number
+
+    /**
+     * specify if the event has a category
+     */
+    @belongsTo(() => Category)
+    public category: BelongsTo<typeof Category>
 
     /**
      * Icon image for the event to be displayed

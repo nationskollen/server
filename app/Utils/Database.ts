@@ -11,6 +11,7 @@ export enum DatabaseTables {
     Locations = 'locations',
     OpeningHours = 'opening_hours',
     Events = 'events',
+    Categories = 'categories',
     Menus = 'menus',
     MenuItems = 'menu_items',
 }

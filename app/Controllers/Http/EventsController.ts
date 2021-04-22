@@ -60,7 +60,8 @@ export default class EventsController {
         const filters = await getValidatedData(request, EventFilterValidator, true)
         const specified = await getValidatedData(request, PaginationValidator, true)
 
-        const query = Event.query().apply((scopes) => {
+        const query = Event.query()
+            .apply((scopes) => {
             this.applyFilters(scopes, filters)
         })
 
@@ -82,6 +83,7 @@ export default class EventsController {
 
         const query = Event.query()
             .where('nation_id', oid)
+            .preload('category')
             .apply((scopes) => {
                 this.applyFilters(scopes, filters)
             })

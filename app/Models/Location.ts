@@ -101,7 +101,8 @@ export default class Location extends BaseModel {
     public estimatedPeopleCount: number
 
     /**
-     * The {@link ActivityLevels | activity level } at the location, dynamically changed depending on
+     * The {@link ActivityLevels | activity level } at the location,
+     * dynamically changed depending on
      * {@link estimatedPeopleCount} and {@link maxCapacity}
      */
     @column()

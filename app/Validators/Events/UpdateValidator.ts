@@ -24,6 +24,12 @@ export default class EventUpdateValidator {
 
         only_members: schema.boolean.optional(),
         only_students: schema.boolean.optional(),
+        category_id: schema.number.optional([
+            rules.exists({
+                table: DatabaseTables.Categories,
+                column: 'id',
+            }),
+        ]),
 
         occurs_at: schema.date.optional({ format: 'iso' }, [rules.beforeField('ends_at')]),
         ends_at: schema.date.optional({ format: 'iso' }, [rules.afterField('occurs_at')]),
