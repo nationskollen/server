@@ -210,6 +210,7 @@ test.group('Events filtering', async () => {
 
         const data = JSON.parse(text)
         assert.equal(data.meta.per_page, 1)
+        assert.equal(data.data.length, 1)
     })
 
     test('ensure that filtering for 2 events in a request is viable', async (assert) => {
@@ -221,6 +222,7 @@ test.group('Events filtering', async () => {
 
         const data = JSON.parse(text)
         assert.equal(data.meta.per_page, 2)
+        assert.equal(data.data.length, 2)
     })
 
     test('ensure that filtering for incorrect type in url is not viable', async () => {
