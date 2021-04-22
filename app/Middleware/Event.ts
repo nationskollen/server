@@ -24,10 +24,18 @@ export default class EventMiddleware {
     /**
      * Handle request
      */
-    public async handle({ request, params }: HttpContextContract, next: () => Promise<void>) {
+    public async handle(
+        { request, params }: HttpContextContract,
+        next: () => Promise<void>,
+        options: string[]
+    ) {
         let event: Event | null
 
-        event = await Event.find(params.eid)
+        if (options.includes('preload')) {
+            event = await Event.query().where('id', params.eid).preload('category').first()
+        } else {
+            event = await Event.find(params.eid)
+        }
 
         if (!event) {
             throw new EventNotFoundException()

@@ -10,6 +10,7 @@ import {
     createTestNation,
     createTestLocation,
     createTestEvent,
+    createTestCategory,
     toRelativePath,
 } from 'App/Utils/Test'
 
@@ -252,7 +253,7 @@ test.group('Events update', async (group) => {
             .expect(404)
     })
 
-    test('ensure that an datetimes are converted into UTC+2', async (assert) => {
+    test('ensure that datetimes are converted into UTC+2', async (assert) => {
         const event = await createTestEvent(nation.oid)
 
         const { text } = await supertest(BASE_URL)
@@ -370,6 +371,65 @@ test.group('Events update', async (group) => {
 
         assert.equal(data.only_students, false)
         assert.equal(data.only_members, false)
+    })
+
+    test('ensure that an event does not return a category field when not set to any', async (assert) => {
+        const event = await createTestEvent(nation.oid)
+
+        const { text } = await supertest(BASE_URL)
+            .get(`/events/${event.id}`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .expect(200)
+
+        const data = JSON.parse(text)
+        assert.isFalse(data.hasOwnProperty('category'))
+    })
+
+    test('ensure that an event returns a category field when defined', async (assert) => {
+        const category = await createTestCategory()
+
+        const { text } = await supertest(BASE_URL)
+            .post(`/nations/${nation.oid}/events`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send({
+                name: 'hello',
+                description: 'world',
+                occurs_at: '2021-04-16T20:00:00.000+02:00',
+                ends_at: '2021-04-16T23:00:00.000+02:00',
+                category_id: category.id,
+            })
+            .expect(200)
+
+        const data = JSON.parse(text)
+        assert.equal(data.category.id, category.id)
+    })
+
+    test('ensure that an event can change categories', async (assert) => {
+        const event = await createTestEvent(nation.oid)
+        const category1 = await createTestCategory()
+        const category2 = await createTestCategory()
+
+        const text1 = await supertest(BASE_URL)
+            .put(`/nations/${nation.oid}/events/${event.id}`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send({
+                category_id: category1.id,
+            })
+            .expect(200)
+
+        const data1 = JSON.parse(text1.text)
+        assert.equal(data1.category.id, category1.id)
+
+        const { text } = await supertest(BASE_URL)
+            .put(`/nations/${nation.oid}/events/${event.id}`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send({
+                category_id: category2.id,
+            })
+            .expect(200)
+
+        const data = JSON.parse(text)
+        assert.equal(data.category.id, category2.id)
     })
 })
 

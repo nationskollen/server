@@ -56,7 +56,7 @@ export default class Event extends BaseModel {
     @column()
     public onlyStudents: boolean
 
-    @column()
+    @column({ serializeAs: null })
     public categoryId: number
 
     /**

@@ -187,7 +187,7 @@ Route.group(() => {
     //TODO Set routes for different queries
     //TODO: Can be removed, the comment above?
     Route.get('/events', 'EventsController.all')
-    Route.get('/events/:eid', 'EventsController.single').middleware(['event'])
+    Route.get('/events/:eid', 'EventsController.single').middleware(['event:preload'])
     Route.get('/nations/:id/events', 'EventsController.index').middleware(['nation'])
     Route.post('/nations/:id/events', 'EventsController.create').middleware([
         'auth',
@@ -211,10 +211,4 @@ Route.group(() => {
         'event',
         'scope:admin',
     ])
-
-    // ----------------------------------------------------------
-    // Event - categories
-    // ----------------------------------------------------------
-    Route.get('/categories', 'CategoryController.index')
-
 }).prefix('/api/v1')

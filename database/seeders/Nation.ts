@@ -9,10 +9,10 @@ export default class NationSeeder extends BaseSeeder {
     public async run() {
         for (const category in Categories) {
             await Category.create({
-                name: category
+                name: category,
             })
         }
-        
+
         const nations = await NationFactory.with('events', 3)
             .merge([
                 {

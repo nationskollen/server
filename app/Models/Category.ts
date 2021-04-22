@@ -21,12 +21,12 @@ export default class Category extends BaseModel {
     /**
      * The date the model was created
      */
-    @column.dateTime({ autoCreate: true })
+    @column.dateTime({ autoCreate: true, serializeAs: null })
     public createdAt: DateTime
 
     /**
      * The date the model was updated
      */
-    @column.dateTime({ autoCreate: true, autoUpdate: true })
+    @column.dateTime({ autoCreate: true, autoUpdate: true, serializeAs: null })
     public updatedAt: DateTime
 }
