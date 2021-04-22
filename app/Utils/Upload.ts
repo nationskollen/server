@@ -56,7 +56,7 @@ export async function attemptFileUpload(file?: MultipartFileContract) {
         throw new FileNotFoundException()
     }
 
-    if (file.extname === 'gif'){
+    if (file.extname === 'gif') {
         // Note that this will throw exceptions if it fails.
         // Since they are not caught, the request will error out.
         // @link https://github.com/adonisjs/bodyparser/blob/bd1891c392865f5fe77546e8ecd488b4309b1eee/src/Multipart/File.ts#L164
@@ -103,8 +103,12 @@ export function attemptFileRemoval(name?: string) {
  */
 export async function compressFile(tmpPath: string, outName: string, extName?: string) {
     if (extName === 'png') {
-        await sharp(tmpPath).png({ quality: UPLOAD_QUALITY_VALUE }).toFile(Application.publicPath(outName))
+        await sharp(tmpPath)
+            .png({ quality: UPLOAD_QUALITY_VALUE })
+            .toFile(Application.publicPath(outName))
     } else {
-        await sharp(tmpPath).jpeg({ quality: UPLOAD_QUALITY_VALUE }).toFile(Application.publicPath(outName))
+        await sharp(tmpPath)
+            .jpeg({ quality: UPLOAD_QUALITY_VALUE })
+            .toFile(Application.publicPath(outName))
     }
 }
