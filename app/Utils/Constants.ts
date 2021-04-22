@@ -13,3 +13,4 @@ export const HOSTNAME = process.env.ASSET_HOSTNAME
 export const BASE_URL = `${HOSTNAME}/api/v1`
 
 export const UPLOAD_QUALITY_VALUE = 45
+export const MINIMUM_PAGE = 1
