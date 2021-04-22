@@ -7,6 +7,7 @@
  */
 import { DateTime } from 'luxon'
 import Event from 'App/Models/Event'
+import { MINIMUM_PAGE } from 'App/Utils/Constants'
 import { ExtractScopes } from '@ioc:Adonis/Lucid/Model'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { attemptFileUpload, attemptFileRemoval } from 'App/Utils/Upload'
@@ -63,7 +64,7 @@ export default class EventsController {
             this.applyFilters(scopes, filters)
         })
 
-        const events = await query.paginate(specified.page ?? 1, specified.amount)
+        const events = await query.paginate(specified.page ?? MINIMUM_PAGE, specified.amount)
         return events.toJSON()
     }
 
@@ -85,7 +86,7 @@ export default class EventsController {
                 this.applyFilters(scopes, filters)
             })
 
-        const events = await query.paginate(specified.page ?? 1, specified.amount)
+        const events = await query.paginate(specified.page ?? MINIMUM_PAGE, specified.amount)
         return events.toJSON()
     }
 

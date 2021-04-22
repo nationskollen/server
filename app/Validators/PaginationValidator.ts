@@ -15,7 +15,7 @@ export default class PaginationValidator {
          * @see {@link https://preview.adonisjs.com/guides/validator/custom-rules | Custom rules - adonisjs}
          */
         page: schema.number.optional([rules.range(1, 5000)]),
-        amount: schema.number.optional(),
+        amount: schema.number.optional([rules.unsigned()]),
     })
 
     public messages = {}

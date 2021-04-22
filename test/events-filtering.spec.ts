@@ -246,4 +246,8 @@ test.group('Events filtering', async () => {
     test('ensure that filtering for 0 pages is not viable', async () => {
         await supertest(BASE_URL).get(`/events?page=0&amount=0`).expect(422)
     })
+
+    test('ensure that filtering for negative amount is not viable', async () => {
+        await supertest(BASE_URL).get(`/events?page=1&amount=-20`).expect(422)
+    })
 })
