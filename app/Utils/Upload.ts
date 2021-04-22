@@ -15,10 +15,13 @@
  */
 
 import fs from 'fs'
+import sharp from 'sharp'
 import crypto from 'crypto'
 import Logger from '@ioc:Adonis/Core/Logger'
+import UPLOAD_QUALITY_VALUE from 'App/Utils/Constants'
 import Application from '@ioc:Adonis/Core/Application'
 import { MultipartFileContract } from '@ioc:Adonis/Core/BodyParser'
+import FileNotFoundException from 'App/Exceptions/FileNotFoundException'
 
 /**
  * @constant `MAX_FILE_SIZE` Specifies the maximum size for uploading a file
@@ -49,11 +52,21 @@ export async function attemptFileUpload(file?: MultipartFileContract) {
         .digest('hex')
     const name = `${hash}.${file.extname}`
 
-    // Note that this will throw exceptions if it fails.
-    // Since they are not caught, the request will error out.
-    // @link https://github.com/adonisjs/bodyparser/blob/bd1891c392865f5fe77546e8ecd488b4309b1eee/src/Multipart/File.ts#L164
-    await file.move(Application.publicPath(), { name })
+    if (!file.tmpPath) {
+        throw new FileNotFoundException()
+    }
 
+    if (file.extname === 'gif'){
+        // Note that this will throw exceptions if it fails.
+        // Since they are not caught, the request will error out.
+        // @link https://github.com/adonisjs/bodyparser/blob/bd1891c392865f5fe77546e8ecd488b4309b1eee/src/Multipart/File.ts#L164
+        // TODO: Must be enabled if file ext is gif
+        await file?.move(Application.publicPath(), { name })
+        return name
+    }
+
+    // If it is not a gif, then we will simply use our file-compressor
+    await compressFile(file.tmpPath, name, file.extname)
     return name
 }
 
@@ -77,5 +90,21 @@ export function attemptFileRemoval(name?: string) {
         fs.unlinkSync(path)
     } catch (e) {
         Logger.error('Could not remove uploaded file:', e)
+    }
+}
+
+/**
+ * Compresses a file
+ * @todo Add new field in models for a mobile optimized image
+ *
+ * @param tmpPath The path where sharp will find the file
+ * @param outName The name of the output file after compression
+ * @param extName The extention in the input file
+ */
+export async function compressFile(tmpPath: string, outName: string, extName?: string) {
+    if (extName === 'png') {
+        await sharp(tmpPath).png({ quality: UPLOAD_QUALITY_VALUE }).toFile(Application.publicPath(outName))
+    } else {
+        await sharp(tmpPath).jpeg({ quality: UPLOAD_QUALITY_VALUE }).toFile(Application.publicPath(outName))
     }
 }
