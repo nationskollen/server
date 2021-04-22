@@ -48,6 +48,12 @@ jobs:
             node ace migration:run --force
             node ace db:seed --force
 
+            # The public directory must be created manually.
+            # Otherwise, any upload that is compressed using sharp
+            # will fail until the public directory is created
+            # (e.g. by uploading a file that does not get compressed)
+            mkdir -p public
+
             # Replace current version with the new one
             cd ../..
             mv server server-old
