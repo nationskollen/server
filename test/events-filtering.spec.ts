@@ -229,7 +229,7 @@ test.group('Events filtering', async () => {
         await supertest(BASE_URL).get(`/events?page=asdf`).expect(422)
     })
 
-    test('ensure that filtering for 0 events returns all no event', async (assert) => {
+    test('ensure that filtering for 0 events returns no event', async (assert) => {
         const testNation = await NationFactory.create()
         await createTestEvent(testNation.oid)
         await createTestEvent(testNation.oid)
@@ -243,6 +243,7 @@ test.group('Events filtering', async () => {
 
         const data = JSON.parse(text)
         assert.equal(data.meta.per_page, 0)
+        assert.equal(data.data.length, 0)
     })
 
     test('ensure that filtering for 0 pages is not viable', async () => {
