@@ -10,13 +10,7 @@ import {
 } from 'App/Utils/Test'
 import { NationFactory } from '../database/factories/index'
 
-test.group('Events filtering', async (group) => {
-    let nation: TestNationContract
-
-    group.before(async () => {
-        nation = await createTestNation()
-    })
-
+test.group('Events filtering', async () => {
     test('ensure that you can filter by specific date', async (assert) => {
         const nation = await NationFactory.create()
         const testEventOne = await createTestEvent(
@@ -266,6 +260,7 @@ test.group('Events filtering', async (group) => {
     })
 
     test('ensure that filtering for different categories returns different set of events per category', async (assert) => {
+        const nation = await createTestNation()
         const event1 = await createTestEvent(nation.oid)
         const event2 = await createTestEvent(nation.oid)
         const event3 = await createTestEvent(nation.oid)

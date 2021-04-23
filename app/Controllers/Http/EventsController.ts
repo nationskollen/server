@@ -17,7 +17,6 @@ import EventUpdateValidator from 'App/Validators/Events/UpdateValidator'
 import EventCreateValidator from 'App/Validators/Events/CreateValidator'
 import EventUploadValidator from 'App/Validators/Events/UploadValidator'
 import EventFilterValidator from 'App/Validators/Events/FilterValidator'
-import CategoryValidator from 'App/Validators/Events/CategoryValidator'
 import PaginationValidator from 'App/Validators/PaginationValidator'
 
 /**
