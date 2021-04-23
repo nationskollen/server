@@ -120,7 +120,10 @@ export default class EventsController {
         // Apply the changes that was requested and save
         event.merge(changes)
         await event.save()
-        await event.preload('category')
+
+        if (event.categoryId) {
+            await event.preload('category')
+        }
 
         return event.toJSON()
     }
@@ -148,7 +151,10 @@ export default class EventsController {
 
         // Update cover image
         await event.save()
-        await event.preload('category')
+
+        if (event.categoryId) {
+            await event.preload('category')
+        }
 
         return event.toJSON()
     }
