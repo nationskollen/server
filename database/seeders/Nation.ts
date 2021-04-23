@@ -1,10 +1,18 @@
 import BaseSeeder from '@ioc:Adonis/Lucid/Seeder'
 import { NationFactory, UserFactory, MenuFactory, LocationFactory } from '../factories'
+import { Categories } from 'App/Utils/Categories'
+import Category from 'App/Models/Category'
 
 export default class NationSeeder extends BaseSeeder {
     public static developmentOnly = true
 
     public async run() {
+        for (const category in Categories) {
+            await Category.create({
+                name: category,
+            })
+        }
+
         const nations = await NationFactory.with('events', 3)
             .merge([
                 {

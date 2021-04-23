@@ -18,6 +18,7 @@ import {
     OpeningHourFactory,
     OpeningHourExceptionFactory,
 } from 'Database/factories/index'
+import Category from 'App/Models/Category'
 
 /**
  * @interface TestNationContract
@@ -86,6 +87,11 @@ export async function createTestEvent(oid: number, occursAt?: DateTime) {
     return EventFactory.merge(mergeData).create()
 }
 
+export async function createTestCategory() {
+    return Category.create({
+        name: 'testCategory',
+    })
+}
 /**
  * Function that creates a test location to test with
  * @param oid The nation the location will be from

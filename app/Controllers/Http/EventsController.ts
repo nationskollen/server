@@ -75,9 +75,11 @@ export default class EventsController {
         const filters = await getValidatedData(request, EventFilterValidator, true)
         const specified = await getValidatedData(request, PaginationValidator, true)
 
-        const query = Event.query().apply((scopes) => {
-            this.applyFilters(scopes, filters)
-        })
+        const query = Event.query()
+            .preload('category')
+            .apply((scopes) => {
+                this.applyFilters(scopes, filters)
+            })
 
         const events = await query.paginate(this.getPageNumber(specified.page), specified.amount)
         return events.toJSON()
@@ -97,6 +99,7 @@ export default class EventsController {
 
         const query = Event.query()
             .where('nation_id', oid)
+            .preload('category')
             .apply((scopes) => {
                 this.applyFilters(scopes, filters)
             })
@@ -113,6 +116,12 @@ export default class EventsController {
         const data = await getValidatedData(request, EventCreateValidator)
         const event = await nation.related('events').create(data)
 
+        // This is so that if we have defined a category when creating an
+        // event, it will preload the category with the response.
+        if (event.categoryId) {
+            await event.preload('category')
+        }
+
         return event.toJSON()
     }
 
@@ -126,6 +135,10 @@ export default class EventsController {
         // Apply the changes that was requested and save
         event.merge(changes)
         await event.save()
+
+        if (event.categoryId) {
+            await event.preload('category')
+        }
 
         return event.toJSON()
     }
@@ -153,6 +166,10 @@ export default class EventsController {
 
         // Update cover image
         await event.save()
+
+        if (event.categoryId) {
+            await event.preload('category')
+        }
 
         return event.toJSON()
     }

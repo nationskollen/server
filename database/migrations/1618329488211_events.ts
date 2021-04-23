@@ -18,6 +18,11 @@ export default class Events extends BaseSchema {
             table.integer('location_id').unsigned()
             table.boolean('only_members').defaultTo(false)
             table.boolean('only_students').defaultTo(false)
+            table
+                .integer('category_id')
+                .unsigned()
+                .references('id')
+                .inTable(DatabaseTables.Categories)
             table.dateTime('occurs_at').notNullable()
             table.dateTime('ends_at').notNullable()
             table.string('cover_img_src')
