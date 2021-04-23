@@ -140,4 +140,12 @@ export default class Event extends BaseModel {
     public static inOrder = scope((query) => {
         query.orderBy('occurs_at', 'asc')
     })
+
+    /**
+     * filtering options to query events for their categoryId
+     * @param categoryId the number for the id to query for
+     */
+    public static perCategory = scope((query, categoryId: number) => {
+        query.where('categoryId', categoryId)
+    })
 }
