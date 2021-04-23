@@ -8,6 +8,7 @@
 import { DateTime } from 'luxon'
 import Event from 'App/Models/Event'
 import { MINIMUM_PAGE } from 'App/Utils/Constants'
+import { Categories } from 'App/Utils/Categories'
 import { ExtractScopes } from '@ioc:Adonis/Lucid/Model'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { attemptFileUpload, attemptFileRemoval } from 'App/Utils/Upload'
@@ -16,6 +17,7 @@ import EventUpdateValidator from 'App/Validators/Events/UpdateValidator'
 import EventCreateValidator from 'App/Validators/Events/CreateValidator'
 import EventUploadValidator from 'App/Validators/Events/UploadValidator'
 import EventFilterValidator from 'App/Validators/Events/FilterValidator'
+import CategoryValidator from 'App/Validators/Events/CategoryValidator'
 import PaginationValidator from 'App/Validators/PaginationValidator'
 
 /**
@@ -51,6 +53,12 @@ export default class EventsController {
         scopes.inOrder()
     }
 
+    private applyCategory(scopes: ExtractScopes<typeof Event>, category?: number) {
+        if (category) {
+            scopes.perCategory(category)
+        }
+    }
+
     /**
      * Helper function for getting the page number from a request.
      * If no page number was specified, {@link MINIMUM_PAGE} is returned.
@@ -72,13 +80,18 @@ export default class EventsController {
      * in `Routes.ts`
      */
     public async all({ request }: HttpContextContract) {
-        const filters = await getValidatedData(request, EventFilterValidator, true)
+        const { date, before, after, category } = await getValidatedData(
+            request,
+            EventFilterValidator,
+            true
+        )
         const specified = await getValidatedData(request, PaginationValidator, true)
 
         const query = Event.query()
             .preload('category')
             .apply((scopes) => {
-                this.applyFilters(scopes, filters)
+                this.applyFilters(scopes, { date, before, after })
+                this.applyCategory(scopes, category)
             })
 
         const events = await query.paginate(this.getPageNumber(specified.page), specified.amount)
