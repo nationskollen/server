@@ -6,7 +6,6 @@ import {
     createTestCategory,
     createTestEvent,
     createTestNation,
-    TestNationContract,
 } from 'App/Utils/Test'
 import { NationFactory } from '../database/factories/index'
 

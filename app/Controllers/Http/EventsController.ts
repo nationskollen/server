@@ -8,7 +8,6 @@
 import { DateTime } from 'luxon'
 import Event from 'App/Models/Event'
 import { MINIMUM_PAGE } from 'App/Utils/Constants'
-import { Categories } from 'App/Utils/Categories'
 import { ExtractScopes } from '@ioc:Adonis/Lucid/Model'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { attemptFileUpload, attemptFileRemoval } from 'App/Utils/Upload'
@@ -104,16 +103,32 @@ export default class EventsController {
         return getEvent(request).toJSON()
     }
 
+    /**
+     * Method to retrieve the long description of an event
+     */
+    public async description({ request }: HttpContextContract) {
+        const { longDescription, createdAt, updatedAt } = getEvent(request)
+
+        return {
+            long_description: longDescription,
+            created_at: createdAt,
+            updated_at: updatedAt,
+        }
+    }
+
+    /**
+     * Method to retrieve a single event
+     */
     public async index({ request }: HttpContextContract) {
         const { oid } = getNation(request)
-        const filters = await getValidatedData(request, EventFilterValidator, true)
+        const { date, before, after } = await getValidatedData(request, EventFilterValidator, true)
         const specified = await getValidatedData(request, PaginationValidator, true)
 
         const query = Event.query()
             .where('nation_id', oid)
             .preload('category')
             .apply((scopes) => {
-                this.applyFilters(scopes, filters)
+                this.applyFilters(scopes, { date, before, after })
             })
 
         const events = await query.paginate(this.getPageNumber(specified.page), specified.amount)
