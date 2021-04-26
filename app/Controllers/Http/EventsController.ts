@@ -8,7 +8,6 @@
 import { DateTime } from 'luxon'
 import Event from 'App/Models/Event'
 import { MINIMUM_PAGE } from 'App/Utils/Constants'
-import { Categories } from 'App/Utils/Categories'
 import { ExtractScopes } from '@ioc:Adonis/Lucid/Model'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { attemptFileUpload, attemptFileRemoval } from 'App/Utils/Upload'
