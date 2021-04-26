@@ -22,7 +22,7 @@ export default class Subscription extends BaseModel {
      * Unique access key that is used to send requests that requires "authentication"
      */
     @column()
-    public uuid: number
+    public uuid: string
 
     /**
      * Id of the nation that is subscribed to

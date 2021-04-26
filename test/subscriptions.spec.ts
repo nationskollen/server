@@ -1,6 +1,5 @@
 import test from 'japa'
 import supertest from 'supertest'
-import PushToken from 'App/Models/PushToken'
 import { BASE_URL } from 'App/Utils/Constants'
 import Subscription from 'App/Models/Subscription'
 import { NationFactory, PushTokenFactory, SubscriptionTopicFactory } from 'Database/factories/index'
