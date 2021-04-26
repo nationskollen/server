@@ -33,10 +33,17 @@ export default class Event extends BaseModel {
     public name: string
 
     /**
-     * The description of the event
+     * The short description of the event
      */
     @column()
-    public description: string
+    public shortDescription: string
+
+    /**
+     * The long description of the event.
+     * This will not be included by default in the response.
+     */
+    @column({ serializeAs: null })
+    public longDescription: string
 
     /**
      * The location of the event
