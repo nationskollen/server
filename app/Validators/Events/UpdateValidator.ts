@@ -11,6 +11,7 @@ export default class EventUpdateValidator {
     constructor(protected ctx: HttpContextContract) {}
 
     public refs = schema.refs({ nationId: getOidRef(this.ctx) })
+
     public schema = schema.create({
         name: schema.string.optional(),
         short_description: schema.string.optional(),

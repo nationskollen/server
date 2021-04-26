@@ -47,9 +47,7 @@ import Location from 'App/Models/Location'
 import Event from 'App/Models/Event'
 import { toAbsolutePath } from 'App/Utils/Serialize'
 import { 
-    hasOne,
     hasMany,
-    HasOne,
     HasMany,
     column,
     BaseModel 
@@ -131,11 +129,8 @@ export default class Nation extends BaseModel {
     /**
      * The default location related to the nation
      */
-        // TODO: set serializeAs null?
-    @hasOne(() => Location, {
-        foreignKey: 'defaultLocationId' 
-    })
-    public defaultLocationId: HasOne<typeof Location>
+    @column()
+    public defaultLocationId: number
 
     /**
      * The different locations related to the nation
