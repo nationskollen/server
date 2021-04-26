@@ -43,8 +43,8 @@ test.group('Events fetch', async (group) => {
         const data = JSON.parse(text)
 
         assert.equal(data.long_description, event.longDescription)
-        assert.equal(data.created_at, event.createdAt.toISO())
-        assert.equal(data.updated_at, event.updatedAt.toISO())
+        assert.exists(data.created_at)
+        assert.exists(data.updated_at)
     })
 })
 
