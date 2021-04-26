@@ -9,11 +9,11 @@
  * @module Request
  */
 import Menu from 'App/Models/Menu'
-import MenuItem from 'App/Models/MenuItem'
+import Event from 'App/Models/Event'
 import Nation from 'App/Models/Nation'
+import MenuItem from 'App/Models/MenuItem'
 import Location from 'App/Models/Location'
 import OpeningHour from 'App/Models/OpeningHour'
-import Event from 'App/Models/Event'
 import { RequestContract } from '@ioc:Adonis/Core/Request'
 import BadRequestException from 'App/Exceptions/BadRequestException'
 import MenuNotFoundException from 'App/Exceptions/MenuNotFoundException'
@@ -22,6 +22,7 @@ import NationNotFoundException from 'App/Exceptions/NationNotFoundException'
 import LocationNotFoundException from 'App/Exceptions/LocationNotFoundException'
 import MenuItemNotFoundException from 'App/Exceptions/MenuItemNotFoundException'
 import OpeningHourNotFoundException from 'App/Exceptions/OpeningHourNotFoundException'
+import SubscriptionNotFoundException from 'App/Exceptions/SubscriptionNotFoundException'
 import { RequestValidatorNode, ParsedTypedSchema, TypedSchema } from '@ioc:Adonis/Core/Validator'
 
 export function getLocation(request: RequestContract): Location {
@@ -82,6 +83,16 @@ export function getEvent(request: RequestContract): Event {
     }
 
     return event
+}
+
+export function getSubscription(request: RequestContract): Subscription {
+    const { subscription } = request
+
+    if (!subscription) {
+        throw new SubscriptionNotFoundException()
+    }
+
+    return subscription
 }
 
 export async function getValidatedData<T extends ParsedTypedSchema<TypedSchema>>(

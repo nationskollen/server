@@ -1,7 +1,8 @@
-import BaseSeeder from '@ioc:Adonis/Lucid/Seeder'
-import { NationFactory, UserFactory, MenuFactory, LocationFactory } from '../factories'
-import { Categories } from 'App/Utils/Categories'
 import Category from 'App/Models/Category'
+import BaseSeeder from '@ioc:Adonis/Lucid/Seeder'
+import { Categories } from 'App/Utils/Categories'
+import SubscriptionTopic from 'App/Models/SubscriptionTopic'
+import { NationFactory, UserFactory, MenuFactory, LocationFactory } from '../factories'
 
 export default class NationSeeder extends BaseSeeder {
     public static developmentOnly = true
@@ -12,6 +13,9 @@ export default class NationSeeder extends BaseSeeder {
                 name: category,
             })
         }
+
+        await SubscriptionTopic.create({ name: 'News' })
+        await SubscriptionTopic.create({ name: 'Events' })
 
         const nations = await NationFactory.with('events', 3)
             .merge([

@@ -1,13 +1,27 @@
 import { DateTime } from 'luxon'
 import User from 'App/Models/User'
 import Menu from 'App/Models/Menu'
+import Event from 'App/Models/Event'
 import Nation from 'App/Models/Nation'
 import MenuItem from 'App/Models/MenuItem'
 import Location from 'App/Models/Location'
-import Event from 'App/Models/Event'
-import Factory from '@ioc:Adonis/Lucid/Factory'
+import PushToken from 'App/Models/PushToken'
 import OpeningHour from 'App/Models/OpeningHour'
+import Factory from '@ioc:Adonis/Lucid/Factory'
 import { OpeningHourTypes } from 'App/Utils/Time'
+import SubscriptionTopic from 'App/Models/SubscriptionTopic'
+
+export const PushTokenFactory = Factory.define(PushToken, ({ faker }) => {
+    return {
+        token: `ExponentPushToken[${faker.unique(faker.git.commitSha)}]`,
+    }
+}).build()
+
+export const SubscriptionTopicFactory = Factory.define(SubscriptionTopic, ({ faker }) => {
+    return {
+        name: faker.unique(faker.random.word),
+    }
+}).build()
 
 export const EventFactory = Factory.define(Event, ({ faker }) => {
     return {

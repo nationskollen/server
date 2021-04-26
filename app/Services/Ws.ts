@@ -1,5 +1,5 @@
 /**
- * @category Misc
+ * @category Services
  * @module Ws
  */
 import WebSocket from 'ws'

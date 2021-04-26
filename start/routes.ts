@@ -185,8 +185,6 @@ Route.group(() => {
     // ----------------------------------------------------------
     // Event
     // ----------------------------------------------------------
-    //TODO Set routes for different queries
-    //TODO: Can be removed, the comment above?
     Route.get('/events', 'EventsController.all')
     Route.get('/events/:eid', 'EventsController.single').middleware(['event:preload'])
     Route.get('/nations/:id/events', 'EventsController.index').middleware(['nation'])
@@ -211,5 +209,15 @@ Route.group(() => {
         'auth',
         'event',
         'scope:admin',
+    ])
+
+    // ----------------------------------------------------------
+    // Subscriptions
+    // ----------------------------------------------------------
+    Route.get('/subscriptions/topics', 'SubscriptionsController.topics')
+    Route.get('/subscriptions', 'SubscriptionsController.single')
+    Route.post('/subscriptions', 'SubscriptionsController.create')
+    Route.delete('/subscriptions/:uuid', 'SubscriptionsController.delete').middleware([
+        'subscription',
     ])
 }).prefix('/api/v1')
