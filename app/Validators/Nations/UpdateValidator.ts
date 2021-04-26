@@ -28,14 +28,6 @@ export default class NationUploadValidator {
             }),
         ]),
         description: schema.string.optional(),
-        default_location_id: schema.number.optional([
-            rules.unsigned(),
-            rules.exists({
-                table: DatabaseTables.Locations,
-                column: 'id',
-                where: { nation_id: this.refs.nationId },
-            }),
-        ]),
         accent_color: schema.string.optional({}, [rules.regex(/^#[a-fA-F0-9]{6}$/)]),
     })
 

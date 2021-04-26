@@ -47,7 +47,9 @@ import Location from 'App/Models/Location'
 import Event from 'App/Models/Event'
 import { toAbsolutePath } from 'App/Utils/Serialize'
 import { 
+    hasOne,
     hasMany,
+    HasOne,
     HasMany,
     column,
     BaseModel 
@@ -121,16 +123,20 @@ export default class Nation extends BaseModel {
     public updatedAt: DateTime
 
     /**
+     * The different locations related to the nation
+     */
+    @hasOne(() => Location, { 
+        localKey: 'oid',
+        onQuery: (query) => query.where('isDefault', true),
+        serializeAs: 'default_location'
+    })
+    public defaultLocation: HasOne<typeof Location>
+
+    /**
      * The different staff users in the nation
      */
     @hasMany(() => User, { localKey: 'oid' })
     public staff: HasMany<typeof User>
-
-    /**
-     * The default location related to the nation
-     */
-    @column()
-    public defaultLocationId: number
 
     /**
      * The different locations related to the nation
@@ -164,12 +170,4 @@ export default class Nation extends BaseModel {
     public static async withLocations(oid: number) {
         return this.withPreloads().where('oid', oid).first()
     }
-
-    /**
-     * Fetch single nation with specific location preloaded
-     */
-    public static async withDefaultLocation() {
-        return Location.findBy('id', this.defaultLocationId)
-    }
-
 }

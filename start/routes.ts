@@ -44,7 +44,6 @@ Route.group(() => {
     // Single nation
     // ----------------------------------------------------------
     Route.get('/nations/:id', 'NationsController.single').middleware(['nation'])
-    Route.get('/nations/:id/default', 'NationsController.single').middleware(['nation'])
     Route.put('/nations/:id', 'NationsController.update').middleware([
         'auth',
         'nation',
