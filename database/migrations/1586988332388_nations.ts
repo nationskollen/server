@@ -11,6 +11,7 @@ export default class Nations extends BaseSchema {
             table.string('name').unique().notNullable()
             table.string('short_name')
             table.text('description')
+            table.integer('default_location_id').notNullable().defaultTo(0)
             table.string('icon_img_src')
             table.string('cover_img_src')
             table.string('accent_color').defaultTo('#333333')

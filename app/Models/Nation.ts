@@ -46,7 +46,14 @@ import User from 'App/Models/User'
 import Location from 'App/Models/Location'
 import Event from 'App/Models/Event'
 import { toAbsolutePath } from 'App/Utils/Serialize'
-import { hasMany, HasMany, column, BaseModel } from '@ioc:Adonis/Lucid/Orm'
+import { 
+    hasOne,
+    hasMany,
+    HasOne,
+    HasMany,
+    column,
+    BaseModel 
+} from '@ioc:Adonis/Lucid/Orm'
 
 /**
  * Nation class with all its attributes and methods
@@ -120,6 +127,15 @@ export default class Nation extends BaseModel {
      */
     @hasMany(() => User, { localKey: 'oid' })
     public staff: HasMany<typeof User>
+
+    /**
+     * The default location related to the nation
+     */
+        // TODO: set serializeAs null?
+    @hasOne(() => Location, {
+        foreignKey: 'defaultLocationId' 
+    })
+    public defaultLocationId: HasOne<typeof Location>
 
     /**
      * The different locations related to the nation
