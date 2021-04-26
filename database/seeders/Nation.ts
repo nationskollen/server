@@ -2,7 +2,13 @@ import Category from 'App/Models/Category'
 import BaseSeeder from '@ioc:Adonis/Lucid/Seeder'
 import { Categories } from 'App/Utils/Categories'
 import SubscriptionTopic from 'App/Models/SubscriptionTopic'
-import { NationFactory, UserFactory, MenuFactory, LocationFactory } from '../factories'
+import {
+    NationFactory,
+    UserFactory,
+    MenuFactory,
+    LocationFactory,
+    PushTokenFactory,
+} from '../factories'
 
 export default class NationSeeder extends BaseSeeder {
     public static developmentOnly = true
@@ -16,6 +22,9 @@ export default class NationSeeder extends BaseSeeder {
 
         await SubscriptionTopic.create({ name: 'News' })
         await SubscriptionTopic.create({ name: 'Events' })
+
+        // Create a test token that can be used in insomnia requests
+        await PushTokenFactory.merge({ token: 'ExponentPushToken[test]' }).create()
 
         const nations = await NationFactory.with('events', 3)
             .merge([
