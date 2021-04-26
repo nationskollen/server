@@ -34,8 +34,11 @@ export default class NationMiddleware {
     ) {
         let nation: Nation | null
 
+        console.log(options)
         if (options.includes('preload')) {
             nation = await Nation.withLocations(params.id)
+        } else if (options.includes('default')) {
+            nation = await Nation.withDefaultLocation()
         } else {
             nation = await Nation.findBy('oid', params.id)
         }

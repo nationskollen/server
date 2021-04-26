@@ -164,4 +164,12 @@ export default class Nation extends BaseModel {
     public static async withLocations(oid: number) {
         return this.withPreloads().where('oid', oid).first()
     }
+
+    /**
+     * Fetch single nation with specific location preloaded
+     */
+    public static async withDefaultLocation() {
+        return Location.findBy('id', this.defaultLocationId)
+    }
+
 }
