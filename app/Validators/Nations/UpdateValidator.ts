@@ -16,11 +16,7 @@ export default class NationUploadValidator {
                 column: 'name',
             }),
         ]),
-        short_name: schema.string.optional({}, [
-            rules.alpha({
-                allow: ['space', 'dash'],
-            }),
-        ]),
+        short_name: schema.string.optional(),
         description: schema.string.optional(),
         accent_color: schema.string.optional({}, [rules.regex(/^#[a-fA-F0-9]{6}$/)]),
     })

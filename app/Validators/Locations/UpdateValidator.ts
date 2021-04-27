@@ -9,11 +9,7 @@ export default class LocationUpdateValidator {
     constructor(protected ctx: HttpContextContract) {}
 
     public schema = schema.create({
-        name: schema.string.optional({}, [
-            rules.alpha({
-                allow: ['space', 'dash'],
-            }),
-        ]),
+        name: schema.string.optional(),
         description: schema.string.optional(),
         address: schema.string.optional(),
         show_on_map: schema.boolean.optional(),

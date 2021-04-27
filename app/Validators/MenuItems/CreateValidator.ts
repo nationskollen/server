@@ -9,11 +9,7 @@ export default class MenuItemCreateValidator {
     constructor(protected ctx: HttpContextContract) {}
 
     public schema = schema.create({
-        name: schema.string({}, [
-            rules.alpha({
-                allow: ['space', 'dash'],
-            }),
-        ]),
+        name: schema.string(),
         description: schema.string({}, []),
         price: schema.number([rules.unsigned()]),
         hidden: schema.boolean(),
