@@ -11,19 +11,12 @@ export default class NationUploadValidator {
 
     public schema = schema.create({
         name: schema.string.optional({}, [
-            rules.alpha({
-                allow: ['space', 'dash'],
-            }),
             rules.unique({
                 table: DatabaseTables.Nations,
                 column: 'name',
             }),
         ]),
-        short_name: schema.string.optional({}, [
-            rules.alpha({
-                allow: ['space', 'dash'],
-            }),
-        ]),
+        short_name: schema.string.optional(),
         description: schema.string.optional(),
         accent_color: schema.string.optional({}, [rules.regex(/^#[a-fA-F0-9]{6}$/)]),
     })

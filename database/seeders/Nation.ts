@@ -13,7 +13,9 @@ export default class NationSeeder extends BaseSeeder {
             })
         }
 
-        const nations = await NationFactory.with('events', 3)
+        const nations = await NationFactory.with('events', 3, (builder) => {
+            builder.merge([{ categoryId: 1 }, { categoryId: 2 }, { categoryId: 3 }])
+        })
             .merge([
                 {
                     oid: 400,
