@@ -3,59 +3,12 @@ import path from 'path'
 import supertest from 'supertest'
 import Location from 'App/Models/Location'
 import { BASE_URL, HOSTNAME } from 'App/Utils/Constants'
-import { LocationFactory } from 'Database/factories/index'
 import {
     TestNationContract,
     createTestNation,
     createTestLocation,
     toRelativePath,
 } from 'App/Utils/Test'
-
-test.group('Locations fetch all shown on map', async () => {
-    test('ensure that you can fetch all locations that is shown on map', async (assert) => {
-        const testNation = await createTestNation()
-        await LocationFactory.merge([
-            {
-                nationId: testNation.oid,
-                showOnMap: true,
-            },
-            {
-                nationId: testNation.oid,
-                showOnMap: true,
-            },
-            {
-                nationId: testNation.oid,
-                showOnMap: true,
-            },
-        ]).createMany(3)
-
-        const { text } = await supertest(BASE_URL).get('/locations/map').expect(200)
-
-        const data = JSON.parse(text)
-
-        assert.isArray(data)
-        assert.isAbove(data.length, 3)
-    })
-
-    test('ensure that you can locations that should not be shown does not get returned', async (assert) => {
-        const testNation = await createTestNation()
-        const testLocation = await LocationFactory.merge({
-            nationId: testNation.oid,
-            showOnMap: false,
-        }).create()
-
-        const { text } = await supertest(BASE_URL).get('/locations/map').expect(200)
-
-        const data = JSON.parse(text)
-
-        assert.isArray(data)
-
-        const locations = data as Array<Location>
-        locations.forEach((location: Location) => {
-            assert.notEqual(location.id, testLocation.id)
-        })
-    })
-})
 
 test.group('Locations fetch', async () => {
     test('ensure a location is default false as the default location', async (assert) => {

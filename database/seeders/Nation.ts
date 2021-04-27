@@ -35,7 +35,7 @@ export default class NationSeeder extends BaseSeeder {
                 },
                 {
                     oid: 406,
-                    name: 'Kalmars nation',
+                    name: 'Kalmar nation',
                     shortName: 'Kalmars',
                 },
                 {
@@ -60,12 +60,12 @@ export default class NationSeeder extends BaseSeeder {
                 },
                 {
                     oid: 411,
-                    name: 'Östgötas nation',
+                    name: 'Östgöta nation',
                     shortName: "ÖG's",
                 },
                 {
                     oid: 412,
-                    name: 'Västgötas nation',
+                    name: 'Västgöta nation',
                     shortName: "VG's",
                 },
                 {
