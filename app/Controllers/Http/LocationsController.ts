@@ -47,18 +47,6 @@ export default class LocationsController {
     }
 
     /**
-     * Sets the previous location that was the default location for the nationback to false.
-     * It can only be initiated when a new default is proposed
-     */
-    private async setNotDefault() {
-        const previousDefault = await Location.findBy('isDefault', true)
-        if (previousDefault) {
-            previousDefault.isDefault = false;
-            await previousDefault.save()
-        }
-    }
-
-    /**
      * create a location
      */
     public async create({ request }: HttpContextContract) {
@@ -67,7 +55,7 @@ export default class LocationsController {
         const location = await nation.related('locations').create(data)
 
         if (data.is_default) {
-            await this.setNotDefault()
+            await Location.setNotDefault(nation.oid)
         }
 
         return location.toJSON()
@@ -81,7 +69,7 @@ export default class LocationsController {
         const changes = await getValidatedData(request, LocationUpdateValidator)
 
         if (changes.is_default && !location.isDefault) {
-            await this.setNotDefault()
+            await Location.setNotDefault(location.nationId)
         }
 
         // Apply the changes that was requested and save
@@ -98,7 +86,7 @@ export default class LocationsController {
         const location = getLocation(request)
 
         if (location.isDefault) {
-            await this.setNotDefault()
+            await Location.setNotDefault(location.nationId)
         }
 
         await location.delete()

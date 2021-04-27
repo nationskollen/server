@@ -34,11 +34,10 @@
 import Ws from 'App/Services/Ws'
 import { DateTime } from 'luxon'
 import Menu from 'App/Models/Menu'
-import Nation from 'App/Models/Nation'
 import OpeningHour from 'App/Models/OpeningHour'
 import { toBoolean, toAbsolutePath } from 'App/Utils/Serialize'
 import { ActivityLevels, MAX_ACTIVITY_LEVEL } from 'App/Utils/Activity'
-import { BaseModel, column, hasMany, HasMany, beforeUpdate, belongsTo, BelongsTo } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, column, hasMany, HasMany, beforeUpdate } from '@ioc:Adonis/Lucid/Orm'
 
 export default class Location extends BaseModel {
     /**
@@ -114,7 +113,6 @@ export default class Location extends BaseModel {
      */
     @column()
     public isDefault: boolean
-
 
     /**
      * If the location is currently open or not
@@ -251,5 +249,20 @@ export default class Location extends BaseModel {
      */
     public static async withOpeningHours(lid: number) {
         return this.withPreloads().where('id', lid).first()
+    }
+
+    /**
+     * Sets the previous location that was the default location for the nationback to false.
+     * It can only be initiated when a new default is proposed
+     */
+    public static async setNotDefault(oid: number) {
+        const previousDefault = await Location.query()
+            .where('isDefault', true)
+            .where('nationId', oid)
+            .first()
+        if (previousDefault) {
+            previousDefault.isDefault = false
+            await previousDefault.save()
+        }
     }
 }

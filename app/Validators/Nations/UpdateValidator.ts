@@ -2,15 +2,12 @@
  * @category Validator
  * @module NationUploadValidator
  */
-import { getOidRef } from 'App/Utils/Validator'
 import { DatabaseTables } from 'App/Utils/Database'
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
 export default class NationUploadValidator {
     constructor(protected ctx: HttpContextContract) {}
-
-    public refs = schema.refs({ nationId: getOidRef(this.ctx) })
 
     public schema = schema.create({
         name: schema.string.optional({}, [

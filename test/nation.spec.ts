@@ -46,15 +46,15 @@ test.group('Nation fetch', () => {
     })
 
     test('ensure a nation does not have a default location if not set to any', async (assert) => {
-        const nation = await createTestNation()
+        const testNation = await createTestNation()
 
         const { text } = await supertest(BASE_URL)
-            .get(`/nations/${nation.oid}`)
-            .set('Authorization', 'Bearer ' + nation.token)
+            .get(`/nations/${testNation.oid}`)
+            .set('Authorization', 'Bearer ' + testNation.token)
             .expect(200)
 
         const data = JSON.parse(text)
-        assert.isFalse(data.hasOwnProperty('is_default'))
+        assert.isFalse(data.hasOwnProperty('default_location'))
     })
 })
 

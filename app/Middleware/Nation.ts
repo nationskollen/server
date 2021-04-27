@@ -36,11 +36,8 @@ export default class NationMiddleware {
 
         if (options.includes('preload')) {
             nation = await Nation.withLocations(params.id)
-        } else if (options.includes('isDefault')) {
-            nation = await Nation.query()
-                .preload('defaultLocation')
-                .where('oid', params.id)
-                .first()
+        } else if (options.includes('preloadDefault')) {
+            nation = await Nation.query().preload('defaultLocation').where('oid', params.id).first()
         } else {
             nation = await Nation.findBy('oid', params.id)
         }
