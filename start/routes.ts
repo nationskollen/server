@@ -43,15 +43,15 @@ Route.group(() => {
     // ----------------------------------------------------------
     // Single nation
     // ----------------------------------------------------------
-    Route.get('/nations/:id', 'NationsController.single').middleware(['nation'])
+    Route.get('/nations/:id', 'NationsController.single').middleware(['nation:isDefault'])
     Route.put('/nations/:id', 'NationsController.update').middleware([
         'auth',
-        'nation',
+        'nation:isDefault',
         'scope:admin',
     ])
     Route.post('/nations/:id/upload', 'NationsController.upload').middleware([
         'auth',
-        'nation',
+        'nation:isDefault',
         'scope:admin',
     ])
 

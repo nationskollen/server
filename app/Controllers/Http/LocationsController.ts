@@ -66,8 +66,8 @@ export default class LocationsController {
         const data = await getValidatedData(request, LocationCreateValidator)
         const location = await nation.related('locations').create(data)
 
-        if (data.is_default ) {
-            this.setNotDefault()
+        if (data.is_default) {
+            await this.setNotDefault()
         }
 
         return location.toJSON()
@@ -81,8 +81,7 @@ export default class LocationsController {
         const changes = await getValidatedData(request, LocationUpdateValidator)
 
         if (changes.is_default && !location.isDefault) {
-            console.log("setting..")
-            this.setNotDefault()
+            await this.setNotDefault()
         }
 
         // Apply the changes that was requested and save
@@ -97,6 +96,11 @@ export default class LocationsController {
      */
     public async delete({ request }: HttpContextContract) {
         const location = getLocation(request)
+
+        if (location.isDefault) {
+            await this.setNotDefault()
+        }
+
         await location.delete()
     }
 
