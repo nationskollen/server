@@ -12,8 +12,8 @@ import { OpeningHourTypes } from 'App/Utils/Time'
 export const EventFactory = Factory.define(Event, ({ faker }) => {
     return {
         name: faker.commerce.productName(),
-        short_description: faker.lorem.sentence(100),
-        long_description: faker.lorem.paragraphs(3),
+        short_description: faker.lorem.sentence(25),
+        long_description: faker.lorem.paragraphs(10),
         onlyMembers: faker.datatype.boolean(),
         onlyStudents: faker.datatype.boolean(),
         occursAt: DateTime.fromObject({
