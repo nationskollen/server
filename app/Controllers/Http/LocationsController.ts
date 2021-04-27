@@ -35,18 +35,6 @@ export default class LocationsController {
     }
 
     /**
-     * Fetch all locations that should be display on the map
-     */
-    public async onMap(_: HttpContextContract) {
-        const locations = await Location.query()
-            .preload('openingHours')
-            .preload('openingHourExceptions')
-            .where('showOnMap', true)
-
-        return locations.map((location: Location) => location.toJSON())
-    }
-
-    /**
      * create a location
      */
     public async create({ request }: HttpContextContract) {

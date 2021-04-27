@@ -84,7 +84,6 @@ Route.group(() => {
     // ----------------------------------------------------------
     // Location actions
     // ----------------------------------------------------------
-    Route.get('/locations/map', 'LocationsController.onMap')
     Route.get('/locations/:lid', 'LocationsController.single').middleware(['location:preload'])
     Route.put('/locations/:lid/open', 'LocationsController.open').middleware([
         'auth',
