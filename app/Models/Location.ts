@@ -109,9 +109,14 @@ export default class Location extends BaseModel {
     public activityLevel: ActivityLevels
 
     /**
+     * The assigned default location for nation (parent model)
+     */
+    @column({ consume: toBoolean })
+    public isDefault: boolean
+
+    /**
      * If the location is currently open or not
      */
-    // TODO: Consider not serializing this and instead calculate it on the frontend
     @column({ consume: toBoolean })
     public isOpen: boolean
 
@@ -244,5 +249,20 @@ export default class Location extends BaseModel {
      */
     public static async withOpeningHours(lid: number) {
         return this.withPreloads().where('id', lid).first()
+    }
+
+    /**
+     * Sets the previous location that was the default location for the nationback to false.
+     * It can only be initiated when a new default is proposed
+     */
+    public static async setNotDefault(oid: number) {
+        const previousDefault = await Location.query()
+            .where('isDefault', true)
+            .where('nationId', oid)
+            .first()
+        if (previousDefault) {
+            previousDefault.isDefault = false
+            await previousDefault.save()
+        }
     }
 }

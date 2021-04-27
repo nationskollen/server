@@ -19,7 +19,7 @@ export default class NationsController {
      * fetch all nations from system
      */
     public async index({}: HttpContextContract) {
-        const nations = await Nation.all()
+        const nations = await Nation.query().preload('defaultLocation')
 
         return nations.map((nation: Nation) => nation.toJSON())
     }

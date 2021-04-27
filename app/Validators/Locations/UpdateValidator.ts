@@ -25,6 +25,7 @@ export default class LocationUpdateValidator {
             rules.requiredWhen('show_on_map', '=', true),
             rules.range(-180, 180),
         ]),
+        is_default: schema.boolean.optional(),
         max_capacity: schema.number.optional([rules.unsigned(), rules.range(1, 5000)]),
     })
 

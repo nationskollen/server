@@ -44,6 +44,18 @@ test.group('Nation fetch', () => {
         assert.equal(data.icon_img_src, nation.iconImgSrc)
         assert.equal(data.accent_color, nation.accentColor)
     })
+
+    test('ensure a nation does not have a default location if not set to any', async (assert) => {
+        const testNation = await createTestNation()
+
+        const { text } = await supertest(BASE_URL)
+            .get(`/nations/${testNation.oid}`)
+            .set('Authorization', 'Bearer ' + testNation.token)
+            .expect(200)
+
+        const data = JSON.parse(text)
+        assert.isFalse(data.hasOwnProperty('default_location'))
+    })
 })
 
 test.group('Nation update', (group) => {
