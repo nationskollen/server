@@ -142,9 +142,9 @@ export default class Location extends BaseModel {
      * The {@link openingHours | opening hours} that are used at a given
      * location, there can be multiple opening hours
      */
-    @hasMany(() => OpeningHour, { 
+    @hasMany(() => OpeningHour, {
         serializeAs: 'opening_hours',
-        onQuery: (query) =>  query.orderBy('day', 'asc')
+        onQuery: (query) => query.orderBy('day', 'asc'),
     })
     public openingHours: HasMany<typeof OpeningHour>
 
