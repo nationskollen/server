@@ -11,9 +11,6 @@ export default class NationUploadValidator {
 
     public schema = schema.create({
         name: schema.string.optional({}, [
-            rules.alpha({
-                allow: ['space', 'dash'],
-            }),
             rules.unique({
                 table: DatabaseTables.Nations,
                 column: 'name',
