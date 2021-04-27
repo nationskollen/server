@@ -111,7 +111,7 @@ export default class Location extends BaseModel {
     /**
      * The assigned default location for nation (parent model)
      */
-    @column()
+    @column({ consume: toBoolean })
     public isDefault: boolean
 
     /**
