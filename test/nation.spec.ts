@@ -209,6 +209,21 @@ test.group('Nation upload', (group) => {
         await supertest(HOSTNAME).get(toRelativePath(data.cover_img_src)).expect(200)
     })
 
+    test('ensure that when uploading icon image, a smaller image is generated as well', async (assert) => {
+        const { text } = await supertest(BASE_URL)
+            .post(`/nations/${nation.oid}/upload`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .attach('icon', iconImagePath)
+            .expect(200)
+
+        const data = JSON.parse(text)
+
+        assert.isNotNull(data.pin_img_src)
+
+        // Ensure that the uploaded images can be accessed via the specified URL
+        await supertest(HOSTNAME).get(toRelativePath(data.pin_img_src)).expect(200)
+    })
+
     test('ensure that old uploads are removed', async (assert) => {
         // Upload initial images
         const { text } = await supertest(BASE_URL)

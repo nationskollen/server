@@ -34,10 +34,20 @@ export const MAX_FILE_SIZE = '3mb'
 export const ALLOWED_FILE_EXTS = ['jpg', 'png', 'jpeg', 'gif']
 
 /**
+ * @constant `iconPrefix` prefix for what to name the icons that are smaller
+ * than regular icon images
+ */
+export const iconPrefix = 'icon_'
+
+/**
+ * @constant `PIN_IMG_HEIGHT`  Specifies the pin imgage hegiht to be scaled to
+ */
+export const PIN_IMG_HEIGHT = 50
+/**
  * Attempts a file upload to the server with a given file
  * @param file
  */
-export async function attemptFileUpload(file?: MultipartFileContract) {
+export async function attemptFileUpload(file?: MultipartFileContract, isIcon?: boolean) {
     if (!file) {
         return null
     }
@@ -63,6 +73,8 @@ export async function attemptFileUpload(file?: MultipartFileContract) {
         // TODO: Must be enabled if file ext is gif
         await file.move(Application.publicPath(), { name })
         return name
+    } else if (isIcon) {
+        compressIconFile(file.tmpPath, name)
     }
 
     // If it is not a gif, then we will simply use our file-compressor
@@ -111,4 +123,17 @@ export async function compressFile(tmpPath: string, outName: string, extName?: s
             .jpeg({ quality: UPLOAD_QUALITY_VALUE })
             .toFile(Application.publicPath(outName))
     }
+}
+
+/**
+ * Compresses a file (icon)
+ * @todo Add new field in models for a mobile optimized image
+ *
+ * @param tmpPath The path where sharp will find the file
+ * @param outName The name of the output file after compression
+ */
+export async function compressIconFile(tmpPath: string, outName: string) {
+    sharp(tmpPath)
+        .resize({ height: PIN_IMG_HEIGHT })
+        .toFile(Application.publicPath(iconPrefix + outName))
 }
