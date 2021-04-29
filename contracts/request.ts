@@ -7,6 +7,7 @@ import MenuItem from 'App/Models/MenuItem'
 import PushToken from 'App/Models/PushToken'
 import OpeningHour from 'App/Models/OpeningHour'
 import Subscription from 'App/Models/Subscription'
+import Notification from 'App/Models/Notification'
 
 declare module '@ioc:Adonis/Core/Request' {
     interface RequestContract {
@@ -19,5 +20,6 @@ declare module '@ioc:Adonis/Core/Request' {
         openingHour?: OpeningHour
         pushToken?: PushToken
         subscription?: Subscription
+        notification?: Notification
     }
 }

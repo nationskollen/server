@@ -220,4 +220,9 @@ Route.group(() => {
     Route.delete('/subscriptions/:uuid', 'SubscriptionsController.delete').middleware([
         'subscription',
     ])
+
+    // ----------------------------------------------------------
+    // Notifications
+    // ----------------------------------------------------------
+    Route.get('/notification/:nid', 'NotificationsController.index').middleware(['notification'])
 }).prefix('/api/v1')

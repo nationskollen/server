@@ -15,6 +15,7 @@ import MenuItem from 'App/Models/MenuItem'
 import Location from 'App/Models/Location'
 import OpeningHour from 'App/Models/OpeningHour'
 import Subscription from 'App/Models/Subscription'
+import Notification from 'App/Models/Notification'
 import { RequestContract } from '@ioc:Adonis/Core/Request'
 import BadRequestException from 'App/Exceptions/BadRequestException'
 import MenuNotFoundException from 'App/Exceptions/MenuNotFoundException'
@@ -24,6 +25,7 @@ import LocationNotFoundException from 'App/Exceptions/LocationNotFoundException'
 import MenuItemNotFoundException from 'App/Exceptions/MenuItemNotFoundException'
 import OpeningHourNotFoundException from 'App/Exceptions/OpeningHourNotFoundException'
 import SubscriptionNotFoundException from 'App/Exceptions/SubscriptionNotFoundException'
+import NotificationNotFoundException from 'App/Exceptions/NotificationNotFoundException'
 import { RequestValidatorNode, ParsedTypedSchema, TypedSchema } from '@ioc:Adonis/Core/Validator'
 
 export function getLocation(request: RequestContract): Location {
@@ -94,6 +96,17 @@ export function getSubscription(request: RequestContract): Subscription {
     }
 
     return subscription
+}
+
+export function getNotification(request: RequestContract): Notification {
+    const { notification } = request
+    console.log(notification)
+
+    if (!notification) {
+        throw new NotificationNotFoundException()
+    }
+
+    return notification
 }
 
 export async function getValidatedData<T extends ParsedTypedSchema<TypedSchema>>(
