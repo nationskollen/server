@@ -80,8 +80,11 @@ export default class Event extends BaseModel {
 
     /**
      * The id related to a notification that is created alongside the event
+     * @todo add this as a `serializeAs: null` when sure that things work. for
+     * now it is present in the response in order to test that notifications
+     * are created and such
      */
-    @column({ serializeAs: null })
+    @column()
     private notificationId: number
 
     /**
