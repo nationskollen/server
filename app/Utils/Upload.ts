@@ -37,7 +37,7 @@ export const ALLOWED_FILE_EXTS = ['jpg', 'png', 'jpeg', 'gif']
  * @constant `iconPrefix` prefix for what to name the icons that are smaller
  * than regular icon images
  */
-export const iconPrefix = 'icon_'
+export const ICON_PREFIX = 'icon_'
 
 /**
  * @constant `PIN_IMG_HEIGHT`  Specifies the pin imgage hegiht to be scaled to
@@ -135,5 +135,5 @@ export async function compressFile(tmpPath: string, outName: string, extName?: s
 export async function compressIconFile(tmpPath: string, outName: string) {
     sharp(tmpPath)
         .resize({ height: PIN_IMG_HEIGHT })
-        .toFile(Application.publicPath(iconPrefix + outName))
+        .toFile(Application.publicPath(ICON_PREFIX + outName))
 }

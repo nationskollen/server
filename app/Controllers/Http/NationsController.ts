@@ -10,7 +10,7 @@
 import Nation from 'App/Models/Nation'
 import { getNation, getValidatedData } from 'App/Utils/Request'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import { iconPrefix, attemptFileUpload, attemptFileRemoval } from 'App/Utils/Upload'
+import { ICON_PREFIX, attemptFileUpload, attemptFileRemoval } from 'App/Utils/Upload'
 import NationUpdateValidator from 'App/Validators/Nations/UpdateValidator'
 import NationUploadValidator from 'App/Validators/Nations/UploadValidator'
 
@@ -54,9 +54,13 @@ export default class NationsController {
         const coverName = await attemptFileUpload(cover)
 
         if (iconName) {
+            // Remove the old paths
             attemptFileRemoval(nation.iconImgSrc)
+            attemptFileRemoval(nation.pinImgSrc)
+
+            // inser the new ones
             nation.iconImgSrc = iconName
-            nation.pinImgSrc = iconPrefix + iconName
+            nation.pinImgSrc = ICON_PREFIX + iconName
         }
 
         if (coverName) {
