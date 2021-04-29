@@ -41,17 +41,19 @@ test.group('Notification fetch', (group) => {
 
         const data = JSON.parse(text)
 
-        // TODO fix with enpoints
-        const notification = await Notification.findByOrFail('id', data.notification_id)
-        assert.isNotNull(notification)
-        assert.equal(data.short_description, notification.message)
-        assert.equal(data.name, notification.title)
+        const text1 = await supertest(BASE_URL)
+            .get(`/notifications/${data.notification_id}`)
+            .expect(200)
+
+        const data1 = JSON.parse(text1.text)
+
+        assert.isNotNull(data1)
+        assert.equal(data.short_description, data1.message)
+        assert.equal(data.name, data1.title)
     })
 
-    test('ensure we cannot fetch a non-existing notification', async (assert) => {
-        // TODO with enpoints
-        const notification = await Notification.findByOrFail('id', 99999999)
-        assert.isNull(notification)
+    test('ensure we cannot fetch a non-existing notification', async () => {
+        await supertest(BASE_URL).get(`/notifications/999999999`).expect(404)
     })
 })
 
@@ -93,5 +95,3 @@ test.group('Notification create', (group) => {
         assert.isNotNull(data.notification_id)
     })
 })
-
-test.group('Subscription delete', (group) => {})

@@ -224,5 +224,5 @@ Route.group(() => {
     // ----------------------------------------------------------
     // Notifications
     // ----------------------------------------------------------
-    Route.get('/notification/:nid', 'NotificationsController.index').middleware(['notification'])
+    Route.get('/notifications/:nid', 'NotificationsController.index').middleware(['notification'])
 }).prefix('/api/v1')

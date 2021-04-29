@@ -100,7 +100,6 @@ export function getSubscription(request: RequestContract): Subscription {
 
 export function getNotification(request: RequestContract): Notification {
     const { notification } = request
-    console.log(notification)
 
     if (!notification) {
         throw new NotificationNotFoundException()
