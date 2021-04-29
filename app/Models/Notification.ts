@@ -11,7 +11,7 @@ export default class Notification extends BaseModel {
     @column()
     public message: string
 
-    @column.dateTime({ autoCreate: true, serializeAs: null })
+    @column.dateTime({ autoCreate: true })
     public createdAt: DateTime
 
     @column.dateTime({ autoCreate: true, autoUpdate: true, serializeAs: null })

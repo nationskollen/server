@@ -51,6 +51,27 @@ test.group('Notification fetch', (group) => {
         assert.equal(data.name, data1.title)
     })
 
+    test('ensure we can fetch all notifications', async (assert) => {
+        await supertest(BASE_URL)
+            .post(`/nations/${nation.oid}/events`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send(eventData)
+            .expect(200)
+
+        const { text } = await supertest(BASE_URL).get(`/notifications`).expect(200)
+
+        const data = JSON.parse(text)
+        assert.notEqual(data.data.length, 0)
+    })
+
+    test('ensure we can fetch notifications after certain date', async (assert) => {
+        const date = new Date().toISOString()
+        const { text } = await supertest(BASE_URL).get(`/notifications?after=${date}`).expect(200)
+
+        const data = JSON.parse(text)
+        assert.equal(data.data.length, 0)
+    })
+
     test('ensure we cannot fetch a non-existing notification', async () => {
         await supertest(BASE_URL).get(`/notifications/999999999`).expect(404)
     })
@@ -98,7 +119,7 @@ test.group('Notification create', (group) => {
         const notification = await Notification.create({
             title: eventData.name,
             message: eventData.short_description,
-            })
+        })
         assert.isNotNull(notification)
     })
 })
