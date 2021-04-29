@@ -7,7 +7,6 @@
  */
 import { DateTime } from 'luxon'
 import Event from 'App/Models/Event'
-import Notification from 'App/Models/Notification'
 import { MINIMUM_PAGE } from 'App/Utils/Constants'
 import { ExtractScopes } from '@ioc:Adonis/Lucid/Model'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
@@ -27,7 +26,7 @@ export default class EventsController {
      * Method that applies given filters depedning on what type of event to
      * filter after
      * @param scopes - The different scopes that exists in the system
-     * @param filters - The filder to apply
+     * @param filters - The filter to apply
      */
     private applyFilters(
         scopes: ExtractScopes<typeof Event>,
@@ -38,12 +37,14 @@ export default class EventsController {
             scopes.onDate(filters.date)
         } else {
             if (filters.before) {
-                // Filter based on when the event ends, i.e. all events before a certain date
+                // Filter based on when the event ends, i.e. all events before
+                // a certain date
                 scopes.beforeDate(filters.before)
             }
 
             if (filters.after) {
-                // Filter based on when the event start, i.e. all events after a certain date
+                // Filter based on when the event start, i.e. all events after
+                // a certain date
                 scopes.afterDate(filters.after)
             }
         }
