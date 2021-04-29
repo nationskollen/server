@@ -111,7 +111,6 @@ export default class Location extends BaseModel {
     /**
      * If the location is currently open or not
      */
-    // TODO: Consider not serializing this and instead calculate it on the frontend
     @column({ consume: toBoolean })
     public isOpen: boolean
 

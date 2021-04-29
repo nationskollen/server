@@ -10,7 +10,8 @@
  */
 import { DateTime } from 'luxon'
 import { toAbsolutePath, toISO } from 'App/Utils/Serialize'
-import { column, BaseModel, scope, belongsTo, BelongsTo } from '@ioc:Adonis/Lucid/Orm'
+import { column, BaseModel, scope, belongsTo, BelongsTo, beforeSave } from '@ioc:Adonis/Lucid/Orm'
+import Notification from 'App/Models/Notification'
 import Category from 'App/Models/Category'
 
 export default class Event extends BaseModel {
@@ -105,6 +106,15 @@ export default class Event extends BaseModel {
      */
     @column.dateTime({ autoCreate: true, serializeAs: null })
     public createdAt: DateTime
+
+    @beforeSave()
+    public static async createNotification(event: Event) {
+        let notification = await Notification.create({
+            title: event.name,
+            message: event.description,
+        })
+
+    }
 
     /**
      * Filtering options to query events before specified date
