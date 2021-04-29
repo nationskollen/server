@@ -85,10 +85,17 @@ export default class Nation extends BaseModel {
 
     /**
      * student nation icon image that is used in the system for different components.
-     * for e.g: Map pin, Notifications etc
+     * for e.g: Notifications etc
      */
     @column({ serialize: toAbsolutePath })
     public iconImgSrc: string
+
+    /**
+     * student nation pin image that is used in the system for different components.
+     * for e.g: Map pin, Notifications etc
+     */
+    @column({ serialize: toAbsolutePath })
+    public pinImgSrc: string
 
     /**
      * student nation cover image that is used at nation page to display

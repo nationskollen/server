@@ -165,6 +165,7 @@ test.group('Nation update', (group) => {
 test.group('Nation upload', (group) => {
     const coverImagePath = path.join(__dirname, 'data/cover.png')
     const iconImagePath = path.join(__dirname, 'data/icon.png')
+    const iconImagePath2 = path.join(__dirname, 'data/cover.png')
     let nation: TestNationContract
 
     group.before(async () => {
@@ -207,6 +208,43 @@ test.group('Nation upload', (group) => {
         // Ensure that the uploaded images can be accessed via the specified URL
         await supertest(HOSTNAME).get(toRelativePath(data.icon_img_src)).expect(200)
         await supertest(HOSTNAME).get(toRelativePath(data.cover_img_src)).expect(200)
+    })
+
+    test('ensure that when uploading icon image, a smaller image is generated as well', async (assert) => {
+        const { text } = await supertest(BASE_URL)
+            .post(`/nations/${nation.oid}/upload`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .attach('icon', iconImagePath)
+            .expect(200)
+
+        const data = JSON.parse(text)
+
+        assert.isNotNull(data.pin_img_src)
+
+        // Ensure that the uploaded images can be accessed via the specified URL
+        await supertest(HOSTNAME).get(toRelativePath(data.pin_img_src)).expect(200)
+    })
+
+    test('ensure that when uploading icon image, the old pin is removed as well', async (assert) => {
+        const { text } = await supertest(BASE_URL)
+            .post(`/nations/${nation.oid}/upload`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .attach('icon', iconImagePath)
+            .expect(200)
+
+        const data = JSON.parse(text)
+
+        const text2 = await supertest(BASE_URL)
+            .post(`/nations/${nation.oid}/upload`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .attach('icon', iconImagePath2)
+            .expect(200)
+
+        const data2 = JSON.parse(text2.text)
+        assert.isNotNull(data2.pin_img_src)
+
+        // Make sure the old pin is removed
+        await supertest(HOSTNAME).get(toRelativePath(data.pin_img_src)).expect(404)
     })
 
     test('ensure that old uploads are removed', async (assert) => {
