@@ -85,7 +85,7 @@ export default class Event extends BaseModel {
      * are created and such
      */
     @column()
-    private notificationId: number
+    public notificationId: number
 
     /**
      * specify if the event has a category
@@ -133,32 +133,6 @@ export default class Event extends BaseModel {
      */
     @column.dateTime({ autoCreate: true, serializeAs: null })
     public createdAt: DateTime
-
-    /**
-     * creates a notification when a new event is created. It also saves the
-     * notification associated with the event in a model field
-     * @param event the event that is created
-     */
-    @beforeCreate()
-    public static async createNotification(event: Event) {
-        let notification = await Notification.create({
-            title: event.name,
-            message: event.shortDescription,
-        })
-
-        event.notificationId = notification.id
-    }
-
-    /**
-     * removes a notification when a an event is deleted by reading the saved
-     * notificationId
-     * @param event the event that is to be deleted
-     */
-    @beforeDelete()
-    public static async removeNotification(event: Event) {
-        const notification = await Notification.findByOrFail('id', event.notificationId)
-        await notification.delete()
-    }
 
     /**
      * Filtering options to query events before specified date

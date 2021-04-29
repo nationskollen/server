@@ -7,6 +7,7 @@
  */
 import { DateTime } from 'luxon'
 import Event from 'App/Models/Event'
+import Notification from 'App/Models/Notification'
 import { MINIMUM_PAGE } from 'App/Utils/Constants'
 import { ExtractScopes } from '@ioc:Adonis/Lucid/Model'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
@@ -151,6 +152,15 @@ export default class EventsController {
             await event.preload('category')
         }
 
+        // Creating the notification here, before it was created using a hook
+        // but that somehow caused timeout in the tests... it was chugging on
+        // something
+        const notification = await Notification.create({
+            title: event.name,
+            message: event.shortDescription,
+        })
+        event.notificationId = notification.id
+
         return event.toJSON()
     }
 
@@ -177,7 +187,10 @@ export default class EventsController {
      */
     public async delete({ request }: HttpContextContract) {
         const event = getEvent(request)
+        const notification = await Notification.findBy('id', event.notificationId)
+
         await event.delete()
+        await notification?.delete()
     }
 
     /**

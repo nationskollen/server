@@ -1,10 +1,9 @@
 import test from 'japa'
 import { DateTime } from 'luxon'
 import supertest from 'supertest'
-import Event from 'App/Models/Event'
 import { BASE_URL } from 'App/Utils/Constants'
+import { TestNationContract, createTestNation } from 'App/Utils/Test'
 import Notification from 'App/Models/Notification'
-import { TestNationContract, createTestNation, createTestEvent } from 'App/Utils/Test'
 
 test.group('Notification fetch', (group) => {
     let nation: TestNationContract
@@ -93,5 +92,13 @@ test.group('Notification create', (group) => {
         const data = JSON.parse(text)
         assert.isTrue(data.hasOwnProperty('notification_id'))
         assert.isNotNull(data.notification_id)
+    })
+
+    test('ensure creating an notification is possible', async (assert) => {
+        const notification = await Notification.create({
+            title: eventData.name,
+            message: eventData.short_description,
+            })
+        assert.isNotNull(notification)
     })
 })

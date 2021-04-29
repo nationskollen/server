@@ -74,4 +74,4 @@ export default class NotificationsController {
     public async index({ request }: HttpContextContract) {
         return getNotification(request).toJSON()
     }
-}
+
