@@ -2,12 +2,7 @@ import test from 'japa'
 import { DateTime } from 'luxon'
 import supertest from 'supertest'
 import { BASE_URL } from 'App/Utils/Constants'
-import {
-    createTestCategory,
-    createTestEvent,
-    createTestNation,
-    TestNationContract,
-} from 'App/Utils/Test'
+import { createTestCategory, createTestEvent, createTestNation } from 'App/Utils/Test'
 import { NationFactory } from '../database/factories/index'
 
 test.group('Events filtering', async () => {

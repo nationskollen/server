@@ -35,24 +35,16 @@ export default class LocationsController {
     }
 
     /**
-     * Fetch all locations that should be display on the map
-     */
-    public async onMap(_: HttpContextContract) {
-        const locations = await Location.query()
-            .preload('openingHours')
-            .preload('openingHourExceptions')
-            .where('showOnMap', true)
-
-        return locations.map((location: Location) => location.toJSON())
-    }
-
-    /**
      * create a location
      */
     public async create({ request }: HttpContextContract) {
         const nation = getNation(request)
         const data = await getValidatedData(request, LocationCreateValidator)
         const location = await nation.related('locations').create(data)
+
+        if (data.is_default) {
+            await Location.setNotDefault(nation.oid)
+        }
 
         return location.toJSON()
     }
@@ -63,6 +55,10 @@ export default class LocationsController {
     public async update({ request }: HttpContextContract) {
         const location = getLocation(request)
         const changes = await getValidatedData(request, LocationUpdateValidator)
+
+        if (changes.is_default && !location.isDefault) {
+            await Location.setNotDefault(location.nationId)
+        }
 
         // Apply the changes that was requested and save
         location.merge(changes)
@@ -76,6 +72,11 @@ export default class LocationsController {
      */
     public async delete({ request }: HttpContextContract) {
         const location = getLocation(request)
+
+        if (location.isDefault) {
+            await Location.setNotDefault(location.nationId)
+        }
+
         await location.delete()
     }
 

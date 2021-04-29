@@ -109,6 +109,12 @@ export default class Location extends BaseModel {
     public activityLevel: ActivityLevels
 
     /**
+     * The assigned default location for nation (parent model)
+     */
+    @column({ consume: toBoolean })
+    public isDefault: boolean
+
+    /**
      * If the location is currently open or not
      */
     @column({ consume: toBoolean })
@@ -136,7 +142,10 @@ export default class Location extends BaseModel {
      * The {@link openingHours | opening hours} that are used at a given
      * location, there can be multiple opening hours
      */
-    @hasMany(() => OpeningHour, { serializeAs: 'opening_hours' })
+    @hasMany(() => OpeningHour, {
+        serializeAs: 'opening_hours',
+        onQuery: (query) => query.orderBy('day', 'asc'),
+    })
     public openingHours: HasMany<typeof OpeningHour>
 
     /**
@@ -243,5 +252,20 @@ export default class Location extends BaseModel {
      */
     public static async withOpeningHours(lid: number) {
         return this.withPreloads().where('id', lid).first()
+    }
+
+    /**
+     * Sets the previous location that was the default location for the nationback to false.
+     * It can only be initiated when a new default is proposed
+     */
+    public static async setNotDefault(oid: number) {
+        const previousDefault = await Location.query()
+            .where('isDefault', true)
+            .where('nationId', oid)
+            .first()
+        if (previousDefault) {
+            previousDefault.isDefault = false
+            await previousDefault.save()
+        }
     }
 }

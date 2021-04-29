@@ -43,15 +43,15 @@ Route.group(() => {
     // ----------------------------------------------------------
     // Single nation
     // ----------------------------------------------------------
-    Route.get('/nations/:id', 'NationsController.single').middleware(['nation'])
+    Route.get('/nations/:id', 'NationsController.single').middleware(['nation:preloadDefault'])
     Route.put('/nations/:id', 'NationsController.update').middleware([
         'auth',
-        'nation',
+        'nation:preloadDefault',
         'scope:admin',
     ])
     Route.post('/nations/:id/upload', 'NationsController.upload').middleware([
         'auth',
-        'nation',
+        'nation:preloadDefault',
         'scope:admin',
     ])
 
@@ -84,7 +84,6 @@ Route.group(() => {
     // ----------------------------------------------------------
     // Location actions
     // ----------------------------------------------------------
-    Route.get('/locations/map', 'LocationsController.onMap')
     Route.get('/locations/:lid', 'LocationsController.single').middleware(['location:preload'])
     Route.put('/locations/:lid/open', 'LocationsController.open').middleware([
         'auth',
@@ -187,6 +186,7 @@ Route.group(() => {
     // ----------------------------------------------------------
     Route.get('/events', 'EventsController.all')
     Route.get('/events/:eid', 'EventsController.single').middleware(['event:preload'])
+    Route.get('/events/:eid/description', 'EventsController.description').middleware(['event'])
     Route.get('/nations/:id/events', 'EventsController.index').middleware(['nation'])
     Route.post('/nations/:id/events', 'EventsController.create').middleware([
         'auth',

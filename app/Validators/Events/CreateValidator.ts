@@ -13,7 +13,8 @@ export default class EventCreateValidator {
     public refs = schema.refs({ nationId: getOidRef(this.ctx) })
     public schema = schema.create({
         name: schema.string(),
-        description: schema.string(),
+        short_description: schema.string(),
+        long_description: schema.string(),
         location_id: schema.number.optional([
             rules.exists({
                 table: DatabaseTables.Locations,

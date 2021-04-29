@@ -3,7 +3,6 @@ import path from 'path'
 import supertest from 'supertest'
 import Location from 'App/Models/Location'
 import { BASE_URL, HOSTNAME } from 'App/Utils/Constants'
-import { LocationFactory } from 'Database/factories/index'
 import {
     TestNationContract,
     createTestNation,
@@ -11,49 +10,19 @@ import {
     toRelativePath,
 } from 'App/Utils/Test'
 
-test.group('Locations fetch all shown on map', async () => {
-    test('ensure that you can fetch all locations that is shown on map', async (assert) => {
-        const testNation = await createTestNation()
-        await LocationFactory.merge([
-            {
-                nationId: testNation.oid,
-                showOnMap: true,
-            },
-            {
-                nationId: testNation.oid,
-                showOnMap: true,
-            },
-            {
-                nationId: testNation.oid,
-                showOnMap: true,
-            },
-        ]).createMany(3)
+test.group('Locations fetch', async () => {
+    test('ensure a location is default false as the default location', async (assert) => {
+        const nation = await createTestNation()
+        const location = await createTestLocation(nation.oid)
 
-        const { text } = await supertest(BASE_URL).get('/locations/map').expect(200)
+        const { text } = await supertest(BASE_URL)
+            .get(`/locations/${location.id}`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .expect(200)
 
         const data = JSON.parse(text)
 
-        assert.isArray(data)
-        assert.isAbove(data.length, 3)
-    })
-
-    test('ensure that you can locations that should not be shown does not get returned', async (assert) => {
-        const testNation = await createTestNation()
-        const testLocation = await LocationFactory.merge({
-            nationId: testNation.oid,
-            showOnMap: false,
-        }).create()
-
-        const { text } = await supertest(BASE_URL).get('/locations/map').expect(200)
-
-        const data = JSON.parse(text)
-
-        assert.isArray(data)
-
-        const locations = data as Array<Location>
-        locations.forEach((location: Location) => {
-            assert.notEqual(location.id, testLocation.id)
-        })
+        assert.isFalse(data.is_default)
     })
 })
 
@@ -341,6 +310,111 @@ test.group('Locations update', async (group) => {
         assert.equal(data.latitude, latitude)
         assert.equal(data.longitude, longitude)
         assert.equal(data.show_on_map, true)
+    })
+
+    test('ensure setting a default nation location updates the fetch with the default location in it', async (assert) => {
+        const location = await createTestLocation(nation.oid)
+
+        const { text } = await supertest(BASE_URL)
+            .put(`/nations/${nation.oid}/locations/${location.id}`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send({
+                is_default: true,
+            })
+            .expect(200)
+
+        const data = JSON.parse(text)
+
+        assert.isTrue(data.is_default)
+
+        const text2 = await supertest(BASE_URL)
+            .get(`/nations/${nation.oid}`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .expect(200)
+
+        const data2 = JSON.parse(text2.text)
+
+        assert.equal(data2.default_location.id, location.id)
+    })
+
+    test('ensure setting a new nation default location sets the previous default to false', async (assert) => {
+        const location = await createTestLocation(nation.oid)
+        const location2 = await createTestLocation(nation.oid)
+
+        // Set first location to default
+        let text1 = await supertest(BASE_URL)
+            .put(`/nations/${nation.oid}/locations/${location.id}`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send({
+                is_default: true,
+            })
+            .expect(200)
+
+        // assure it is default
+        let data1 = JSON.parse(text1.text)
+        assert.isTrue(data1.is_default)
+
+        // Set second location to default
+        const text2 = await supertest(BASE_URL)
+            .put(`/nations/${nation.oid}/locations/${location2.id}`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send({
+                is_default: true,
+            })
+            .expect(200)
+
+        text1 = await supertest(BASE_URL).get(`/locations/${location.id}`).expect(200)
+
+        data1 = JSON.parse(text1.text)
+
+        // Assure new location becomes default while also checking the
+        // previously has become false
+        const data2 = JSON.parse(text2.text)
+        assert.isTrue(data2.is_default)
+        assert.isFalse(data1.is_default)
+
+        const text3 = await supertest(BASE_URL)
+            .get(`/nations/${nation.oid}`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .expect(200)
+
+        // Make sure that the new said default is the default in nation
+        const data3 = JSON.parse(text3.text)
+        assert.equal(data3.default_location.id, location2.id)
+    })
+
+    test("ensure setting default locations does not affect other nation's default location", async (assert) => {
+        let nation2: TestNationContract
+        nation2 = await createTestNation()
+        const location = await createTestLocation(nation.oid)
+        const location2 = await createTestLocation(nation2.oid)
+
+        await supertest(BASE_URL)
+            .put(`/nations/${nation.oid}/locations/${location.id}`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send({
+                is_default: true,
+            })
+            .expect(200)
+
+        await supertest(BASE_URL)
+            .put(`/nations/${nation2.oid}/locations/${location2.id}`)
+            .set('Authorization', 'Bearer ' + nation2.token)
+            .send({
+                is_default: true,
+            })
+            .expect(200)
+
+        const text2 = await supertest(BASE_URL).get(`/nations/${nation2.oid}/`).expect(200)
+
+        const text1 = await supertest(BASE_URL).get(`/nations/${nation.oid}/`).expect(200)
+
+        const data1 = JSON.parse(text1.text)
+        const data2 = JSON.parse(text2.text)
+        // Make sure that even when changing default location of other nation
+        // it does not affect another nations default location
+        assert.equal(data1.default_location.id, location.id)
+        assert.equal(data2.default_location.id, location2.id)
     })
 })
 

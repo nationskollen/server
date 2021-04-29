@@ -2,7 +2,7 @@ import test from 'japa'
 import path from 'path'
 import supertest from 'supertest'
 import Nation from 'App/Models/Nation'
-import { createStaffUser } from 'App/Utils/Test'
+import { createStaffUser, createTestLocation } from 'App/Utils/Test'
 import { BASE_URL, HOSTNAME } from 'App/Utils/Constants'
 import { NationFactory } from 'Database/factories/index'
 import { TestNationContract, createTestNation, toRelativePath } from 'App/Utils/Test'
@@ -43,6 +43,39 @@ test.group('Nation fetch', () => {
         assert.equal(data.cover_img_src, nation.coverImgSrc)
         assert.equal(data.icon_img_src, nation.iconImgSrc)
         assert.equal(data.accent_color, nation.accentColor)
+    })
+
+    test('ensure a nation does not have a default location if not set to any', async (assert) => {
+        const testNation = await createTestNation()
+
+        const { text } = await supertest(BASE_URL)
+            .get(`/nations/${testNation.oid}`)
+            .set('Authorization', 'Bearer ' + testNation.token)
+            .expect(200)
+
+        const data = JSON.parse(text)
+        assert.isFalse(data.hasOwnProperty('default_location'))
+    })
+
+    test('ensure a nation that has a default location also preloads the opening hours for the location', async (assert) => {
+        const testNation = await createTestNation()
+        const location = await createTestLocation(testNation.oid)
+
+        await supertest(BASE_URL)
+            .put(`/nations/${testNation.oid}/locations/${location.id}`)
+            .set('Authorization', 'Bearer ' + testNation.token)
+            .send({
+                is_default: true,
+            })
+            .expect(200)
+
+        const { text } = await supertest(BASE_URL)
+            .get(`/nations/${testNation.oid}`)
+            .set('Authorization', 'Bearer ' + testNation.token)
+            .expect(200)
+
+        const data = JSON.parse(text)
+        assert.isTrue(data.default_location.hasOwnProperty('opening_hours'))
     })
 })
 

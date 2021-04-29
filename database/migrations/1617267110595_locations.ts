@@ -21,6 +21,7 @@ export default class Locations extends BaseSchema {
             table.float('latitude', 10, 6)
             table.float('longitude', 10, 6)
             table.boolean('show_on_map').notNullable().defaultTo(false)
+            table.boolean('is_default').notNullable().defaultTo(false)
             table.integer('max_capacity').notNullable().unsigned()
             table.integer('estimated_people_count').defaultTo(0)
             table.integer('activity_level').defaultTo(0)

@@ -14,11 +14,46 @@ import {
     toRelativePath,
 } from 'App/Utils/Test'
 
+test.group('Events fetch', async (group) => {
+    let nation: TestNationContract
+
+    group.before(async () => {
+        nation = await createTestNation()
+    })
+
+    test('ensure that the long description is not included in the regular response', async (assert) => {
+        const event = await createTestEvent(nation.oid)
+
+        const { text } = await supertest(BASE_URL).get(`/events/${event.id}`).expect(200)
+
+        const data = JSON.parse(text)
+
+        assert.isNotTrue(data.hasOwnProperty('long_description'))
+        assert.isNotTrue(data.hasOwnProperty('created_at'))
+        assert.isNotTrue(data.hasOwnProperty('updated_at'))
+    })
+
+    test('ensure that you can fetch the event long description', async (assert) => {
+        const event = await createTestEvent(nation.oid)
+
+        const { text } = await supertest(BASE_URL)
+            .get(`/events/${event.id}/description`)
+            .expect(200)
+
+        const data = JSON.parse(text)
+
+        assert.equal(data.long_description, event.longDescription)
+        assert.exists(data.created_at)
+        assert.exists(data.updated_at)
+    })
+})
+
 test.group('Events create', async (group) => {
     let nation: TestNationContract
     let eventData = {
         name: 'testEvent',
-        description: 'Lunchevent',
+        short_description: 'Lunchevent',
+        long_description: 'Lorem ipsum',
         occurs_at: DateTime.fromObject({
             year: 2021,
             month: 3,
@@ -63,7 +98,9 @@ test.group('Events create', async (group) => {
             .expect(200)
 
         const data = JSON.parse(text)
-        assert.containsAllDeepKeys(data, Object.keys(eventData))
+        const compareData: Record<string, unknown> = { ...eventData }
+        delete compareData.long_description
+        assert.containsAllKeys(data, compareData)
     })
 
     test('ensure that an admin cannot create an event for the incorrect nation', async (assert) => {
@@ -100,7 +137,8 @@ test.group('Events create', async (group) => {
             .set('Authorization', 'Bearer ' + nation.token)
             .send({
                 name: 'utc test',
-                description: 'timezones',
+                short_description: 'timezones',
+                long_description: 'dudududud',
                 // Specify times in Zulu-time (UTC).
                 // These should be converted into UTC+2 (Swedish time).
                 occurs_at: '2021-02-10T20:00:00.000Z',
@@ -122,7 +160,8 @@ test.group('Events create', async (group) => {
             .set('Authorization', 'Bearer ' + nation.token)
             .send({
                 name: 'hello',
-                description: 'world',
+                short_description: 'cruel',
+                long_description: 'world',
                 occurs_at: '2021-04-16T20:00:00.000+02:00',
                 ends_at: '2021-04-16T23:00:00.000+02:00',
                 category_id: category.id,

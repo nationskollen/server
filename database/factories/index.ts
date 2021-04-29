@@ -26,7 +26,8 @@ export const SubscriptionTopicFactory = Factory.define(SubscriptionTopic, ({ fak
 export const EventFactory = Factory.define(Event, ({ faker }) => {
     return {
         name: faker.commerce.productName(),
-        description: faker.commerce.productDescription(),
+        shortDescription: faker.lorem.sentence(25),
+        longDescription: faker.lorem.paragraphs(10),
         onlyMembers: faker.datatype.boolean(),
         onlyStudents: faker.datatype.boolean(),
         occursAt: DateTime.fromObject({

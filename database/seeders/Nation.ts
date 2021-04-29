@@ -26,7 +26,9 @@ export default class NationSeeder extends BaseSeeder {
         // Create a test token that can be used in insomnia requests
         await PushTokenFactory.merge({ token: 'ExponentPushToken[test]' }).create()
 
-        const nations = await NationFactory.with('events', 3)
+        const nations = await NationFactory.with('events', 3, (builder) => {
+            builder.merge([{ categoryId: 1 }, { categoryId: 2 }, { categoryId: 3 }])
+        })
             .merge([
                 {
                     oid: 400,
@@ -48,7 +50,7 @@ export default class NationSeeder extends BaseSeeder {
                 },
                 {
                     oid: 406,
-                    name: 'Kalmars nation',
+                    name: 'Kalmar nation',
                     shortName: 'Kalmars',
                 },
                 {
@@ -73,12 +75,12 @@ export default class NationSeeder extends BaseSeeder {
                 },
                 {
                     oid: 411,
-                    name: 'Östgötas nation',
+                    name: 'Östgöta nation',
                     shortName: "ÖG's",
                 },
                 {
                     oid: 412,
-                    name: 'Västgötas nation',
+                    name: 'Västgöta nation',
                     shortName: "VG's",
                 },
                 {
@@ -126,18 +128,21 @@ export default class NationSeeder extends BaseSeeder {
                 {
                     name: 'Västmanland-dala nation',
                     nationId: 400,
+                    isDefault: true,
                     latitude: 59.86032259136127,
                     longitude: 17.628939051847695,
                 },
                 {
                     name: 'Stockholms nation',
                     nationId: 394,
+                    isDefault: true,
                     latitude: 59.856731614930446,
                     longitude: 17.63419919045771,
                 },
                 {
                     name: 'Norrlands nation',
                     nationId: 405,
+                    isDefault: true,
                     latitude: 59.856227,
                     longitude: 17.6378425,
                 },
@@ -145,60 +150,70 @@ export default class NationSeeder extends BaseSeeder {
                 {
                     name: 'Kalmars Nation',
                     nationId: 406,
+                    isDefault: true,
                     latitude: 59.859106565445636,
                     longitude: 17.62706918384986,
                 },
                 {
                     name: 'Värmlands Nation',
                     nationId: 407,
+                    isDefault: true,
                     latitude: 59.85715355297,
                     longitude: 17.633830648196177,
                 },
                 {
                     name: 'Gästrike-Hälsinge Nation',
                     nationId: 408,
+                    isDefault: true,
                     latitude: 59.85656549537542,
                     longitude: 17.63670148804158,
                 },
                 {
                     name: 'Gotlands nation',
                     nationId: 409,
+                    isDefault: true,
                     latitude: 59.85978279670555,
                     longitude: 17.634567704542953,
                 },
                 {
                     name: 'Uplands nation',
                     nationId: 410,
+                    isDefault: true,
                     latitude: 59.85992220628584,
                     longitude: 17.629458535888315,
                 },
                 {
                     name: 'Östgötas nation',
                     nationId: 411,
+                    isDefault: true,
                     latitude: 59.85521276094654,
                     longitude: 17.637959775927737,
                 },
                 {
                     name: 'Västgötas nation',
                     nationId: 412,
+                    isDefault: true,
                     latitude: 59.85686289838122,
                     longitude: 17.638651455173623,
                 },
                 {
                     name: 'Smålands nation',
                     nationId: 413,
+                    isDefault: true,
                     latitude: 59.85929959538165,
                     longitude: 17.63123586514085,
                 },
                 {
                     name: 'Göteborgs nation',
                     nationId: 414,
+                    isDefault: true,
                     latitude: 59.85957889713392,
                     longitude: 17.63019280454616,
                 },
                 {
                     name: 'Södermanland-Nerikes nation',
                     nationId: 415,
+                    isDefault: true,
                     latitude: 59.8591482187301,
                     longitude: 17.630697251271798,
                 },
