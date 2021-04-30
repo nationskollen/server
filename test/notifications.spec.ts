@@ -72,6 +72,17 @@ test.group('Notification fetch', (group) => {
         assert.equal(data.data.length, 0)
     })
 
+    test('ensure that notifications have correct ISO format', async () => {
+        const yesterday = DateTime.local().minus({ day: 1 }).toISO()
+        await supertest(BASE_URL)
+            .get(`/notifications?after=${encodeURIComponent(yesterday)}`)
+            .expect(200)
+    })
+
+    test('ensure that incorrect ISO format is not viable', async () => {
+        await supertest(BASE_URL).get(`/notifications?after=2021-0101T`).expect(422)
+    })
+
     test('ensure we cannot fetch a non-existing notification', async () => {
         await supertest(BASE_URL).get(`/notifications/999999999`).expect(404)
     })
