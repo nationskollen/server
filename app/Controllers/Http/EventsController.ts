@@ -12,12 +12,12 @@ import { MINIMUM_PAGE } from 'App/Utils/Constants'
 import { ExtractScopes } from '@ioc:Adonis/Lucid/Model'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { attemptFileUpload, attemptFileRemoval } from 'App/Utils/Upload'
-import { getNation, getEvent, getValidatedData } from 'App/Utils/Request'
+import { getNation, getEvent, attemptNotificationRemoval, getValidatedData } from 'App/Utils/Request'
+import PaginationValidator from 'App/Validators/PaginationValidator'
 import EventUpdateValidator from 'App/Validators/Events/UpdateValidator'
 import EventCreateValidator from 'App/Validators/Events/CreateValidator'
 import EventUploadValidator from 'App/Validators/Events/UploadValidator'
 import EventFilterValidator from 'App/Validators/Events/FilterValidator'
-import PaginationValidator from 'App/Validators/PaginationValidator'
 
 /**
  * Event controller
@@ -187,10 +187,9 @@ export default class EventsController {
      */
     public async delete({ request }: HttpContextContract) {
         const event = getEvent(request)
-        const notification = await Notification.findBy('id', event.notificationId)
 
+        await attemptNotificationRemoval(event.notificationId)
         await event.delete()
-        await notification?.delete()
     }
 
     /**
