@@ -148,6 +148,7 @@ export default class EventsController {
         const notification = await Notification.create({
             title: event.name,
             message: event.shortDescription,
+            nationId: event.nationId,
         })
         event.notificationId = notification.id
 

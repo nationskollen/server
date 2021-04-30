@@ -127,9 +127,12 @@ test.group('Notification create', (group) => {
     })
 
     test('ensure creating an notification is possible', async (assert) => {
+        Object.assign(eventData, { nation_id: nation.oid })
+
         const notification = await Notification.create({
             title: eventData.name,
             message: eventData.short_description,
+            nationId: eventData.nation_id,
         })
         assert.isNotNull(notification)
     })

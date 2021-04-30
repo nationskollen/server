@@ -6,6 +6,14 @@ export default class Notification extends BaseModel {
     public id: number
 
     @column()
+    public nationId: number
+
+    // // @todo
+    // // TODO
+    // @column()
+    // public subcriptionTopicId: number
+
+    @column()
     public title: string
 
     @column()
