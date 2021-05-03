@@ -76,18 +76,10 @@ export default class Menu extends BaseModel {
     }
 
     /**
-     * Method to display menus depending on specific item ID
+     * Method to display menus depending on specific location
      * @param id - the location id
      */
-    public static async allWithItems(locationId: number) {
-        return this.withPreloads().where('location_id', locationId)
-    }
-
-    /**
-     * Method to display menus only without prefetching the items
-     * @param id - the location id
-     */
-    public static async allWithoutItems(locationId: number) {
+    public static async allMenus(locationId: number) {
         return this.query().where('location_id', locationId)
     }
 }

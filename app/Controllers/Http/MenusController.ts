@@ -20,22 +20,7 @@ export default class MenusController {
      */
     public async index({ request }: HttpContextContract) {
         const location = getLocation(request)
-        const menus = await Menu.allWithItems(location.id)
-
-        return menus.map((menu) => menu.toJSON())
-    }
-
-    /**
-     * Fetch all the menus (only menus) in the system
-     */
-    public async withoutItems({ request }: HttpContextContract) {
-        const location = getLocation(request)
-        const menus = await Menu.allWithoutItems(location.id)
-
-        if (!menus) {
-            console.log('menu not found')
-            return
-        }
+        const menus = await Menu.allMenus(location.id)
 
         return menus.map((menu) => menu.toJSON())
     }
@@ -45,7 +30,7 @@ export default class MenusController {
      */
     public async withItems({ request }: HttpContextContract) {
         const location = getLocation(request)
-        const menus = await Menu.allWithItems(location.id)
+        const menus = await Menu.allMenus(location.id)
 
         return menus.map((menu) => menu.toJSON())
     }
