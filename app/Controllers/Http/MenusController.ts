@@ -16,9 +16,34 @@ import { getLocation, getMenu, getValidatedData } from 'App/Utils/Request'
 
 export default class MenusController {
     /**
-     * Fetch all the menus in the system
+     * Fetch all the menus (and their items) in the system
      */
     public async index({ request }: HttpContextContract) {
+        const location = getLocation(request)
+        const menus = await Menu.allWithItems(location.id)
+
+        return menus.map((menu) => menu.toJSON())
+    }
+
+    /**
+     * Fetch all the menus (only menus) in the system
+     */
+    public async withoutItems({ request }: HttpContextContract) {
+        const location = getLocation(request)
+        const menus = await Menu.allWithoutItems(location.id)
+
+        if (!menus) {
+            console.log('menu not found')
+            return
+        }
+
+        return menus.map((menu) => menu.toJSON())
+    }
+
+    /**
+     * Fetch all the menus in the system
+     */
+    public async withItems({ request }: HttpContextContract) {
         const location = getLocation(request)
         const menus = await Menu.allWithItems(location.id)
 
