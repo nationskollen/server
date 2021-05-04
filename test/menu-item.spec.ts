@@ -65,6 +65,15 @@ test.group('Menu item fetch', async (group) => {
 
         assert.isNotEmpty(data)
         assert.lengthOf(data.data, 2)
+
+        const text2 = await supertest(BASE_URL)
+            .get(`/menus/${menu.id}/items?page=2&amount=1`)
+            .expect(200)
+
+        // Make sure that if we paginate for the second page we get the last menu item
+        const data2 = JSON.parse(text2.text)
+        assert.isNotEmpty(data2)
+        assert.lengthOf(data2.data, 1)
     })
 
     test('ensure that it returns an empty array if the location has no menus', async (assert) => {

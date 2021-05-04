@@ -28,9 +28,9 @@ export default class MenusController {
     private applyFilters(scopes: ExtractScopes<typeof Menu>, filters: boolean | undefined) {
         if (filters) {
             // Filter based on selected date
-            scopes.showHidden(true)
+            scopes.showHidden(filters)
         } else {
-            scopes.showHidden(false)
+            scopes.showHidden(!!filters)
         }
     }
 
