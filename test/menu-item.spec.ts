@@ -28,6 +28,8 @@ test.group('Menu item fetch', async (group) => {
 
         // Create another one just for verifying the count when fetching all
         await createTestMenuItem(menu.id)
+        // Create another for pagination testing
+        await createTestMenuItem(menu.id)
     })
 
     test('ensure that you can fetch all items of a menu', async (assert) => {
@@ -36,7 +38,35 @@ test.group('Menu item fetch', async (group) => {
         const data = JSON.parse(text)
 
         assert.isNotEmpty(data)
-        assert.lengthOf(data, 2)
+        assert.lengthOf(data.data, 3)
+    })
+
+    test('ensure that you can fetch paginated items of a menu', async (assert) => {
+        const { text } = await supertest(BASE_URL)
+            .get(`/menus/${menu.id}/items?page=1&amount=1`)
+            .expect(200)
+
+        const data = JSON.parse(text)
+
+        assert.isNotEmpty(data)
+        assert.lengthOf(data.data, 1)
+    })
+
+    test('ensure that you cannot paginate for zero pages', async () => {
+        await supertest(BASE_URL)
+            .get(`/menus/${menu.id}/items?page=0&amount=1`)
+            .expect(422)
+    })
+
+    test('ensure that you can paginate for two items when three are present in a menu', async (assert) => {
+        const { text } = await supertest(BASE_URL)
+            .get(`/menus/${menu.id}/items?page=1&amount=2`)
+            .expect(200)
+
+        const data = JSON.parse(text)
+
+        assert.isNotEmpty(data)
+        assert.lengthOf(data.data, 2)
     })
 
     test('ensure that it returns an empty array if the location has no menus', async (assert) => {

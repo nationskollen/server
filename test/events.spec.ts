@@ -536,24 +536,6 @@ test.group('Event delete', async (group) => {
 })
 
 test.group('Event upload', (group) => {
-    let nation: TestNationContract
-    let event: Event
-
-    group.before(async () => {
-        nation = await createTestNation()
-        event = await createTestEvent(nation.oid)
-    })
-
-    test('ensure that uploading an image requires an attachment', async () => {
-        await supertest(BASE_URL)
-            .post(`/events/${event.id}/upload`)
-            .set('Authorization', 'Bearer ' + nation.token)
-            .send({ randomData: 'hello' })
-            .expect(422)
-    })
-})
-
-test.group('Event upload', (group) => {
     const coverImagePath = path.join(__dirname, 'data/cover.png')
     let nation: TestNationContract
     let event: Event
@@ -627,7 +609,7 @@ test.group('Event upload', (group) => {
             .post(`/events/${event.id}/upload`)
             .set('Authorization', 'Bearer ' + nation.token)
             .send({ randomData: 'hello' })
-            .expect(422)
+            .expect(400)
     })
 
     test('ensure that uploading images to a non-existant event fails', async () => {
