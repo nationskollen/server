@@ -55,8 +55,40 @@ test.group('Menu fetch', async (group) => {
         assert.deepEqual(data.hidden, menuOne.hidden)
     })
 
-    test('ensure that you get an error if fetching a non-existant menu', async () => {
-        await supertest(BASE_URL).get(`/menus/99999`).expect(404)
+    test('ensure that you can fetch menu(s) by filtering for non-hidden menus', async (assert) => {
+        await createTestMenu(nation.oid, location.id)
+        await createTestMenu(nation.oid, location.id)
+        await createTestMenu(nation.oid, location.id)
+        await createTestMenu(nation.oid, location.id)
+        await createTestMenu(nation.oid, location.id)
+
+        const hiddenMenu = {
+            name: 'Frukost',
+            hidden: true,
+        }
+
+        await supertest(BASE_URL)
+            .post(`/locations/${location.id}/menus`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send(hiddenMenu)
+            .expect(200)
+
+        const { text } = await supertest(BASE_URL)
+            .get(`/locations/${location.id}/menus?hidden=false`)
+            .expect(200)
+
+        const data = JSON.parse(text)
+        assert.lengthOf(data, 7)
+    })
+
+    test('ensure that you can fetch menu(s) by filtering for hidden menus', async (assert) => {
+        // Use the hidden menu from the test before
+        const { text } = await supertest(BASE_URL)
+            .get(`/locations/${location.id}/menus?hidden=true`)
+            .expect(200)
+
+        const data = JSON.parse(text)
+        assert.lengthOf(data, 1)
     })
 })
 
