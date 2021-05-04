@@ -8,7 +8,7 @@
 import { DateTime } from 'luxon'
 import MenuItem from 'App/Models/MenuItem'
 import { toBoolean, toAbsolutePath } from 'App/Utils/Serialize'
-import { BaseModel, column, hasMany, HasMany } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, column, hasMany, HasMany, scope } from '@ioc:Adonis/Lucid/Orm'
 
 export default class Menu extends BaseModel {
     /**
@@ -81,18 +81,6 @@ export default class Menu extends BaseModel {
     @hasMany(() => MenuItem, { serializeAs: 'items' })
     public items: HasMany<typeof MenuItem>
 
-    private static withPreloads() {
-        return this.query().preload('items')
-    }
-
-    /**
-     * Method to display items depending on specific ID
-     * @param id - the id of the item in menu
-     */
-    public static async withItems(id: number) {
-        return this.withPreloads().where('id', id).first()
-    }
-
     /**
      * Method to display menus depending on specific location
      * @param id - the location id
@@ -100,4 +88,12 @@ export default class Menu extends BaseModel {
     public static async allMenus(locationId: number) {
         return this.query().where('location_id', locationId)
     }
+
+    /**
+     * filtering options to query menus for wether they are hidden or not
+     * @param hidden the boolean for the menu to query for
+     */
+    public static showHidden = scope((query, show: boolean) => {
+        query.where('hidden', show)
+    })
 }

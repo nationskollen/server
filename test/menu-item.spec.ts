@@ -53,9 +53,7 @@ test.group('Menu item fetch', async (group) => {
     })
 
     test('ensure that you cannot paginate for zero pages', async () => {
-        await supertest(BASE_URL)
-            .get(`/menus/${menu.id}/items?page=0&amount=1`)
-            .expect(422)
+        await supertest(BASE_URL).get(`/menus/${menu.id}/items?page=0&amount=1`).expect(422)
     })
 
     test('ensure that you can paginate for two items when three are present in a menu', async (assert) => {
@@ -76,8 +74,8 @@ test.group('Menu item fetch', async (group) => {
 
         const data = JSON.parse(text)
 
-        assert.isEmpty(data)
-        assert.lengthOf(data, 0)
+        assert.isEmpty(data.data)
+        assert.lengthOf(data.data, 0)
     })
 
     test('ensure that you can fetch a single menu item', async (assert) => {
