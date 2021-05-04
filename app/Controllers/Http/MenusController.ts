@@ -11,6 +11,8 @@
 import Menu from 'App/Models/Menu'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import MenuUpdateValidator from 'App/Validators/Menus/UpdateValidator'
+import MenuUploadValidator from 'App/Validators/Menus/UploadValidator'
+import { attemptFileUpload, attemptFileRemoval } from 'App/Utils/Upload'
 import MenuCreateController from 'App/Validators/Menus/CreateValidator'
 import { getLocation, getMenu, getValidatedData } from 'App/Utils/Request'
 
@@ -78,5 +80,30 @@ export default class MenusController {
      */
     public async delete({ request }: HttpContextContract) {
         await getMenu(request).delete()
+    }
+
+    /**
+     * Method to upload an image to a menu in the system
+     */
+    public async upload({ request }: HttpContextContract) {
+        const menu = getMenu(request)
+        const { icon, cover } = await getValidatedData(request, MenuUploadValidator)
+        const iconName = await attemptFileUpload(icon, true)
+        const coverName = await attemptFileUpload(cover)
+
+        if (iconName) {
+            attemptFileRemoval(menu.iconImgSrc)
+            menu.iconImgSrc = iconName
+        }
+
+        if (coverName) {
+            attemptFileRemoval(menu.coverImgSrc)
+            menu.coverImgSrc = coverName
+        }
+
+        // Update cover image
+        await menu.save()
+
+        return menu.toJSON()
     }
 }

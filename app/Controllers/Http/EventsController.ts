@@ -183,12 +183,18 @@ export default class EventsController {
      */
     public async upload({ request }: HttpContextContract) {
         const event = getEvent(request)
-        const { cover } = await getValidatedData(request, EventUploadValidator)
-        const filename = await attemptFileUpload(cover)
+        const { icon, cover } = await getValidatedData(request, EventUploadValidator)
+        const iconName = await attemptFileUpload(icon, true)
+        const coverName = await attemptFileUpload(cover)
 
-        if (filename) {
+        if (iconName) {
+            attemptFileRemoval(event.iconImgSrc)
+            event.iconImgSrc = iconName
+        }
+
+        if (coverName) {
             attemptFileRemoval(event.coverImgSrc)
-            event.coverImgSrc = filename
+            event.coverImgSrc = coverName
         }
 
         // Update cover image

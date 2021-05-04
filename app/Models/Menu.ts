@@ -7,7 +7,7 @@
  */
 import { DateTime } from 'luxon'
 import MenuItem from 'App/Models/MenuItem'
-import { toBoolean } from 'App/Utils/Serialize'
+import { toBoolean, toAbsolutePath } from 'App/Utils/Serialize'
 import { BaseModel, column, hasMany, HasMany } from '@ioc:Adonis/Lucid/Orm'
 
 export default class Menu extends BaseModel {
@@ -44,6 +44,18 @@ export default class Menu extends BaseModel {
      */
     @column({ consume: toBoolean })
     public hidden: boolean
+
+    /**
+     * Icon image for the menu to be displayed
+     */
+    @column({ serialize: toAbsolutePath })
+    public iconImgSrc: string
+
+    /**
+     * Cover image for the menu to be displayed
+     */
+    @column({ serialize: toAbsolutePath })
+    public coverImgSrc: string
 
     /**
      * Which date the menu was created at

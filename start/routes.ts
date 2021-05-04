@@ -151,6 +151,11 @@ Route.group(() => {
         'menu',
         'scope:admin',
     ])
+    Route.post('/menus/:mid/upload', 'MenusController.upload').middleware([
+        'auth',
+        'menu',
+        'scope:admin',
+    ])
 
     // ----------------------------------------------------------
     // Location menu items
