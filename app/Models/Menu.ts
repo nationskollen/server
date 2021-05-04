@@ -40,6 +40,12 @@ export default class Menu extends BaseModel {
     public name: string
 
     /**
+     * The name of the menu
+     */
+    @column()
+    public description: string
+
+    /**
      * Wether if the menu will be displayed or not
      */
     @column({ consume: toBoolean })

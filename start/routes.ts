@@ -132,7 +132,7 @@ Route.group(() => {
     // ----------------------------------------------------------
     // Location menus
     // ----------------------------------------------------------
-    Route.get('/menus/:mid', 'MenusController.single').middleware(['menu:preload'])
+    Route.get('/menus/:mid', 'MenusController.single').middleware(['menu'])
     Route.get('/locations/:lid/menus', 'MenusController.index').middleware(['location'])
     Route.post('/locations/:lid/menus', 'MenusController.create').middleware([
         'auth',
