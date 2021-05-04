@@ -12,25 +12,15 @@ import Menu from 'App/Models/Menu'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import MenuUpdateValidator from 'App/Validators/Menus/UpdateValidator'
 import MenuUploadValidator from 'App/Validators/Menus/UploadValidator'
-import { attemptFileUpload, attemptFileRemoval } from 'App/Utils/Upload'
 import MenuCreateController from 'App/Validators/Menus/CreateValidator'
+import { attemptFileUpload, attemptFileRemoval } from 'App/Utils/Upload'
 import { getLocation, getMenu, getValidatedData } from 'App/Utils/Request'
 
 export default class MenusController {
     /**
-     * Fetch all the menus (and their items) in the system
-     */
-    public async index({ request }: HttpContextContract) {
-        const location = getLocation(request)
-        const menus = await Menu.allMenus(location.id)
-
-        return menus.map((menu) => menu.toJSON())
-    }
-
-    /**
      * Fetch all the menus in the system
      */
-    public async withItems({ request }: HttpContextContract) {
+    public async index({ request }: HttpContextContract) {
         const location = getLocation(request)
         const menus = await Menu.allMenus(location.id)
 

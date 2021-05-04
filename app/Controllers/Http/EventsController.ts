@@ -7,7 +7,7 @@
  */
 import { DateTime } from 'luxon'
 import Event from 'App/Models/Event'
-import { MINIMUM_PAGE } from 'App/Utils/Constants'
+import { getPageNumber } from 'App/Utils/Paginate'
 import { ExtractScopes } from '@ioc:Adonis/Lucid/Model'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { attemptFileUpload, attemptFileRemoval } from 'App/Utils/Upload'
@@ -58,21 +58,6 @@ export default class EventsController {
     }
 
     /**
-     * Helper function for getting the page number from a request.
-     * If no page number was specified, {@link MINIMUM_PAGE} is returned.
-     * This was added because during typescript compilation in production build,
-     * it would fail and the server could not start. This was a result of the `??`
-     * operator.
-     */
-    private getPageNumber(page?: number) {
-        if (page) {
-            return page
-        }
-
-        return MINIMUM_PAGE
-    }
-
-    /**
      * Method to retrieve all the events in the system
      * The actual function call is done by a request (CRUD) which are specified
      * in `Routes.ts`
@@ -92,7 +77,7 @@ export default class EventsController {
                 this.applyCategory(scopes, category)
             })
 
-        const events = await query.paginate(this.getPageNumber(specified.page), specified.amount)
+        const events = await query.paginate(getPageNumber(specified.page), specified.amount)
         return events.toJSON()
     }
 
@@ -131,7 +116,7 @@ export default class EventsController {
                 this.applyFilters(scopes, { date, before, after })
             })
 
-        const events = await query.paginate(this.getPageNumber(specified.page), specified.amount)
+        const events = await query.paginate(getPageNumber(specified.page), specified.amount)
         return events.toJSON()
     }
 
