@@ -13,6 +13,7 @@ export default class EventFilterValidator {
         before: schema.date.optional({ format: 'yyyy-LL-dd' }),
         after: schema.date.optional({ format: 'yyyy-LL-dd' }),
         category: schema.number.optional([rules.unsigned()]),
+        exclude_oids: schema.string.optional(),
     })
 
     public messages = {}

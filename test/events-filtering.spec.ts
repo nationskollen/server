@@ -310,4 +310,76 @@ test.group('Events filtering', async () => {
         assert.equal(data.meta.total, 0)
         assert.equal(data.data.length, 0)
     })
+
+    test('ensure that filtering for events except specific oid returns events not belonging to the oid', async (assert) => {
+        const nation = await NationFactory.create()
+        const nation2 = await NationFactory.create()
+        await createTestEvent(nation.oid)
+        await createTestEvent(nation.oid)
+        await createTestEvent(nation.oid)
+        await createTestEvent(nation2.oid)
+        await createTestEvent(nation2.oid)
+
+        const { text } = await supertest(BASE_URL)
+            .get(`/events?exclude_oids=${nation.oid}`)
+            .expect(200)
+
+        const data = JSON.parse(text)
+        for (const event of data.data) {
+            assert.notEqual(event.nation_id, nation.oid)
+        }
+    })
+
+    test('ensure that filtering out multiple nation is viable', async (assert) => {
+        const nation = await NationFactory.create()
+        const nation2 = await NationFactory.create()
+        await createTestEvent(nation.oid)
+        await createTestEvent(nation.oid)
+        await createTestEvent(nation.oid)
+        await createTestEvent(nation2.oid)
+        await createTestEvent(nation2.oid)
+
+        const { text } = await supertest(BASE_URL)
+            .get(`/events?exclude_oids=${nation.oid},${nation2.oid}`)
+            .expect(200)
+
+        const data = JSON.parse(text)
+        for (const event of data.data) {
+            assert.notEqual(event.nation_id, nation.oid)
+            assert.notEqual(event.nation_id, nation2.oid)
+        }
+    })
+
+    test('ensure that incorrectly filter out OIDs returns all events', async (assert) => {
+        const { text } = await supertest(BASE_URL).get(`/events?exclude_oids=,`).expect(200)
+
+        const data = JSON.parse(text)
+        assert.isNotEmpty(data.data)
+    })
+
+    test('ensure that having seperated the oids incorrectly still excludes a given oid', async (assert) => {
+        const nation = await NationFactory.create()
+
+        const { text } = await supertest(BASE_URL)
+            .get(`/events?exclude_oids=, ${nation.oid}`)
+            .expect(200)
+
+        const data = JSON.parse(text)
+        for (const event of data.data) {
+            assert.notEqual(event.nation_id, nation.oid)
+        }
+    })
+
+    test('ensure that having a different type in the exclusion ignores it but takes the proper parameters in the exclusion', async (assert) => {
+        const nation = await NationFactory.create()
+
+        const { text } = await supertest(BASE_URL)
+            .get(`/events?exclude_oids= asdf, ${nation.oid}`)
+            .expect(200)
+
+        const data = JSON.parse(text)
+        for (const event of data.data) {
+            assert.notEqual(event.nation_id, nation.oid)
+        }
+    })
 })

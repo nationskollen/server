@@ -155,4 +155,14 @@ export default class Event extends BaseModel {
     public static perCategory = scope((query, categoryId: number) => {
         query.where('categoryId', categoryId)
     })
+
+    /**
+     * filtering options to query events for their oid belonging
+     * @param categoryId the number for the id to query for
+     */
+    public static filterOutOids = scope((query, oids?: Array<number>) => {
+        if (oids) {
+            query.whereNotIn('nationId', oids)
+        }
+    })
 }
