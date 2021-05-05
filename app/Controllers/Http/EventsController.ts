@@ -57,13 +57,33 @@ export default class EventsController {
         }
     }
 
+    private applyExclusionOids(
+        scopes: ExtractScopes<typeof Event>,
+        excludeOids?: string | undefined
+    ) {
+        if (excludeOids) {
+            const initial: Array<number> = []
+            const parsed = excludeOids.split(',').reduce((reducedArray, oid) => {
+                const tmp = parseInt(oid)
+
+                if (!isNaN(tmp)) {
+                    reducedArray.push(tmp)
+                }
+
+                return reducedArray
+            }, initial)
+
+            scopes.filterOutOids(parsed)
+        }
+    }
+
     /**
      * Method to retrieve all the events in the system
      * The actual function call is done by a request (CRUD) which are specified
      * in `Routes.ts`
      */
     public async all({ request }: HttpContextContract) {
-        const { date, before, after, category } = await getValidatedData(
+        const { date, before, after, category, exclude_oids } = await getValidatedData(
             request,
             EventFilterValidator,
             true
@@ -75,6 +95,7 @@ export default class EventsController {
             .apply((scopes) => {
                 this.applyFilters(scopes, { date, before, after })
                 this.applyCategory(scopes, category)
+                this.applyExclusionOids(scopes, exclude_oids)
             })
 
         const events = await query.paginate(getPageNumber(specified.page), specified.amount)
