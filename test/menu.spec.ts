@@ -56,11 +56,9 @@ test.group('Menu fetch', async (group) => {
     })
 
     test('ensure that you can fetch menu(s) by filtering for non-hidden menus', async (assert) => {
-        let tmpNation: TestNationContract
-        let tmpLocation: Location
+        const tmpNation = await createTestNation()
+        const tmpLocation = await createTestLocation(tmpNation.oid)
 
-        tmpNation = await createTestNation()
-        tmpLocation = await createTestLocation(tmpNation.oid)
         await createTestMenu(tmpNation.oid, tmpLocation.id)
         await createTestMenu(tmpNation.oid, tmpLocation.id)
         await createTestMenu(tmpNation.oid, tmpLocation.id)
@@ -74,7 +72,7 @@ test.group('Menu fetch', async (group) => {
             hidden: true,
         }
 
-        await supertest(BASE_URL)
+        const text2 = await supertest(BASE_URL)
             .post(`/locations/${tmpLocation.id}/menus`)
             .set('Authorization', 'Bearer ' + tmpNation.token)
             .send(hiddenMenu)
@@ -85,15 +83,16 @@ test.group('Menu fetch', async (group) => {
             .expect(200)
 
         const data = JSON.parse(text)
+        const data2 = JSON.parse(text2.text)
         assert.lengthOf(data, numberOfNonHiddenMenus)
+        for (const menu of data) {
+            assert.notDeepEqual(menu.id, data2.id)
+        }
     })
 
     test('ensure that you can fetch menu(s) by filtering for hidden menus', async (assert) => {
-        let tmpNation2: TestNationContract
-        let tmpLocation2: Location
-
-        tmpNation2 = await createTestNation()
-        tmpLocation2 = await createTestLocation(tmpNation2.oid)
+        const tmpNation = await createTestNation()
+        const tmpLocation = await createTestLocation(tmpNation.oid)
         const numberOfHiddenMenus = 1
 
         const hiddenMenu = {
@@ -101,18 +100,20 @@ test.group('Menu fetch', async (group) => {
             hidden: true,
         }
 
-        await supertest(BASE_URL)
-            .post(`/locations/${tmpLocation2.id}/menus`)
-            .set('Authorization', 'Bearer ' + tmpNation2.token)
+        const text2 = await supertest(BASE_URL)
+            .post(`/locations/${tmpLocation.id}/menus`)
+            .set('Authorization', 'Bearer ' + tmpNation.token)
             .send(hiddenMenu)
             .expect(200)
 
         const { text } = await supertest(BASE_URL)
-            .get(`/locations/${tmpLocation2.id}/menus?hidden=true`)
+            .get(`/locations/${tmpLocation.id}/menus?hidden=true`)
             .expect(200)
 
         const data = JSON.parse(text)
+        const data2 = JSON.parse(text2.text)
         assert.lengthOf(data, numberOfHiddenMenus)
+        assert.equal(data[0].id, data2.id)
     })
 })
 

@@ -28,7 +28,6 @@ export default class MenuItemsController {
         const query = MenuItem.query().where('menu_id', menu.id)
         const menuItems = await query.paginate(getPageNumber(specified.page), specified.amount)
 
-        console.log(menuItems)
         return menuItems.toJSON()
     }
 

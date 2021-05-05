@@ -9,7 +9,6 @@
  * @module MenusController
  */
 import Menu from 'App/Models/Menu'
-import { ExtractScopes } from '@ioc:Adonis/Lucid/Model'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import MenuUpdateValidator from 'App/Validators/Menus/UpdateValidator'
 import MenuUploadValidator from 'App/Validators/Menus/UploadValidator'
@@ -20,21 +19,6 @@ import { getLocation, getMenu, getValidatedData } from 'App/Utils/Request'
 
 export default class MenusController {
     /**
-     * Method that applies given filters depedning on what type of menu to
-     * filter after
-     * @param scopes - The different scopes that exists in the system
-     * @param filters - The filter to apply
-     */
-    private applyFilters(scopes: ExtractScopes<typeof Menu>, filters: boolean | undefined) {
-        if (filters) {
-            // Filter based on selected date
-            scopes.showHidden(filters)
-        } else {
-            scopes.showHidden(!!filters)
-        }
-    }
-
-    /**
      * Fetch all the menus in the system
      */
     public async index({ request }: HttpContextContract) {
@@ -43,7 +27,7 @@ export default class MenusController {
         const menus = await Menu.query()
             .where('location_id', location.id)
             .apply((scopes) => {
-                this.applyFilters(scopes, hidden)
+                scopes.showHidden(!!hidden)
             })
 
         return menus.map((menu) => menu.toJSON())
