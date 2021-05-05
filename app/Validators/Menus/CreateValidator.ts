@@ -10,6 +10,7 @@ export default class MenuCreateValidator {
 
     public schema = schema.create({
         name: schema.string(),
+        description: schema.string.optional(),
         hidden: schema.boolean(),
     })
 

@@ -1,16 +1,14 @@
 /**
  * @category Validator
- * @module MenuUpdateValidator
+ * @module MenuFilterValidator
  */
-import { schema, rules } from '@ioc:Adonis/Core/Validator'
+import { schema } from '@ioc:Adonis/Core/Validator'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
-export default class MenuUpdateValidator {
+export default class MenuFilterValidator {
     constructor(protected ctx: HttpContextContract) {}
 
     public schema = schema.create({
-        name: schema.string.optional(),
-        description: schema.string.optional(),
         hidden: schema.boolean.optional(),
     })
 

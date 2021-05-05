@@ -8,7 +8,9 @@
  * @module MenuItemsController
  */
 import MenuItem from 'App/Models/MenuItem'
+import { getPageNumber } from 'App/Utils/Paginate'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import PaginationValidator from 'App/Validators/PaginationValidator'
 import { attemptFileUpload, attemptFileRemoval } from 'App/Utils/Upload'
 import { getMenu, getMenuItem, getValidatedData } from 'App/Utils/Request'
 import MenuItemUpdateValidator from 'App/Validators/MenuItems/UpdateValidator'
@@ -21,9 +23,12 @@ export default class MenuItemsController {
      */
     public async index({ request }: HttpContextContract) {
         const menu = getMenu(request)
-        const items = await MenuItem.query().where('menu_id', menu.id)
+        const specified = await getValidatedData(request, PaginationValidator, true)
 
-        return items.map((item) => item.toJSON())
+        const query = MenuItem.query().where('menu_id', menu.id)
+        const menuItems = await query.paginate(getPageNumber(specified.page), specified.amount)
+
+        return menuItems.toJSON()
     }
 
     /**

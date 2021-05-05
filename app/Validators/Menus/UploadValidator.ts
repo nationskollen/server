@@ -1,12 +1,12 @@
 /**
  * @category Validator
- * @module EventUploadValidator
+ * @module MenuUploadValidator
  */
 import { schema } from '@ioc:Adonis/Core/Validator'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { MAX_FILE_SIZE, ALLOWED_FILE_EXTS } from 'App/Utils/Upload'
 
-export default class EventUploadValidator {
+export default class MenuUploadValidator {
     constructor(protected ctx: HttpContextContract) {}
 
     public schema = schema.create({
@@ -16,7 +16,6 @@ export default class EventUploadValidator {
         }),
         icon: schema.file.optional({
             size: MAX_FILE_SIZE,
-            // TODO: Allow svg?
             extnames: ALLOWED_FILE_EXTS,
         }),
     })

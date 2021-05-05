@@ -132,7 +132,7 @@ Route.group(() => {
     // ----------------------------------------------------------
     // Location menus
     // ----------------------------------------------------------
-    Route.get('/menus/:mid', 'MenusController.single').middleware(['menu:preload'])
+    Route.get('/menus/:mid', 'MenusController.single').middleware(['menu'])
     Route.get('/locations/:lid/menus', 'MenusController.index').middleware(['location'])
     Route.post('/locations/:lid/menus', 'MenusController.create').middleware([
         'auth',
@@ -148,6 +148,11 @@ Route.group(() => {
     Route.delete('/locations/:lid/menus/:mid', 'MenusController.delete').middleware([
         'auth',
         'location',
+        'menu',
+        'scope:admin',
+    ])
+    Route.post('/menus/:mid/upload', 'MenusController.upload').middleware([
+        'auth',
         'menu',
         'scope:admin',
     ])
