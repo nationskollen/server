@@ -72,6 +72,12 @@ export default class Nation extends BaseModel {
     public name: string
 
     /**
+     * web url to a nation, can be specified to any website
+     */
+    @column()
+    public webURL: string
+
+    /**
      * Short student nation name, e.g. V-dala
      */
     @column()
