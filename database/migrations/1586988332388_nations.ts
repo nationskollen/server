@@ -10,6 +10,7 @@ export default class Nations extends BaseSchema {
             table.integer('oid').unique().notNullable()
             table.string('name').unique().notNullable()
             table.string('short_name')
+            table.string('web_url')
             table.text('description')
             table.string('icon_img_src')
             table.string('pin_img_src')
