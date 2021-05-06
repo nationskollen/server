@@ -54,6 +54,34 @@ Route.group(() => {
         'nation:preloadDefault',
         'scope:admin',
     ])
+    // ----------------------------------------------------------
+    // Persons
+    // ----------------------------------------------------------
+    Route.get('/persons', 'PersonsController.index')
+
+    // ----------------------------------------------------------
+    // Single person
+    // ----------------------------------------------------------
+    Route.get('/persons/:id', 'PersonsController.single').middleware([
+        'auth',
+        'person',
+        'scope:admin',
+    ])
+    Route.post('/nations/:id/persons', 'PersonsController.create').middleware([
+        'auth',
+        'nation',
+        'scope:admin',
+    ])
+    Route.put('/persons/:id', 'PersonsController.update').middleware([
+        'auth',
+        'person',
+        'scope:admin',
+    ])
+    Route.post('/persons/:id/upload', 'PersonsController.upload').middleware([
+        'auth',
+        'person',
+        'scope:admin',
+    ])
 
     // ----------------------------------------------------------
     // Locations

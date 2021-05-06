@@ -10,9 +10,7 @@ test.group('Categories fetch', async () => {
             await createTestCategory()
         }
 
-        const { text } = await supertest(BASE_URL)
-            .get(`/categories`)
-            .expect(200)
+        const { text } = await supertest(BASE_URL).get(`/categories`).expect(200)
 
         const data = JSON.parse(text)
 
