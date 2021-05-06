@@ -215,4 +215,9 @@ Route.group(() => {
         'event',
         'scope:admin',
     ])
+
+    // ----------------------------------------------------------
+    // categories
+    // ----------------------------------------------------------
+    Route.get('/categories', 'CategoriesController.index')
 }).prefix('/api/v1')
