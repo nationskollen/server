@@ -6,7 +6,7 @@
  * in the {@link Subscription} model.
  *
  * @category Model
- * @module SubscriptionType
+ * @module SubscriptionTopic
  */
 import { DateTime } from 'luxon'
 import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'

@@ -10,7 +10,6 @@
  */
 import Env from '@ioc:Adonis/Core/Env'
 import Logger from '@ioc:Adonis/Core/Logger'
-import PushToken from 'App/Models/PushToken'
 import Subscription from 'App/Models/Subscription'
 import { Expo, ExpoPushTicket, ExpoPushMessage } from 'expo-server-sdk'
 
@@ -93,6 +92,8 @@ class ExpoService {
                 }
             } else {
                 // TODO: Save receipt ids and validate later when they have been delivered
+                // TODO: Queue job and fetch recipts after about an hour
+                // TODO: Save recipts ids?
             }
         })
     }
@@ -158,6 +159,7 @@ class ExpoService {
 
         // Skip sending of push notifications if there are no subscribers
         if (applicableSubscriptions.length === 0) {
+            Logger.info('Skipped sending of push notification. No active subcriptions')
             return
         }
 
@@ -182,6 +184,8 @@ class ExpoService {
                 Logger.error(error)
             }
         }
+
+        Logger.info('Successfully sent ')
 
         // Validate the returned tickets and handle any errors
         this.validateTickets(tickets, applicableSubscriptions)

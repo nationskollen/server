@@ -8,21 +8,65 @@
  * @category Model
  * @module Event
  */
-import { DateTime } from 'luxon'
-import { toAbsolutePath, toISO } from 'App/Utils/Serialize'
 import {
     column,
     BaseModel,
     scope,
     belongsTo,
     BelongsTo,
-    beforeCreate,
-    beforeDelete,
 } from '@ioc:Adonis/Lucid/Orm'
-import Notification from 'App/Models/Notification'
+import { DateTime } from 'luxon'
 import Category from 'App/Models/Category'
+import Logger from '@ioc:Adonis/Core/Logger'
+import { Topics } from 'App/Utils/Subscriptions'
+import Notification from 'App/Models/Notification'
+import { toAbsolutePath, toISO } from 'App/Utils/Serialize'
+import SubscriptionTopic from 'App/Models/SubscriptionTopic'
 
 export default class Event extends BaseModel {
+    /**
+     * Filtering options to query events before specified date
+     */
+    public static beforeDate = scope((query, date: DateTime) => {
+        query.where('occurs_at', '<', date.toISO())
+    })
+
+    /**
+     * Filtering options to query events after specified date
+     */
+    public static afterDate = scope((query, date: DateTime) => {
+        /**
+         * NOTE: Simply filtering by '>' with 'date.toISO()' does not work.
+         * No idea why this is, but I don't really care either.
+         */
+        query.where('occurs_at', '>=', date.plus({ day: 1 }).toISO())
+    })
+
+    /**
+     * Filtering options to query events at specified date
+     */
+    public static onDate = scope((query, date: DateTime) => {
+        query.whereBetween('occurs_at', [
+            date.set({ hour: 0, minute: 0 }).toISO(),
+            date.set({ hour: 23, minute: 59 }).toISO(),
+        ])
+    })
+
+    /**
+     * Ordering options to query events at ascending order
+     */
+    public static inOrder = scope((query) => {
+        query.orderBy('occurs_at', 'asc')
+    })
+
+    /**
+     * filtering options to query events for their categoryId
+     * @param categoryId the number for the id to query for
+     */
+    public static perCategory = scope((query, categoryId: number) => {
+        query.where('categoryId', categoryId)
+    })
+
     /**
      * The id for the event
      */
@@ -135,45 +179,26 @@ export default class Event extends BaseModel {
     public createdAt: DateTime
 
     /**
-     * Filtering options to query events before specified date
+     * Creates a new notification for the event model.
      */
-    public static beforeDate = scope((query, date: DateTime) => {
-        query.where('occurs_at', '<', date.toISO())
-    })
+    public async createNotification() {
+        const topic = await SubscriptionTopic.findBy('name', Topics.Events)
 
-    /**
-     * Filtering options to query events after specified date
-     */
-    public static afterDate = scope((query, date: DateTime) => {
-        /**
-         * NOTE: Simply filtering by '>' with 'date.toISO()' does not work.
-         * No idea why this is, but I don't really care either.
-         */
-        query.where('occurs_at', '>=', date.plus({ day: 1 }).toISO())
-    })
+        if (!topic) {
+            Logger.error('Could not create notification for Event model. Topic could not be found')
+            return
+        }
 
-    /**
-     * Filtering options to query events at specified date
-     */
-    public static onDate = scope((query, date: DateTime) => {
-        query.whereBetween('occurs_at', [
-            date.set({ hour: 0, minute: 0 }).toISO(),
-            date.set({ hour: 23, minute: 59 }).toISO(),
-        ])
-    })
+        // Creating this in the afterCreate hook resulted in weird behavior
+        const notification = await Notification.create({
+            title: this.name,
+            message: this.shortDescription,
+            nationId: this.nationId,
+            subscriptionTopicId: topic.id,
+        })
 
-    /**
-     * Ordering options to query events at ascending order
-     */
-    public static inOrder = scope((query) => {
-        query.orderBy('occurs_at', 'asc')
-    })
-
-    /**
-     * filtering options to query events for their categoryId
-     * @param categoryId the number for the id to query for
-     */
-    public static perCategory = scope((query, categoryId: number) => {
-        query.where('categoryId', categoryId)
-    })
+        // Update model with notification id
+        this.notificationId = notification.id
+        await this.save()
+    }
 }

@@ -17,4 +17,5 @@ export enum DatabaseTables {
     PushTokens = 'push_tokens',
     SubscriptionTopics = 'subscription_topics',
     Subscriptions = 'subscriptions',
+    Notifications = 'notifications',
 }

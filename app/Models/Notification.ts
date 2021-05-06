@@ -1,30 +1,8 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column, scope } from '@ioc:Adonis/Lucid/Orm'
+import ExpoService from 'App/Services/Expo'
+import { BaseModel, column, scope, afterCreate } from '@ioc:Adonis/Lucid/Orm'
 
 export default class Notification extends BaseModel {
-    @column({ isPrimary: true })
-    public id: number
-
-    @column()
-    public nationId: number
-
-    // // @todo
-    // // TODO
-    // @column()
-    // public subcriptionTopicId: number
-
-    @column()
-    public title: string
-
-    @column()
-    public message: string
-
-    @column.dateTime({ autoCreate: true })
-    public createdAt: DateTime
-
-    @column.dateTime({ autoCreate: true, autoUpdate: true, serializeAs: null })
-    public updatedAt: DateTime
-
     /**
      * Filtering options to query notifications after specified date
      */
@@ -42,4 +20,36 @@ export default class Notification extends BaseModel {
     public static inOrder = scope((query) => {
         query.orderBy('created_at', 'asc')
     })
+
+    @column({ isPrimary: true })
+    public id: number
+
+    @column()
+    public nationId: number
+
+    @column()
+    public subscriptionTopicId: number
+
+    @column()
+    public title: string
+
+    @column()
+    public message: string
+
+    @column.dateTime({ autoCreate: true })
+    public createdAt: DateTime
+
+    @column.dateTime({ autoCreate: true, autoUpdate: true, serializeAs: null })
+    public updatedAt: DateTime
+
+    /**
+     * Queues a job for sending out the push notifications
+     */
+    @afterCreate()
+    public static async queuePushNotification(notification: Notification) {
+        ExpoService.notify(notification.nationId, notification.subscriptionTopicId, {
+            title: notification.title,
+            body: notification.message,
+        })
+    }
 }

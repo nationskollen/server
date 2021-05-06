@@ -5,19 +5,18 @@
  * @category Controller
  * @module EventsController
  */
-import { DateTime } from 'luxon'
-import Event from 'App/Models/Event'
-import { getPageNumber } from 'App/Utils/Paginate'
-import Notification from 'App/Models/Notification'
-import { ExtractScopes } from '@ioc:Adonis/Lucid/Model'
-import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import { attemptFileUpload, attemptFileRemoval } from 'App/Utils/Upload'
 import {
     getNation,
     getEvent,
     attemptNotificationRemoval,
     getValidatedData,
 } from 'App/Utils/Request'
+import { DateTime } from 'luxon'
+import Event from 'App/Models/Event'
+import { getPageNumber } from 'App/Utils/Paginate'
+import { ExtractScopes } from '@ioc:Adonis/Lucid/Model'
+import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import { attemptFileUpload, attemptFileRemoval } from 'App/Utils/Upload'
 import PaginationValidator from 'App/Validators/PaginationValidator'
 import EventUpdateValidator from 'App/Validators/Events/UpdateValidator'
 import EventCreateValidator from 'App/Validators/Events/CreateValidator'
@@ -142,15 +141,7 @@ export default class EventsController {
             await event.preload('category')
         }
 
-        // Creating the notification here, before it was created using a hook
-        // but that somehow caused timeout in the tests... it was chugging on
-        // something
-        const notification = await Notification.create({
-            title: event.name,
-            message: event.shortDescription,
-            nationId: event.nationId,
-        })
-        event.notificationId = notification.id
+        await event.createNotification()
 
         return event.toJSON()
     }

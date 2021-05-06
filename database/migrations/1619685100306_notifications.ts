@@ -2,7 +2,7 @@ import BaseSchema from '@ioc:Adonis/Lucid/Schema'
 import { DatabaseTables } from 'App/Utils/Database'
 
 export default class Notifications extends BaseSchema {
-    protected tableName = 'notifications'
+    protected tableName = DatabaseTables.Notifications
 
     public async up() {
         this.schema.createTable(this.tableName, (table) => {
@@ -15,12 +15,12 @@ export default class Notifications extends BaseSchema {
                 .unsigned()
                 .references('oid')
                 .inTable(DatabaseTables.Nations)
-            // table
-            //     .integer('subscription_topic_id')
-            //     .notNullable()
-            //     .unsigned()
-            //     .references('id')
-            //     .inTable(DatabaseTables.SubscriptionTopics)
+            table
+                .integer('subscription_topic_id')
+                .notNullable()
+                .unsigned()
+                .references('id')
+                .inTable(DatabaseTables.SubscriptionTopics)
             table.timestamps(true)
         })
     }

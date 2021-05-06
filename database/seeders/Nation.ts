@@ -1,7 +1,4 @@
-import Category from 'App/Models/Category'
 import BaseSeeder from '@ioc:Adonis/Lucid/Seeder'
-import { Categories } from 'App/Utils/Categories'
-import SubscriptionTopic from 'App/Models/SubscriptionTopic'
 import {
     NationFactory,
     UserFactory,
@@ -14,15 +11,6 @@ export default class NationSeeder extends BaseSeeder {
     public static developmentOnly = true
 
     public async run() {
-        for (const category in Categories) {
-            await Category.create({
-                name: category,
-            })
-        }
-
-        await SubscriptionTopic.create({ name: 'News' })
-        await SubscriptionTopic.create({ name: 'Events' })
-
         // Create a test token that can be used in insomnia requests
         await PushTokenFactory.merge({ token: 'ExponentPushToken[test]' }).create()
 
@@ -121,8 +109,7 @@ export default class NationSeeder extends BaseSeeder {
             .apply('admin')
             .createMany(3)
 
-        // TODO: Fix this hacky solution for setting the nationId
-        await LocationFactory.with('openingHours', 2)
+        const locations = await LocationFactory.with('openingHours', 2)
             .with('openingHourExceptions', 1)
             .merge([
                 {
@@ -220,13 +207,13 @@ export default class NationSeeder extends BaseSeeder {
             ])
             .createMany(13)
 
-        for (const nation of nations) {
-            if (!nation.locations) continue
-            for (const location of nation.locations) {
-                await MenuFactory.with('items', 3)
-                    .merge({ locationId: location.id, nationId: nation.oid })
-                    .createMany(3)
-            }
+        for (const location of locations) {
+            await MenuFactory.with('items', 3)
+                .merge({
+                    locationId: location.id,
+                    nationId: location.nationId
+                })
+                .createMany(3)
         }
     }
 }
