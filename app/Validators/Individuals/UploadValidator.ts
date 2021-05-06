@@ -1,12 +1,12 @@
 /**
  * @category Validator
- * @module PersonUploadValidator
+ * @module IndividualUploadValidator
  */
 import { schema } from '@ioc:Adonis/Core/Validator'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { MAX_FILE_SIZE, ALLOWED_FILE_EXTS } from 'App/Utils/Upload'
 
-export default class PersonUploadValidator {
+export default class IndividualUploadValidator {
     constructor(protected ctx: HttpContextContract) {}
 
     public schema = schema.create({

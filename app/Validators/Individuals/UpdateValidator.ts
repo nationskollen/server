@@ -1,13 +1,13 @@
 /**
  * @category Validator
- * @module PersonUpdateValidator
+ * @module IndividualUpdateValidator
  */
 import { getOidRef } from 'App/Utils/Validator'
 import { DatabaseTables } from 'App/Utils/Database'
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
-export default class PersonUpdateValidator {
+export default class IndividualUpdateValidator {
     constructor(protected ctx: HttpContextContract) {}
 
     public refs = schema.refs({ nationId: getOidRef(this.ctx) })

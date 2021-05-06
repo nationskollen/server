@@ -8,7 +8,7 @@ export enum DatabaseTables {
     Users = 'users',
     ApiTokens = 'api_tokens',
     Nations = 'nations',
-    Persons = 'persons',
+    Individuals = 'individuals',
     Locations = 'locations',
     OpeningHours = 'opening_hours',
     Events = 'events',

@@ -55,31 +55,31 @@ Route.group(() => {
         'scope:admin',
     ])
     // ----------------------------------------------------------
-    // Persons
+    // individuals
     // ----------------------------------------------------------
-    Route.get('/persons', 'PersonsController.index')
+    Route.get('/individuals', 'IndividualsController.index')
 
     // ----------------------------------------------------------
-    // Single person
+    // Single individual
     // ----------------------------------------------------------
-    Route.get('/persons/:id', 'PersonsController.single').middleware([
+    Route.get('/individuals/:iid', 'IndividualsController.single').middleware([
         'auth',
-        'person',
+        'individual',
         'scope:admin',
     ])
-    Route.post('/nations/:id/persons', 'PersonsController.create').middleware([
+    Route.post('/nations/:id/individuals', 'IndividualsController.create').middleware([
         'auth',
         'nation',
         'scope:admin',
     ])
-    Route.put('/persons/:id', 'PersonsController.update').middleware([
+    Route.put('/individuals/:iid', 'IndividualsController.update').middleware([
         'auth',
-        'person',
+        'individual',
         'scope:admin',
     ])
-    Route.post('/persons/:id/upload', 'PersonsController.upload').middleware([
+    Route.post('/individuals/:iid/upload', 'IndividualsController.upload').middleware([
         'auth',
-        'person',
+        'individual',
         'scope:admin',
     ])
 
