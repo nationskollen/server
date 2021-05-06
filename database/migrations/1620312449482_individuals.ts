@@ -1,5 +1,5 @@
 import BaseSchema from '@ioc:Adonis/Lucid/Schema'
-import {DatabaseTables} from 'App/Utils/Database'
+import { DatabaseTables } from 'App/Utils/Database'
 
 export default class Individuals extends BaseSchema {
     protected tableName = DatabaseTables.Individuals
@@ -8,6 +8,7 @@ export default class Individuals extends BaseSchema {
         this.schema.createTable(this.tableName, (table) => {
             table.increments('id')
             table.string('name')
+            table.string('role')
             table
                 .integer('nation_id')
                 .notNullable()

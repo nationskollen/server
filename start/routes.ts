@@ -68,13 +68,21 @@ Route.group(() => {
         'nation',
         'scope:admin',
     ])
-    Route.put('/individuals/:iid', 'IndividualsController.update').middleware([
+    Route.put('/nations/:id/individuals/:iid', 'IndividualsController.update').middleware([
         'auth',
+        'nation',
         'individual',
         'scope:admin',
     ])
-    Route.post('/individuals/:iid/upload', 'IndividualsController.upload').middleware([
+    Route.post('/nations/:id/individuals/:iid/upload', 'IndividualsController.upload').middleware([
         'auth',
+        'nation',
+        'individual',
+        'scope:admin',
+    ])
+    Route.delete('/nations/:id/individuals/:iid', 'IndividualsController.delete').middleware([
+        'auth',
+        'nation',
         'individual',
         'scope:admin',
     ])

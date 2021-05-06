@@ -59,6 +59,14 @@ export default class IndividualsController {
     }
 
     /**
+     * delete a single individual from system
+     */
+    public async delete({ request }: HttpContextContract) {
+        const individual = getIndividual(request)
+        await individual.delete()
+    }
+
+    /**
      * upload a file to a individual from system
      */
     public async upload({ request }: HttpContextContract) {
