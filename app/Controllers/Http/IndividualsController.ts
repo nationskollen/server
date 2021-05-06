@@ -11,9 +11,9 @@ import Individual from 'App/Models/Individual'
 import { getIndividual, getNation, getValidatedData } from 'App/Utils/Request'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { attemptFileUpload, attemptFileRemoval } from 'App/Utils/Upload'
-import IndividualCreateValidator from 'App/Validators/Individual/CreateValidator'
-import IndividualUpdateValidator from 'App/Validators/Individual/UpdateValidator'
-import IndividualUploadValidator from 'App/Validators/Individual/UploadValidator'
+import IndividualCreateValidator from 'App/Validators/Individuals/CreateValidator'
+import IndividualUpdateValidator from 'App/Validators/Individuals/UpdateValidator'
+import IndividualUploadValidator from 'App/Validators/Individuals/UploadValidator'
 
 export default class IndividualsController {
     /**
