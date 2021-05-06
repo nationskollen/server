@@ -30,7 +30,7 @@ export default class IndividualsController {
      * fetch a single individual from system
      */
     public async single({ request }: HttpContextContract) {
-        return getPerson(request).toJSON()
+        return getIndividual(request).toJSON()
     }
 
     /**
@@ -40,9 +40,7 @@ export default class IndividualsController {
         const nation = getNation(request)
         const data = await getValidatedData(request, IndividualCreateValidator)
 
-        const individual = await Individual.create(data)
-
-        await nation.related('individuals').save(individual)
+        const individual = await nation.related('individuals').create(data)
 
         return individual.toJSON()
     }

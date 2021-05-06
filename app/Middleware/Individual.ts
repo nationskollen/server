@@ -28,9 +28,7 @@ export default class IndividualMiddleware {
      * Handle request
      */
     public async handle({ request, params }: HttpContextContract, next: () => Promise<void>) {
-        let individual: Individual | null
-
-        individual = await Individual.findby('id', params.id)
+        const individual = await Individual.findBy('id', params.iid)
 
         if (!individual) {
             throw new IndividualNotFoundException()

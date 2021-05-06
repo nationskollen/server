@@ -62,11 +62,7 @@ Route.group(() => {
     // ----------------------------------------------------------
     // Single individual
     // ----------------------------------------------------------
-    Route.get('/individuals/:iid', 'IndividualsController.single').middleware([
-        'auth',
-        'individual',
-        'scope:admin',
-    ])
+    Route.get('/individuals/:iid', 'IndividualsController.single').middleware(['individual'])
     Route.post('/nations/:id/individuals', 'IndividualsController.create').middleware([
         'auth',
         'nation',
