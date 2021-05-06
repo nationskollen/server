@@ -5,15 +5,14 @@ import { createTestCategory } from 'App/Utils/Test'
 
 test.group('Categories fetch', async () => {
     test('ensure that you can fetch all the categories in the system', async (assert) => {
-        const numberOfCategoriesInTest = 6
-        await createTestCategory()
-        await createTestCategory()
-        await createTestCategory()
-        await createTestCategory()
-        await createTestCategory()
-        await createTestCategory()
+        const numberOfCategoriesInTest = 2
+        for (let i = 0; i < numberOfCategoriesInTest; i++) {
+            await createTestCategory()
+        }
 
-        const { text } = await supertest(BASE_URL).get(`/categories`).expect(200)
+        const { text } = await supertest(BASE_URL)
+            .get(`/categories`)
+            .expect(200)
 
         const data = JSON.parse(text)
 

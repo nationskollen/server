@@ -16,7 +16,9 @@ export default class CategoriesController {
      * fetch all nations from system
      */
     public async index({}: HttpContextContract) {
-        const categories = await Category.all()
+        const categories = await Category.query().apply((scopes) => {
+            scopes.inOrder()
+        })
 
         return categories.map((category: Category) => category.toJSON())
     }

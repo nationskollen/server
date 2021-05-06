@@ -3,7 +3,7 @@
  * @module Category
  */
 import { DateTime } from 'luxon'
-import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, column, scope } from '@ioc:Adonis/Lucid/Orm'
 
 export default class Category extends BaseModel {
     /**
@@ -29,4 +29,11 @@ export default class Category extends BaseModel {
      */
     @column.dateTime({ autoCreate: true, autoUpdate: true, serializeAs: null })
     public updatedAt: DateTime
+
+    /**
+     * Ordering options to query categories at ascending order
+     */
+    public static inOrder = scope((query) => {
+        query.orderBy('name', 'asc')
+    })
 }
