@@ -13,23 +13,24 @@ export default class NationSeeder extends BaseSeeder {
             })
         }
 
-        const nations = await NationFactory
-            .with('events', 3, (builder) => {
-                builder.merge([{ categoryId: 1 }, { categoryId: 2 }, { categoryId: 3 }])
-            })
+        const nations = await NationFactory.with('events', 3, (builder) => {
+            builder.merge([{ categoryId: 1 }, { categoryId: 2 }, { categoryId: 3 }])
+        })
             .with('individuals', 3, (builder) => {
-                builder.merge([{ 
+                builder.merge([
+                    {
                         role: '1Q',
                         profileImgSrc: 'assets/fadde.jpeg',
-                    }, 
-                    { 
-                        role: '2Q',
-                        profileImgSrc: 'assets/fredrik.jpeg'
                     },
-                    { 
+                    {
+                        role: '2Q',
+                        profileImgSrc: 'assets/fredrik.jpeg',
+                    },
+                    {
                         role: 'Klubbmästare',
-                        profileImgSrc: 'assets/johannes.jpeg'
-                    }])
+                        profileImgSrc: 'assets/johannes.jpeg',
+                    },
+                ])
             })
             .merge([
                 {

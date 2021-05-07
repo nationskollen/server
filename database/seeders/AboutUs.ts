@@ -1,5 +1,5 @@
 import BaseSeeder from '@ioc:Adonis/Lucid/Seeder'
-import { } from '../factories'
+import {} from '../factories'
 import { Categories } from 'App/Utils/Categories'
 import Category from 'App/Models/Category'
 
