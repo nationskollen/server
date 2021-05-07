@@ -41,12 +41,13 @@ jobs:
             npm run build
             cp ../server/build/.env ./build/.env
 
-            # Run migrations
+            # Run migrations and copy assets
             # Must navigate to the build folder so that we get the correct DB credentials
             cd build
             node ace migration:rollback --force
             node ace migration:run --force
             node ace db:seed --force
+            cp -r ../assets ./public
 
             # The public directory must be created manually.
             # Otherwise, any upload that is compressed using sharp
