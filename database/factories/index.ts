@@ -39,9 +39,9 @@ export const MenuItemFactory = Factory.define(MenuItem, ({ faker }) => {
 
 export const IndividualFactory = Factory.define(Individual, ({ faker }) => {
     return {
-        name: faker.commerce.productName(),
-        description: faker.commerce.productDescription(),
-        role: faker.commerce.department(),
+        name: faker.name.firstName(),
+        description: faker.lorem.sentence(),
+        role: faker.name.jobTitle(),
     }
 }).build()
 
