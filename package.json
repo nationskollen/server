@@ -6,7 +6,7 @@
         "pg:start": "docker-compose start",
         "pg:up": "docker-compose up",
         "pg:stop": "docker container stop $(docker container list -q)",
-        "setup": "node ace migration:rollback && node ace migration:run && node ace db:seed && cp -R assets/ public/assets/",
+        "setup": "node ace migration:rollback && node ace migration:run && node ace db:seed && cp -R assets/ public/",
         "dev": "node ace serve --watch",
         "build": "node ace build --production",
         "start": "node server.js",

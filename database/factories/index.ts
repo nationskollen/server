@@ -121,6 +121,7 @@ export const NationFactory = Factory.define(Nation, async ({ faker }) => {
     .relation('staff', () => UserFactory)
     .relation('locations', () => LocationFactory)
     .relation('events', () => EventFactory)
+    .relation('individuals', () => IndividualFactory)
     .build()
 
 export const UserFactory = Factory.define(User, ({ faker }) => {

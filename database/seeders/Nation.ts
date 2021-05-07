@@ -13,9 +13,24 @@ export default class NationSeeder extends BaseSeeder {
             })
         }
 
-        const nations = await NationFactory.with('events', 3, (builder) => {
-            builder.merge([{ categoryId: 1 }, { categoryId: 2 }, { categoryId: 3 }])
-        })
+        const nations = await NationFactory
+            .with('events', 3, (builder) => {
+                builder.merge([{ categoryId: 1 }, { categoryId: 2 }, { categoryId: 3 }])
+            })
+            .with('individuals', 3, (builder) => {
+                builder.merge([{ 
+                        role: '1Q',
+                        profileImgSrc: 'assets/fadde.jpeg',
+                    }, 
+                    { 
+                        role: '2Q',
+                        profileImgSrc: 'assets/fredrik.jpeg'
+                    },
+                    { 
+                        role: 'Klubbmästare',
+                        profileImgSrc: 'assets/johannes.jpeg'
+                    }])
+            })
             .merge([
                 {
                     oid: 400,
@@ -135,7 +150,31 @@ export default class NationSeeder extends BaseSeeder {
             .createMany(3)
 
         // TODO: Fix this hacky solution for setting the nationId
-        await LocationFactory.with('openingHours', 2)
+        await LocationFactory.with('openingHours', 7, (builder) => {
+            builder.merge([
+                {
+                    day: 0,
+                },
+                {
+                    day: 1,
+                },
+                {
+                    day: 2,
+                },
+                {
+                    day: 3,
+                },
+                {
+                    day: 4,
+                },
+                {
+                    day: 5,
+                },
+                {
+                    day: 6,
+                },
+            ])
+        })
             .with('openingHourExceptions', 1)
             .merge([
                 {
@@ -144,6 +183,7 @@ export default class NationSeeder extends BaseSeeder {
                     isDefault: true,
                     latitude: 59.86032259136127,
                     longitude: 17.628939051847695,
+                    coverImgSrc: 'assets/vdala/vdala-framsida.png',
                 },
                 {
                     name: 'Stockholms nation',
@@ -151,6 +191,7 @@ export default class NationSeeder extends BaseSeeder {
                     isDefault: true,
                     latitude: 59.856731614930446,
                     longitude: 17.63419919045771,
+                    coverImgSrc: 'assets/stocken/stockenbaksida.jpg',
                 },
                 {
                     name: 'Norrlands nation',
@@ -158,6 +199,7 @@ export default class NationSeeder extends BaseSeeder {
                     isDefault: true,
                     latitude: 59.856227,
                     longitude: 17.6378425,
+                    coverImgSrc: 'assets/norrlands/norrlandsframsida.jpg',
                 },
 
                 {
@@ -166,6 +208,7 @@ export default class NationSeeder extends BaseSeeder {
                     isDefault: true,
                     latitude: 59.859106565445636,
                     longitude: 17.62706918384986,
+                    coverImgSrc: 'assets/kalmar/kalmarframsida.jpg',
                 },
                 {
                     name: 'Värmlands Nation',
@@ -173,6 +216,7 @@ export default class NationSeeder extends BaseSeeder {
                     isDefault: true,
                     latitude: 59.85715355297,
                     longitude: 17.633830648196177,
+                    coverImgSrc: 'assets/varmlands/varmlandsframsida.jpg',
                 },
                 {
                     name: 'Gästrike-Hälsinge Nation',
@@ -180,6 +224,7 @@ export default class NationSeeder extends BaseSeeder {
                     isDefault: true,
                     latitude: 59.85656549537542,
                     longitude: 17.63670148804158,
+                    coverImgSrc: 'assets/gastrike/GH-Huset.JPG',
                 },
                 {
                     name: 'Gotlands nation',
@@ -187,6 +232,7 @@ export default class NationSeeder extends BaseSeeder {
                     isDefault: true,
                     latitude: 59.85978279670555,
                     longitude: 17.634567704542953,
+                    coverImgSrc: 'assets/gotlands/gotlandsframsida.JPG',
                 },
                 {
                     name: 'Uplands nation',
@@ -194,6 +240,7 @@ export default class NationSeeder extends BaseSeeder {
                     isDefault: true,
                     latitude: 59.85992220628584,
                     longitude: 17.629458535888315,
+                    coverImgSrc: 'assets/uplands/uplandsframsida.jpg',
                 },
                 {
                     name: 'Östgötas nation',
@@ -201,6 +248,7 @@ export default class NationSeeder extends BaseSeeder {
                     isDefault: true,
                     latitude: 59.85521276094654,
                     longitude: 17.637959775927737,
+                    coverImgSrc: 'assets/ostgota/ostgotaframsida.jpg',
                 },
                 {
                     name: 'Västgötas nation',
@@ -208,6 +256,7 @@ export default class NationSeeder extends BaseSeeder {
                     isDefault: true,
                     latitude: 59.85686289838122,
                     longitude: 17.638651455173623,
+                    coverImgSrc: 'assets/vastgota/vastgotaframsida.jpg',
                 },
                 {
                     name: 'Smålands nation',
@@ -215,6 +264,7 @@ export default class NationSeeder extends BaseSeeder {
                     isDefault: true,
                     latitude: 59.85929959538165,
                     longitude: 17.63123586514085,
+                    coverImgSrc: 'assets/smalands/smalandsframsida.jpg',
                 },
                 {
                     name: 'Göteborgs nation',
@@ -222,6 +272,7 @@ export default class NationSeeder extends BaseSeeder {
                     isDefault: true,
                     latitude: 59.85957889713392,
                     longitude: 17.63019280454616,
+                    coverImgSrc: 'assets/gbg/gbgframsida.jpeg',
                 },
                 {
                     name: 'Södermanland-Nerikes nation',
@@ -229,6 +280,7 @@ export default class NationSeeder extends BaseSeeder {
                     isDefault: true,
                     latitude: 59.8591482187301,
                     longitude: 17.630697251271798,
+                    coverImgSrc: 'assets/snarkes/snerikesframsida.jpg',
                 },
             ])
             .createMany(13)
