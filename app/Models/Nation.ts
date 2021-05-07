@@ -45,6 +45,7 @@ import { DateTime } from 'luxon'
 import User from 'App/Models/User'
 import Location from 'App/Models/Location'
 import Event from 'App/Models/Event'
+import Individual from 'App/Models/Individual'
 import { toAbsolutePath } from 'App/Utils/Serialize'
 import { hasOne, hasMany, HasOne, HasMany, column, BaseModel } from '@ioc:Adonis/Lucid/Orm'
 
@@ -155,6 +156,12 @@ export default class Nation extends BaseModel {
      */
     @hasMany(() => Event, { localKey: 'oid' })
     public events: HasMany<typeof Event>
+
+    /**
+     * The different persons related to the nation
+     */
+    @hasMany(() => Individual, { localKey: 'oid' })
+    public individuals: HasMany<typeof Individual>
 
     /**
      * Create nation query builder with locations preloaded
