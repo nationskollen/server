@@ -6,6 +6,10 @@ import PgBoss from 'pg-boss'
 import Logger from '@ioc:Adonis/Core/Logger'
 import Database from '@ioc:Adonis/Lucid/Database'
 
+export enum JobNames {
+    NotificationReciepts = 'notification-recipts',
+}
+
 class Scheduler {
     public boss: PgBoss
 

@@ -8,10 +8,18 @@
  * @category Services
  * @module Expo
  */
+import { Job } from 'pg-boss'
 import Env from '@ioc:Adonis/Core/Env'
 import Logger from '@ioc:Adonis/Core/Logger'
+import PushToken from 'App/Models/PushToken'
 import Subscription from 'App/Models/Subscription'
+import Scheduler, { JobNames } from 'App/Services/Scheduler'
 import { Expo, ExpoPushTicket, ExpoPushMessage } from 'expo-server-sdk'
+
+// One hour timeout (specified in seconds)
+const RECIEPT_FETCH_TIMEOUT = 60 * 60
+
+export type NotificationRecieptsData = { [ticketId: string]: string }
 
 class ExpoService {
     private expo?: Expo
@@ -49,6 +57,99 @@ class ExpoService {
         // Delete all subscriptions for this push token
         await Subscription.query().where('pushTokenId', subscription.pushToken.id).delete()
         await pushToken.delete()
+
+        Scheduler.boss.subscribe(JobNames.NotificationReciepts, {}, this.validateReceipts)
+    }
+
+    /**
+     * Deletes a push token based on a string. This should be used when fetching receipts.
+     * This will not schedule any jobs for validating receipts.
+     *
+     * @param subscription - The token that caused a `DeviceNotRegistered` error
+     */
+    private async deleteReceiptPushToken(jobName: string, token?: string) {
+        if (!token) {
+            Logger.error(
+                `Job ${jobName}: Could not delete token. Token is undefined`
+            )
+            return
+        }
+
+        const pushToken = await PushToken.findBy('token', token)
+
+        if (!pushToken) {
+            Logger.error(
+                `Job ${jobName}: Could not delete token. No such token in the database`
+            )
+            return
+        }
+
+        // Delete all subscriptions for this push token
+        await Subscription.query().where('pushTokenId', pushToken.id).delete()
+        await pushToken.delete()
+    }
+
+    private async validateReceipts(job: Job<NotificationRecieptsData>) {
+        const data = job.data
+
+        // Make sure that we have receipts to validate
+        if (!data || Object.keys(data).length === 0) {
+            Logger.info(
+                `Job "${job.name}" was cancelled because no data was provided`
+            )
+            return
+        }
+
+        if (!this.expo) {
+            Logger.info(
+                `Job "${job.name}" was cancelled because expo has not been initialized`
+            )
+            return
+        }
+
+        const receiptIdChunks = this.expo.chunkPushNotificationReceiptIds(Object.keys(data))
+
+        receiptIdChunks.forEach(async (chunk) => {
+            try {
+                // It complains about this.expo possibly being null. This should never be the case.
+                // @ts-ignore
+                const receipts = await this.expo.getPushNotificationReceiptsAsync(chunk);
+
+                // The receipts specify whether Apple or Google successfully received the
+                // notification and information about an error, if one occurred.
+                for (const receiptId in receipts) {
+                    const receipt = receipts[receiptId]
+
+                    if (receipt.status === 'error') {
+                        const { details } = receipt
+
+                        if (!details || !details.error) {
+                            // The error codes are listed in the Expo documentation:
+                            // https://docs.expo.io/push-notifications/sending-notifications/#individual-errors
+                            // You must handle the errors appropriately.
+                            continue
+                        }
+
+                        switch (details?.error) {
+                            case 'MessageTooBig': /* fallthrough */
+                            case 'MessageRateExceeded':
+                                // TODO: What the fuck should we do about this?
+                                break
+                            case 'InvalidCredentials':
+                                Logger.error(`Job ${job.name}: Invalid expo credentials`)
+                                break
+                            case 'DeviceNotRegistered':
+                                this.deleteReceiptPushToken(job.name, data[receiptId])
+                                break
+                            default:
+                                Logger.info(`Job ${job.name}: Invalid error message received from expo`)
+                        }
+                    }
+                }
+            } catch (error) {
+                Logger.error(`Job ${job.name}: Failed to fetch receipts for chunk`);
+            }
+        })
     }
 
     /**
@@ -63,6 +164,8 @@ class ExpoService {
      * @param subscriptions - The subscriptions that created the tickets, in the same order
      */
     private validateTickets(tickets: Array<ExpoPushTicket>, subscriptions: Array<Subscription>) {
+        const validateTicketIds: NotificationRecieptsData = {}
+
         tickets.forEach((ticket, index) => {
             if (ticket.status !== 'ok') {
                 switch (ticket.details?.error) {
@@ -91,11 +194,21 @@ class ExpoService {
                         break
                 }
             } else {
-                // TODO: Save receipt ids and validate later when they have been delivered
-                // TODO: Queue job and fetch recipts after about an hour
-                // TODO: Save recipts ids?
+                // Save receipt ids and validate later when they have been delivered
+                validateTicketIds[ticket.id] = subscriptions[index].pushToken.token
             }
         })
+
+        // If we have tickets to validate
+        if (Object.keys(validateTicketIds).length !== 0) {
+            // Queue job for fetching receipts
+            Scheduler.boss.publishAfter(
+                JobNames.NotificationReciepts,
+                validateTicketIds,
+                {},
+                RECIEPT_FETCH_TIMEOUT
+            )
+        }
     }
 
     /**
@@ -153,9 +266,9 @@ class ExpoService {
 
         const messages: Array<ExpoPushMessage> = []
         const applicableSubscriptions = await Subscription.query()
-            .where('subscriptionTopicId', subscriptionTopicId)
-            .where('nationId', nationId)
-            .preload('pushToken')
+        .where('subscriptionTopicId', subscriptionTopicId)
+        .where('nationId', nationId)
+        .preload('pushToken')
 
         // Skip sending of push notifications if there are no subscribers
         if (applicableSubscriptions.length === 0) {
