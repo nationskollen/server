@@ -24,9 +24,12 @@ export type NotificationRecieptsData = { [ticketId: string]: string }
 class ExpoService {
     private expo?: Expo
     private testing = false
+    private development = false
+    private hasScheduleListener = false
 
     constructor() {
         this.testing = Env.get('NODE_ENV', 'development') === 'testing'
+        this.development = Env.get('NODE_ENV', 'development') === 'development'
         const accessToken = Env.get('EXPO_ACCESS_TOKEN')
 
         if (!accessToken) {
@@ -35,6 +38,21 @@ class ExpoService {
         }
 
         this.expo = new Expo({ accessToken })
+    }
+
+    public setupScheduleListeners() {
+        // Skip subscription if we already have it setup
+        if (this.hasScheduleListener) {
+            return
+        }
+
+        Scheduler.boss.subscribe(
+            JobNames.NotificationReciepts,
+            {},
+            (job: Job<NotificationRecieptsData>) => this.validateReceipts(job)
+        )
+
+        this.hasScheduleListener = true
     }
 
     /**
@@ -58,7 +76,7 @@ class ExpoService {
         await Subscription.query().where('pushTokenId', subscription.pushToken.id).delete()
         await pushToken.delete()
 
-        Scheduler.boss.subscribe(JobNames.NotificationReciepts, {}, this.validateReceipts)
+        Logger.info(`Removed invalid push token: ${subscription.pushToken.token}`)
     }
 
     /**
@@ -86,6 +104,10 @@ class ExpoService {
     }
 
     private async validateReceipts(job: Job<NotificationRecieptsData>) {
+        if (this.development) {
+            Logger.info(`Running job: ${job.name} and data: ${JSON.stringify(job.data, null, 4)}`)
+        }
+
         const data = job.data
 
         // Make sure that we have receipts to validate
@@ -296,6 +318,7 @@ class ExpoService {
 
         // Validate the returned tickets and handle any errors
         this.validateTickets(tickets, applicableSubscriptions)
+        this.setupScheduleListeners()
     }
 }
 
