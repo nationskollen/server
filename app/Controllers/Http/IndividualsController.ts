@@ -19,10 +19,13 @@ export default class IndividualsController {
     /**
      * fetch all individuals from system
      */
-    public async index({}: HttpContextContract) {
-        const individuals = await Individual.query().apply((scopes) => {
-            scopes.inOrder()
-        })
+    public async index({ request }: HttpContextContract) {
+        const { oid } = getNation(request)
+        const individuals = await Individual.query()
+            .where('nation_id', oid)
+            .apply((scopes) => {
+                scopes.inOrder()
+            })
         return individuals.map((individual: Individual) => individual.toJSON())
     }
 
@@ -71,12 +74,12 @@ export default class IndividualsController {
      */
     public async upload({ request }: HttpContextContract) {
         const individual = getIndividual(request)
-        const { cover } = await getValidatedData(request, IndividualUploadValidator)
-        const coverName = await attemptFileUpload(cover)
+        const { profile } = await getValidatedData(request, IndividualUploadValidator)
+        const profileName = await attemptFileUpload(profile)
 
-        if (coverName) {
-            attemptFileRemoval(individual.coverImgSrc)
-            individual.coverImgSrc = coverName
+        if (profileName) {
+            attemptFileRemoval(individual.profileImgSrc)
+            individual.profileImgSrc = profileName
         }
 
         await individual.save()

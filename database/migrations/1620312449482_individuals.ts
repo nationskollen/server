@@ -7,7 +7,7 @@ export default class Individuals extends BaseSchema {
     public async up() {
         this.schema.createTable(this.tableName, (table) => {
             table.increments('id')
-            table.string('name')
+            table.string('name').notNullable()
             table.string('role')
             table
                 .integer('nation_id')
@@ -16,7 +16,7 @@ export default class Individuals extends BaseSchema {
                 .references('oid')
                 .inTable(DatabaseTables.Nations)
             table.string('description')
-            table.string('cover_img_src')
+            table.string('profile_img_src')
             table.timestamps(true)
         })
     }

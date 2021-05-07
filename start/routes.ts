@@ -57,7 +57,7 @@ Route.group(() => {
     // ----------------------------------------------------------
     // individuals
     // ----------------------------------------------------------
-    Route.get('/individuals', 'IndividualsController.index')
+    Route.get('/nations/:id/individuals', 'IndividualsController.index').middleware(['nation'])
 
     // ----------------------------------------------------------
     // Single individual

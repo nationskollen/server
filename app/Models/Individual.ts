@@ -42,7 +42,7 @@ export default class Individual extends BaseModel {
      * Cover image for the individual to be displayed
      */
     @column({ serialize: toAbsolutePath })
-    public coverImgSrc: string
+    public profileImgSrc: string
 
     @column.dateTime({ autoCreate: true, serializeAs: null })
     public createdAt: DateTime

@@ -4,6 +4,7 @@ import Menu from 'App/Models/Menu'
 import Nation from 'App/Models/Nation'
 import MenuItem from 'App/Models/MenuItem'
 import Location from 'App/Models/Location'
+import Individual from 'App/Models/Individual'
 import Event from 'App/Models/Event'
 import Factory from '@ioc:Adonis/Lucid/Factory'
 import OpeningHour from 'App/Models/OpeningHour'
@@ -32,8 +33,15 @@ export const MenuItemFactory = Factory.define(MenuItem, ({ faker }) => {
         name: faker.commerce.productName(),
         description: faker.commerce.productDescription(),
         price: parseFloat(faker.commerce.price()),
-        coverImgSrc: faker.image.food(),
         hidden: false,
+    }
+}).build()
+
+export const IndividualFactory = Factory.define(Individual, ({ faker }) => {
+    return {
+        name: faker.commerce.productName(),
+        description: faker.commerce.productDescription(),
+        role: faker.commerce.department(),
     }
 }).build()
 
