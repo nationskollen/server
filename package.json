@@ -12,7 +12,7 @@
         "start": "node server.js",
         "lint": "eslint . --ext=.ts",
         "format": "prettier --write .",
-        "test": "node -r @adonisjs/assembler/build/register japaFile.ts && cp -R assets/ public/assets/",
+        "test": "node -r @adonisjs/assembler/build/register japaFile.ts && cp -R assets/ public/",
         "ci:test": "CI=yes node -r @adonisjs/assembler/build/register japaFile.ts",
         "coverage": "npx nyc npm run test",
         "docs": "npx typedoc app/**/** start/",
