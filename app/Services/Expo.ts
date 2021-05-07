@@ -271,7 +271,6 @@ class ExpoService {
     ): Promise<void> {
         // We do not want to send notifications during testing
         if (this.testing) {
-            Logger.info('Skipping notification sending during testing')
             return
         }
 

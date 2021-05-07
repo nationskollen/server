@@ -189,7 +189,6 @@ export default class Event extends BaseModel {
         const topic = await SubscriptionTopic.findBy('name', Topics.Events)
 
         if (!topic) {
-            Logger.error('Could not create notification for Event model. Topic could not be found')
             return
         }
 

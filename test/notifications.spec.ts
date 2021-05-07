@@ -2,8 +2,9 @@ import test from 'japa'
 import { DateTime } from 'luxon'
 import supertest from 'supertest'
 import { BASE_URL } from 'App/Utils/Constants'
+import { Topics } from 'App/Utils/Subscriptions'
+import SubscriptionTopic from 'App/Models/SubscriptionTopic'
 import { TestNationContract, createTestNation } from 'App/Utils/Test'
-import Notification from 'App/Models/Notification'
 
 test.group('Notification fetch', (group) => {
     let nation: TestNationContract
@@ -29,6 +30,9 @@ test.group('Notification fetch', (group) => {
 
     group.before(async () => {
         nation = await createTestNation()
+
+        // Make sure to create a topic so that notifications can be created
+        await SubscriptionTopic.create({ name: Topics.Events })
     })
 
     test('ensure creating an event, we can fetch the notification', async (assert) => {
@@ -39,13 +43,13 @@ test.group('Notification fetch', (group) => {
             .expect(200)
 
         const data = JSON.parse(text)
+        assert.isNotNull(data.notification_id)
 
         const text1 = await supertest(BASE_URL)
             .get(`/notifications/${data.notification_id}`)
             .expect(200)
 
         const data1 = JSON.parse(text1.text)
-
         assert.isNotNull(data1)
         assert.equal(data.short_description, data1.message)
         assert.equal(data.name, data1.title)
@@ -64,12 +68,34 @@ test.group('Notification fetch', (group) => {
         assert.notEqual(data.data.length, 0)
     })
 
-    test('ensure we can fetch notifications after certain date', async (assert) => {
+    test('ensure that the pagination array is empty if the after date is too recent', async (assert) => {
         const date = new Date().toISOString()
         const { text } = await supertest(BASE_URL).get(`/notifications?after=${date}`).expect(200)
 
         const data = JSON.parse(text)
         assert.equal(data.data.length, 0)
+    })
+
+    test('ensure we can fetch notifications after date', async (assert) => {
+        // Save time before before creating event
+        const date = new Date().toISOString()
+
+        // Make sure no notifications currently exists after this date
+        const responseOne = await supertest(BASE_URL).get(`/notifications?after=${date}`).expect(200)
+        const dataOne = JSON.parse(responseOne.text)
+        assert.equal(dataOne.data.length, 0)
+
+        await supertest(BASE_URL)
+            .post(`/nations/${nation.oid}/events`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send(eventData)
+            .expect(200)
+
+        const responseTwo = await supertest(BASE_URL).get(`/notifications?after=${date}`).expect(200)
+
+        const dataTwo = JSON.parse(responseTwo.text)
+        assert.equal(dataTwo.data.length, 1)
+        assert.equal(dataTwo.data[0].title, eventData.name)
     })
 
     test('ensure that notifications have correct ISO format', async () => {
@@ -85,55 +111,5 @@ test.group('Notification fetch', (group) => {
 
     test('ensure we cannot fetch a non-existing notification', async () => {
         await supertest(BASE_URL).get(`/notifications/999999999`).expect(404)
-    })
-})
-
-test.group('Notification create', (group) => {
-    let nation: TestNationContract
-    let eventData = {
-        name: 'notificationEvent',
-        short_description: 'NotEvent',
-        long_description: 'Lorem ipsum',
-        occurs_at: DateTime.fromObject({
-            year: 2021,
-            month: 3,
-            day: 16,
-            hour: 15,
-            minute: 20,
-        }).toISO(),
-        ends_at: DateTime.fromObject({
-            year: 2021,
-            month: 3,
-            day: 16,
-            hour: 20,
-            minute: 0,
-        }).toISO(),
-    }
-
-    group.before(async () => {
-        nation = await createTestNation()
-    })
-
-    test('ensure creating an event also creates a notification with it', async (assert) => {
-        const { text } = await supertest(BASE_URL)
-            .post(`/nations/${nation.oid}/events`)
-            .set('Authorization', 'Bearer ' + nation.token)
-            .send(eventData)
-            .expect(200)
-
-        const data = JSON.parse(text)
-        assert.isTrue(data.hasOwnProperty('notification_id'))
-        assert.isNotNull(data.notification_id)
-    })
-
-    test('ensure creating an notification is possible', async (assert) => {
-        Object.assign(eventData, { nation_id: nation.oid })
-
-        const notification = await Notification.create({
-            title: eventData.name,
-            message: eventData.short_description,
-            nationId: eventData.nation_id,
-        })
-        assert.isNotNull(notification)
     })
 })
