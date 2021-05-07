@@ -13,6 +13,7 @@ import Event from 'App/Models/Event'
 import Nation from 'App/Models/Nation'
 import MenuItem from 'App/Models/MenuItem'
 import Location from 'App/Models/Location'
+import Individual from 'App/Models/Individual'
 import OpeningHour from 'App/Models/OpeningHour'
 import Subscription from 'App/Models/Subscription'
 import Notification from 'App/Models/Notification'
@@ -21,6 +22,7 @@ import BadRequestException from 'App/Exceptions/BadRequestException'
 import MenuNotFoundException from 'App/Exceptions/MenuNotFoundException'
 import EventNotFoundException from 'App/Exceptions/EventNotFoundException'
 import NationNotFoundException from 'App/Exceptions/NationNotFoundException'
+import IndividualNotFoundException from 'App/Exceptions/IndividualNotFoundException'
 import LocationNotFoundException from 'App/Exceptions/LocationNotFoundException'
 import MenuItemNotFoundException from 'App/Exceptions/MenuItemNotFoundException'
 import OpeningHourNotFoundException from 'App/Exceptions/OpeningHourNotFoundException'
@@ -46,6 +48,16 @@ export function getNation(request: RequestContract): Nation {
     }
 
     return nation
+}
+
+export function getIndividual(request: RequestContract): Individual {
+    const { individual } = request
+
+    if (!individual) {
+        throw new IndividualNotFoundException()
+    }
+
+    return individual
 }
 
 export function getOpeningHour(request: RequestContract): OpeningHour {

@@ -12,6 +12,8 @@ import {
     NationFactory,
     MenuItemFactory,
     LocationFactory,
+    EventFactory,
+    IndividualFactory,
     OpeningHourFactory,
     OpeningHourExceptionFactory,
 } from 'Database/factories/index'
@@ -93,6 +95,11 @@ export async function createTestCategory() {
         name: 'testCategory',
     })
 }
+
+export async function createTestIndividual(oid: number) {
+    return IndividualFactory.merge({ nationId: oid }).create()
+}
+
 /**
  * Function that creates a test location to test with
  * @param oid The nation the location will be from

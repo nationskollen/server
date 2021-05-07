@@ -55,8 +55,65 @@ test.group('Menu fetch', async (group) => {
         assert.deepEqual(data.hidden, menuOne.hidden)
     })
 
-    test('ensure that you get an error if fetching a non-existant menu', async () => {
-        await supertest(BASE_URL).get(`/menus/99999`).expect(404)
+    test('ensure that you can fetch menu(s) by filtering for non-hidden menus', async (assert) => {
+        const tmpNation = await createTestNation()
+        const tmpLocation = await createTestLocation(tmpNation.oid)
+
+        await createTestMenu(tmpNation.oid, tmpLocation.id)
+        await createTestMenu(tmpNation.oid, tmpLocation.id)
+        await createTestMenu(tmpNation.oid, tmpLocation.id)
+        await createTestMenu(tmpNation.oid, tmpLocation.id)
+        await createTestMenu(tmpNation.oid, tmpLocation.id)
+
+        const numberOfNonHiddenMenus = 5
+
+        const hiddenMenu = {
+            name: 'Frukost',
+            hidden: true,
+        }
+
+        const text2 = await supertest(BASE_URL)
+            .post(`/locations/${tmpLocation.id}/menus`)
+            .set('Authorization', 'Bearer ' + tmpNation.token)
+            .send(hiddenMenu)
+            .expect(200)
+
+        const { text } = await supertest(BASE_URL)
+            .get(`/locations/${tmpLocation.id}/menus?hidden=false`)
+            .expect(200)
+
+        const data = JSON.parse(text)
+        const data2 = JSON.parse(text2.text)
+        assert.lengthOf(data, numberOfNonHiddenMenus)
+        for (const menu of data) {
+            assert.notDeepEqual(menu.id, data2.id)
+        }
+    })
+
+    test('ensure that you can fetch menu(s) by filtering for hidden menus', async (assert) => {
+        const tmpNation = await createTestNation()
+        const tmpLocation = await createTestLocation(tmpNation.oid)
+        const numberOfHiddenMenus = 1
+
+        const hiddenMenu = {
+            name: 'Frukost',
+            hidden: true,
+        }
+
+        const text2 = await supertest(BASE_URL)
+            .post(`/locations/${tmpLocation.id}/menus`)
+            .set('Authorization', 'Bearer ' + tmpNation.token)
+            .send(hiddenMenu)
+            .expect(200)
+
+        const { text } = await supertest(BASE_URL)
+            .get(`/locations/${tmpLocation.id}/menus?hidden=true`)
+            .expect(200)
+
+        const data = JSON.parse(text)
+        const data2 = JSON.parse(text2.text)
+        assert.lengthOf(data, numberOfHiddenMenus)
+        assert.equal(data[0].id, data2.id)
     })
 })
 

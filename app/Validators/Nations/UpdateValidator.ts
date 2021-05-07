@@ -18,6 +18,11 @@ export default class NationUploadValidator {
         ]),
         short_name: schema.string.optional(),
         description: schema.string.optional(),
+        web_url: schema.string.optional({}, [
+            rules.url({
+                protocols: ['http', 'https'],
+            }),
+        ]),
         accent_color: schema.string.optional({}, [rules.regex(/^#[a-fA-F0-9]{6}$/)]),
     })
 

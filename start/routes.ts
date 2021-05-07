@@ -54,6 +54,38 @@ Route.group(() => {
         'nation:preloadDefault',
         'scope:admin',
     ])
+    // ----------------------------------------------------------
+    // individuals
+    // ----------------------------------------------------------
+    Route.get('/nations/:id/individuals', 'IndividualsController.index').middleware(['nation'])
+
+    // ----------------------------------------------------------
+    // Single individual
+    // ----------------------------------------------------------
+    Route.get('/individuals/:iid', 'IndividualsController.single').middleware(['individual'])
+    Route.post('/nations/:id/individuals', 'IndividualsController.create').middleware([
+        'auth',
+        'nation',
+        'scope:admin',
+    ])
+    Route.put('/nations/:id/individuals/:iid', 'IndividualsController.update').middleware([
+        'auth',
+        'nation',
+        'individual',
+        'scope:admin',
+    ])
+    Route.post('/nations/:id/individuals/:iid/upload', 'IndividualsController.upload').middleware([
+        'auth',
+        'nation',
+        'individual',
+        'scope:admin',
+    ])
+    Route.delete('/nations/:id/individuals/:iid', 'IndividualsController.delete').middleware([
+        'auth',
+        'nation',
+        'individual',
+        'scope:admin',
+    ])
 
     // ----------------------------------------------------------
     // Locations
@@ -132,7 +164,7 @@ Route.group(() => {
     // ----------------------------------------------------------
     // Location menus
     // ----------------------------------------------------------
-    Route.get('/menus/:mid', 'MenusController.single').middleware(['menu:preload'])
+    Route.get('/menus/:mid', 'MenusController.single').middleware(['menu'])
     Route.get('/locations/:lid/menus', 'MenusController.index').middleware(['location'])
     Route.post('/locations/:lid/menus', 'MenusController.create').middleware([
         'auth',
@@ -148,6 +180,11 @@ Route.group(() => {
     Route.delete('/locations/:lid/menus/:mid', 'MenusController.delete').middleware([
         'auth',
         'location',
+        'menu',
+        'scope:admin',
+    ])
+    Route.post('/menus/:mid/upload', 'MenusController.upload').middleware([
+        'auth',
         'menu',
         'scope:admin',
     ])
@@ -215,7 +252,7 @@ Route.group(() => {
     // Subscriptions
     // ----------------------------------------------------------
     Route.get('/subscriptions/topics', 'SubscriptionsController.topics')
-    Route.get('/subscriptions', 'SubscriptionsController.single')
+    Route.get('/subscriptions', 'SubscriptionsController.all')
     Route.post('/subscriptions', 'SubscriptionsController.create')
     Route.delete('/subscriptions/:uuid', 'SubscriptionsController.delete').middleware([
         'subscription',
@@ -226,4 +263,9 @@ Route.group(() => {
     // ----------------------------------------------------------
     Route.get('/notifications', 'NotificationsController.all')
     Route.get('/notifications/:nid', 'NotificationsController.index').middleware(['notification'])
+
+    // ----------------------------------------------------------
+    // Categories
+    // ----------------------------------------------------------
+    Route.get('/categories', 'CategoriesController.index')
 }).prefix('/api/v1')

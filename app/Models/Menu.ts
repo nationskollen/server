@@ -7,8 +7,8 @@
  */
 import { DateTime } from 'luxon'
 import MenuItem from 'App/Models/MenuItem'
-import { toBoolean } from 'App/Utils/Serialize'
-import { BaseModel, column, hasMany, HasMany } from '@ioc:Adonis/Lucid/Orm'
+import { toBoolean, toAbsolutePath } from 'App/Utils/Serialize'
+import { BaseModel, column, hasMany, HasMany, scope } from '@ioc:Adonis/Lucid/Orm'
 
 export default class Menu extends BaseModel {
     /**
@@ -40,10 +40,28 @@ export default class Menu extends BaseModel {
     public name: string
 
     /**
+     * The name of the menu
+     */
+    @column()
+    public description: string
+
+    /**
      * Wether if the menu will be displayed or not
      */
     @column({ consume: toBoolean })
     public hidden: boolean
+
+    /**
+     * Icon image for the menu to be displayed
+     */
+    @column({ serialize: toAbsolutePath })
+    public iconImgSrc: string
+
+    /**
+     * Cover image for the menu to be displayed
+     */
+    @column({ serialize: toAbsolutePath })
+    public coverImgSrc: string
 
     /**
      * Which date the menu was created at
@@ -63,23 +81,19 @@ export default class Menu extends BaseModel {
     @hasMany(() => MenuItem, { serializeAs: 'items' })
     public items: HasMany<typeof MenuItem>
 
-    private static withPreloads() {
-        return this.query().preload('items')
-    }
-
     /**
-     * Method to display items depending on specific ID
-     * @param id - the id of the item in menu
-     */
-    public static async withItems(id: number) {
-        return this.withPreloads().where('id', id).first()
-    }
-
-    /**
-     * Method to display menus depending on specific item ID
+     * Method to display menus depending on specific location
      * @param id - the location id
      */
-    public static async allWithItems(locationId: number) {
-        return this.withPreloads().where('location_id', locationId)
+    public static async allMenus(locationId: number) {
+        return this.query().where('location_id', locationId)
     }
+
+    /**
+     * filtering options to query menus for wether they are hidden or not
+     * @param hidden the boolean for the menu to query for
+     */
+    public static showHidden = scope((query, show: boolean) => {
+        query.where('hidden', show)
+    })
 }

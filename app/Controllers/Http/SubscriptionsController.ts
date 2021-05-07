@@ -26,7 +26,7 @@ export default class SubscriptionsController {
     /**
      * Fetch all the subscriptions for a {@link PushToken|push token}
      */
-    public async single({ request }: HttpContextContract) {
+    public async all({ request }: HttpContextContract) {
         const query = await getValidatedData(request, SubscriptionQueryValidator)
         const pushToken = await PushToken.findBy('token', query.token)
 

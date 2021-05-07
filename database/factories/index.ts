@@ -6,10 +6,18 @@ import Nation from 'App/Models/Nation'
 import MenuItem from 'App/Models/MenuItem'
 import Location from 'App/Models/Location'
 import PushToken from 'App/Models/PushToken'
+import Individual from 'App/Models/Individual'
 import OpeningHour from 'App/Models/OpeningHour'
 import Factory from '@ioc:Adonis/Lucid/Factory'
 import { OpeningHourTypes } from 'App/Utils/Time'
 import SubscriptionTopic from 'App/Models/SubscriptionTopic'
+
+export const RANDOM_IMAGES_COUNT = 30
+
+export function getRandomImage(faker: Faker.FakerStatic) {
+    const index = faker.datatype.number({ min: 1, max: RANDOM_IMAGES_COUNT })
+    return `assets/random/${index}.jpg`
+}
 
 export const PushTokenFactory = Factory.define(PushToken, ({ faker }) => {
     return {
@@ -30,6 +38,7 @@ export const EventFactory = Factory.define(Event, ({ faker }) => {
         longDescription: faker.lorem.paragraphs(10),
         onlyMembers: faker.datatype.boolean(),
         onlyStudents: faker.datatype.boolean(),
+        coverImgSrc: getRandomImage(faker),
         occursAt: DateTime.fromObject({
             hour: faker.datatype.number(12),
             minute: faker.datatype.number(59),
@@ -46,8 +55,16 @@ export const MenuItemFactory = Factory.define(MenuItem, ({ faker }) => {
         name: faker.commerce.productName(),
         description: faker.commerce.productDescription(),
         price: parseFloat(faker.commerce.price()),
-        coverImgSrc: faker.image.food(),
         hidden: false,
+        coverImgSrc: getRandomImage(faker),
+    }
+}).build()
+
+export const IndividualFactory = Factory.define(Individual, ({ faker }) => {
+    return {
+        name: faker.name.firstName(),
+        description: faker.lorem.sentence(),
+        role: faker.name.jobTitle(),
     }
 }).build()
 
@@ -55,6 +72,7 @@ export const MenuFactory = Factory.define(Menu, ({ faker }) => {
     return {
         name: faker.commerce.productName(),
         hidden: false,
+        coverImgSrc: getRandomImage(faker),
     }
 })
     .relation('items', () => MenuItemFactory)
@@ -127,6 +145,7 @@ export const NationFactory = Factory.define(Nation, async ({ faker }) => {
     .relation('staff', () => UserFactory)
     .relation('locations', () => LocationFactory)
     .relation('events', () => EventFactory)
+    .relation('individuals', () => IndividualFactory)
     .build()
 
 export const UserFactory = Factory.define(User, ({ faker }) => {

@@ -28,6 +28,7 @@ export default class Events extends BaseSchema {
             table.dateTime('occurs_at').notNullable()
             table.dateTime('ends_at').notNullable()
             table.string('cover_img_src')
+            table.string('icon_img_src')
             table.timestamps(true)
         })
     }

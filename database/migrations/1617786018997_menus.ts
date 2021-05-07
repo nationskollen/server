@@ -20,7 +20,10 @@ export default class Menus extends BaseSchema {
                 .references('id')
                 .inTable(DatabaseTables.Locations)
             table.string('name').notNullable()
+            table.string('description')
             table.boolean('hidden').notNullable().defaultTo(false)
+            table.string('cover_img_src')
+            table.string('icon_img_src')
             table.timestamps(true)
         })
     }

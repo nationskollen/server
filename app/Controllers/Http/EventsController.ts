@@ -64,13 +64,33 @@ export default class EventsController {
         }
     }
 
+    private applyExclusionOids(
+        scopes: ExtractScopes<typeof Event>,
+        excludeOids?: string | undefined
+    ) {
+        if (excludeOids) {
+            const initial: Array<number> = []
+            const parsed = excludeOids.split(',').reduce((reducedArray, oid) => {
+                const tmp = parseInt(oid)
+
+                if (!isNaN(tmp)) {
+                    reducedArray.push(tmp)
+                }
+
+                return reducedArray
+            }, initial)
+
+            scopes.filterOutOids(parsed)
+        }
+    }
+
     /**
      * Method to retrieve all the events in the system
      * The actual function call is done by a request (CRUD) which are specified
      * in `Routes.ts`
      */
     public async all({ request }: HttpContextContract) {
-        const { date, before, after, category } = await getValidatedData(
+        const { date, before, after, category, exclude_oids } = await getValidatedData(
             request,
             EventFilterValidator,
             true
@@ -82,6 +102,7 @@ export default class EventsController {
             .apply((scopes) => {
                 this.applyFilters(scopes, { date, before, after })
                 this.applyCategory(scopes, category)
+                this.applyExclusionOids(scopes, exclude_oids)
             })
 
         const events = await query.paginate(getPageNumber(specified.page), specified.amount)
@@ -179,12 +200,18 @@ export default class EventsController {
      */
     public async upload({ request }: HttpContextContract) {
         const event = getEvent(request)
-        const { cover } = await getValidatedData(request, EventUploadValidator)
-        const filename = await attemptFileUpload(cover)
+        const { icon, cover } = await getValidatedData(request, EventUploadValidator)
+        const iconName = await attemptFileUpload(icon, true)
+        const coverName = await attemptFileUpload(cover)
 
-        if (filename) {
+        if (iconName) {
+            attemptFileRemoval(event.iconImgSrc)
+            event.iconImgSrc = iconName
+        }
+
+        if (coverName) {
             attemptFileRemoval(event.coverImgSrc)
-            event.coverImgSrc = filename
+            event.coverImgSrc = coverName
         }
 
         // Update cover image
