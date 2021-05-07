@@ -10,6 +10,13 @@ import Factory from '@ioc:Adonis/Lucid/Factory'
 import OpeningHour from 'App/Models/OpeningHour'
 import { OpeningHourTypes } from 'App/Utils/Time'
 
+export const RANDOM_IMAGES_COUNT = 30
+
+function getRandomImage(faker: Faker.FakerStatic) {
+    const index = faker.datatype.number({ min: 1, max: RANDOM_IMAGES_COUNT })
+    return `assets/random/${index}.jpg`
+}
+
 export const EventFactory = Factory.define(Event, ({ faker }) => {
     return {
         name: faker.commerce.productName(),
@@ -17,6 +24,7 @@ export const EventFactory = Factory.define(Event, ({ faker }) => {
         longDescription: faker.lorem.paragraphs(10),
         onlyMembers: faker.datatype.boolean(),
         onlyStudents: faker.datatype.boolean(),
+        coverImgSrc: getRandomImage(faker),
         occursAt: DateTime.fromObject({
             hour: faker.datatype.number(12),
             minute: faker.datatype.number(59),
@@ -34,6 +42,7 @@ export const MenuItemFactory = Factory.define(MenuItem, ({ faker }) => {
         description: faker.commerce.productDescription(),
         price: parseFloat(faker.commerce.price()),
         hidden: false,
+        coverImgSrc: getRandomImage(faker),
     }
 }).build()
 
@@ -49,6 +58,7 @@ export const MenuFactory = Factory.define(Menu, ({ faker }) => {
     return {
         name: faker.commerce.productName(),
         hidden: false,
+        coverImgSrc: getRandomImage(faker),
     }
 })
     .relation('items', () => MenuItemFactory)
