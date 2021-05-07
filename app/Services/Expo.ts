@@ -69,18 +69,14 @@ class ExpoService {
      */
     private async deleteReceiptPushToken(jobName: string, token?: string) {
         if (!token) {
-            Logger.error(
-                `Job ${jobName}: Could not delete token. Token is undefined`
-            )
+            Logger.error(`Job ${jobName}: Could not delete token. Token is undefined`)
             return
         }
 
         const pushToken = await PushToken.findBy('token', token)
 
         if (!pushToken) {
-            Logger.error(
-                `Job ${jobName}: Could not delete token. No such token in the database`
-            )
+            Logger.error(`Job ${jobName}: Could not delete token. No such token in the database`)
             return
         }
 
@@ -94,16 +90,12 @@ class ExpoService {
 
         // Make sure that we have receipts to validate
         if (!data || Object.keys(data).length === 0) {
-            Logger.info(
-                `Job "${job.name}" was cancelled because no data was provided`
-            )
+            Logger.info(`Job "${job.name}" was cancelled because no data was provided`)
             return
         }
 
         if (!this.expo) {
-            Logger.info(
-                `Job "${job.name}" was cancelled because expo has not been initialized`
-            )
+            Logger.info(`Job "${job.name}" was cancelled because expo has not been initialized`)
             return
         }
 
@@ -113,7 +105,7 @@ class ExpoService {
             try {
                 // It complains about this.expo possibly being null. This should never be the case.
                 // @ts-ignore
-                const receipts = await this.expo.getPushNotificationReceiptsAsync(chunk);
+                const receipts = await this.expo.getPushNotificationReceiptsAsync(chunk)
 
                 // The receipts specify whether Apple or Google successfully received the
                 // notification and information about an error, if one occurred.
@@ -142,12 +134,14 @@ class ExpoService {
                                 this.deleteReceiptPushToken(job.name, data[receiptId])
                                 break
                             default:
-                                Logger.info(`Job ${job.name}: Invalid error message received from expo`)
+                                Logger.info(
+                                    `Job ${job.name}: Invalid error message received from expo`
+                                )
                         }
                     }
                 }
             } catch (error) {
-                Logger.error(`Job ${job.name}: Failed to fetch receipts for chunk`);
+                Logger.error(`Job ${job.name}: Failed to fetch receipts for chunk`)
             }
         })
     }
@@ -266,9 +260,9 @@ class ExpoService {
 
         const messages: Array<ExpoPushMessage> = []
         const applicableSubscriptions = await Subscription.query()
-        .where('subscriptionTopicId', subscriptionTopicId)
-        .where('nationId', nationId)
-        .preload('pushToken')
+            .where('subscriptionTopicId', subscriptionTopicId)
+            .where('nationId', nationId)
+            .preload('pushToken')
 
         // Skip sending of push notifications if there are no subscribers
         if (applicableSubscriptions.length === 0) {

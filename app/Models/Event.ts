@@ -8,13 +8,7 @@
  * @category Model
  * @module Event
  */
-import {
-    column,
-    BaseModel,
-    scope,
-    belongsTo,
-    BelongsTo,
-} from '@ioc:Adonis/Lucid/Orm'
+import { column, BaseModel, scope, belongsTo, BelongsTo } from '@ioc:Adonis/Lucid/Orm'
 import { DateTime } from 'luxon'
 import Category from 'App/Models/Category'
 import Logger from '@ioc:Adonis/Core/Logger'

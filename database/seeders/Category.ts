@@ -5,7 +5,7 @@ import BaseSeeder from '@ioc:Adonis/Lucid/Seeder'
 export default class CategorySeeder extends BaseSeeder {
     protected developmentOnly = false
 
-    public async run () {
+    public async run() {
         for (const category in Categories) {
             await Category.create({
                 name: category,
