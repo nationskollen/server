@@ -469,11 +469,6 @@
     "@babel/helper-validator-identifier" "^7.12.11"
     to-fast-properties "^2.0.0"
 
-"@dsp-krabby/typedoc-theme-overrides@^1.0.2":
-  version "1.0.2"
-  resolved "https://npm.pkg.github.com/download/@dsp-krabby/typedoc-theme-overrides/1.0.2/01b97ff6e0c061b48116c81efd951ef9d03033833825357959b8b2ae01140ad5"
-  integrity sha512-jv39Met7WqpaQnYe6Ca+RBtzRY15pvkAudE8idAlP3MY32nxQ9ReLuiJQ8dRvYekLSvHPP1Zk4y/cE5tYjw51Q==
-
 "@eslint/eslintrc@^0.4.0":
   version "0.4.0"
   resolved "https://registry.npmjs.org/@eslint/eslintrc/-/eslintrc-0.4.0.tgz"
@@ -555,6 +550,12 @@
   dependencies:
     call-me-maybe "^1.0.1"
     glob-to-regexp "^0.3.0"
+
+"@nationskollen/typedoc-theme-overrides@^1.0.2":
+  name "@dsp-krabby/typedoc-theme-overrides"
+  version "1.0.2"
+  resolved "https://npm.pkg.github.com/download/@nationskollen/typedoc-theme-overrides/1.0.2/01b97ff6e0c061b48116c81efd951ef9d03033833825357959b8b2ae01140ad5#179517cdaf65dfe7659e143ab5247f170ee4d079"
+  integrity sha512-jv39Met7WqpaQnYe6Ca+RBtzRY15pvkAudE8idAlP3MY32nxQ9ReLuiJQ8dRvYekLSvHPP1Zk4y/cE5tYjw51Q==
 
 "@nodelib/fs.scandir@2.1.4":
   version "2.1.4"
