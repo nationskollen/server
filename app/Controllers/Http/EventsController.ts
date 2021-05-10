@@ -5,11 +5,7 @@
  * @category Controller
  * @module EventsController
  */
-import {
-    getNation,
-    getEvent,
-    getValidatedData,
-} from 'App/Utils/Request'
+import { getNation, getEvent, getValidatedData } from 'App/Utils/Request'
 import { DateTime } from 'luxon'
 import Event from 'App/Models/Event'
 import { getPageNumber } from 'App/Utils/Paginate'

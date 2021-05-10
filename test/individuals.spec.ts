@@ -90,7 +90,7 @@ test.group('Individuals create', async (group) => {
         assert.equal(data.nation_id, nation.oid)
     })
 
-    test('ensure that creating an individual must have specified fields', async (assert) => {
+    test('ensure that creating an individual must have specified fields', async () => {
         await supertest(BASE_URL)
             .post(`/nations/${nation.oid}/individuals`)
             .set('Authorization', 'Bearer ' + nation.token)
@@ -170,7 +170,6 @@ test.group('Individuals update', async (group) => {
 
 test.group('Event delete', async (group) => {
     let nation: TestNationContract
-    let individual: Individual
 
     group.before(async () => {
         nation = await createTestNation()

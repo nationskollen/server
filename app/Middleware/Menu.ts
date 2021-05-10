@@ -23,18 +23,10 @@ export default class MenuMiddleware {
     /**
      * Handle request
      */
-    public async handle(
-        { request, params }: HttpContextContract,
-        next: () => Promise<void>,
-        options: string[]
-    ) {
+    public async handle({ request, params }: HttpContextContract, next: () => Promise<void>) {
         let menu: Menu | null
 
-        if (options.includes('preload')) {
-            menu = await Menu.withItems(params.mid)
-        } else {
-            menu = await Menu.find(params.mid)
-        }
+        menu = await Menu.find(params.mid)
 
         if (!menu) {
             throw new MenuNotFoundException()
