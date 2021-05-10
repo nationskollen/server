@@ -59,6 +59,39 @@ export default class EventsController {
         }
     }
 
+    private applyExclusionCategory(scopes: ExtractScopes<typeof Event>, excludeCategory?: string) {
+        if (!excludeCategory) {
+            return
+        }
+
+        const initial: Array<number> = []
+        const parsed = excludeCategory.split(',').reduce((reducedArray, oid) => {
+            const tmp = parseInt(oid)
+
+            if (!isNaN(tmp)) {
+                reducedArray.push(tmp)
+            }
+
+            return reducedArray
+        }, initial)
+
+        scopes.filterOutCategories(parsed)
+    }
+
+    private applyInclusionFilter(
+        scopes: ExtractScopes<typeof Event>,
+        student?: boolean,
+        membership?: boolean
+    ) {
+        if (membership !== undefined) {
+            scopes.forMembers(membership)
+        }
+
+        if (student !== undefined) {
+            scopes.forStudents(student)
+        }
+    }
+
     private applyExclusionOids(
         scopes: ExtractScopes<typeof Event>,
         excludeOids?: string | undefined
@@ -85,11 +118,16 @@ export default class EventsController {
      * in `Routes.ts`
      */
     public async all({ request }: HttpContextContract) {
-        const { date, before, after, category, exclude_oids } = await getValidatedData(
-            request,
-            EventFilterValidator,
-            true
-        )
+        const {
+            date,
+            before,
+            after,
+            category,
+            exclude_oids,
+            exclude_categories,
+            only_students,
+            only_members,
+        } = await getValidatedData(request, EventFilterValidator, true)
         const specified = await getValidatedData(request, PaginationValidator, true)
 
         const query = Event.query()
@@ -98,6 +136,8 @@ export default class EventsController {
                 this.applyFilters(scopes, { date, before, after })
                 this.applyCategory(scopes, category)
                 this.applyExclusionOids(scopes, exclude_oids)
+                this.applyExclusionCategory(scopes, exclude_categories)
+                this.applyInclusionFilter(scopes, only_students, only_members)
             })
 
         const events = await query.paginate(getPageNumber(specified.page), specified.amount)

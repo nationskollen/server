@@ -13,7 +13,7 @@ import { DateTime } from 'luxon'
 import Category from 'App/Models/Category'
 import { Topics } from 'App/Utils/Subscriptions'
 import Notification from 'App/Models/Notification'
-import { toAbsolutePath, toISO } from 'App/Utils/Serialize'
+import { toBoolean, toAbsolutePath, toISO } from 'App/Utils/Serialize'
 import SubscriptionTopic from 'App/Models/SubscriptionTopic'
 
 export default class Event extends BaseModel {
@@ -110,13 +110,13 @@ export default class Event extends BaseModel {
     /**
      * specify if the event is only for nation members
      */
-    @column()
+    @column({ consume: toBoolean })
     public onlyMembers: boolean
 
     /**
      * specify if the event is only for students
      */
-    @column()
+    @column({ consume: toBoolean })
     public onlyStudents: boolean
 
     /**
@@ -203,4 +203,30 @@ export default class Event extends BaseModel {
         this.notificationId = notification.id
         await this.save()
     }
+
+    /**
+     * filtering options to query events for members only
+     * @param value the boolean for the wether the query is for members or not
+     */
+    public static forMembers = scope((query, value: boolean) => {
+        query.where('onlyMembers', value)
+    })
+
+    /**
+     * filtering options to query events for students only
+     * @param value the boolean for the wether the query is for students or not
+     */
+    public static forStudents = scope((query, value: boolean) => {
+        query.where('onlyStudents', value)
+    })
+
+    /**
+     * filtering options to exclude events for their category that they belong to
+     * @param categoryId the number for the id to query for
+     */
+    public static filterOutCategories = scope((query, categories?: Array<number>) => {
+        if (categories) {
+            query.whereNotIn('categoryId', categories)
+        }
+    })
 }

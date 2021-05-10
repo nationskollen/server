@@ -6,6 +6,8 @@ import { createTestCategory, createTestEvent, createTestNation } from 'App/Utils
 import { NationFactory } from '../database/factories/index'
 
 test.group('Events filtering', async () => {
+    const numberOfEventsToCreate = 5
+
     test.skipInCI('ensure that you can filter by specific date', async (assert) => {
         const nation = await NationFactory.create()
         const testEventOne = await createTestEvent(
@@ -404,4 +406,146 @@ test.group('Events filtering', async () => {
             }
         }
     )
+
+    test('ensure that filtering for only students events is viable', async (assert) => {
+        const nation = await NationFactory.create()
+        for (let i = 0; i < numberOfEventsToCreate; i++) {
+            await createTestEvent(nation.oid)
+        }
+
+        const { text } = await supertest(BASE_URL)
+            .get(`/events?only_students=true&only_members=false`)
+            .expect(200)
+
+        const data = JSON.parse(text)
+        for (const event of data.data) {
+            assert.isTrue(event.only_students)
+            assert.isFalse(event.only_members)
+        }
+    })
+
+    test('ensure that filtering for only member events is viable', async (assert) => {
+        const nation = await NationFactory.create()
+        for (let i = 0; i < numberOfEventsToCreate; i++) {
+            await createTestEvent(nation.oid)
+        }
+
+        const { text } = await supertest(BASE_URL)
+            .get(`/events?only_members=true&only_students=false`)
+            .expect(200)
+
+        const data = JSON.parse(text)
+        for (const event of data.data) {
+            assert.isTrue(event.only_members)
+            assert.isFalse(event.only_students)
+        }
+    })
+
+    test('ensure that filtering for both member and student events is viable', async (assert) => {
+        const nation = await NationFactory.create()
+        for (let i = 0; i < numberOfEventsToCreate; i++) {
+            await createTestEvent(nation.oid)
+        }
+
+        const { text } = await supertest(BASE_URL)
+            .get(`/events?only_members=true&only_students=true`)
+            .expect(200)
+
+        const data = JSON.parse(text)
+        for (const event of data.data) {
+            assert.isTrue(event.only_members)
+            assert.isTrue(event.only_students)
+        }
+    })
+
+    test('ensure that filtering for neither member and student events is viable', async (assert) => {
+        const nation = await NationFactory.create()
+        for (let i = 0; i < numberOfEventsToCreate; i++) {
+            await createTestEvent(nation.oid)
+        }
+
+        const { text } = await supertest(BASE_URL)
+            .get(`/events?only_members=false&only_students=false`)
+            .expect(200)
+
+        const data = JSON.parse(text)
+        for (const event of data.data) {
+            assert.isFalse(event.only_members)
+            assert.isFalse(event.only_students)
+        }
+    })
+
+    test('ensure that filtering fails when providing incorrect request format', async () => {
+        const nation = await NationFactory.create()
+        for (let i = 0; i < numberOfEventsToCreate; i++) {
+            await createTestEvent(nation.oid)
+        }
+
+        await supertest(BASE_URL).get(`/events?only_members=1&only_students=2`).expect(422)
+    })
+
+    test('ensure that excluding a category is viable', async (assert) => {
+        const nation = await NationFactory.create()
+        for (let i = 0; i < numberOfEventsToCreate; i++) {
+            await createTestEvent(nation.oid, undefined, true)
+        }
+
+        const { text } = await supertest(BASE_URL).get(`/events?exclude_categories=1`).expect(200)
+
+        const data = JSON.parse(text)
+        for (const event of data.data) {
+            assert.notEqual(event.category_id, 1)
+        }
+    })
+
+    test('ensure that excluding multiple categories is viable', async (assert) => {
+        const nation = await NationFactory.create()
+        for (let i = 0; i < numberOfEventsToCreate; i++) {
+            await createTestEvent(nation.oid, undefined, true)
+        }
+
+        const { text } = await supertest(BASE_URL)
+            .get(`/events?exclude_categories=1, 4`)
+            .expect(200)
+
+        const data = JSON.parse(text)
+        for (const event of data.data) {
+            assert.notEqual(event.category_id, 1)
+            assert.notEqual(event.category_id, 4)
+        }
+    })
+
+    test('ensure that excluding multiple categories is viable', async (assert) => {
+        const nation = await NationFactory.create()
+        for (let i = 0; i < numberOfEventsToCreate; i++) {
+            await createTestEvent(nation.oid, undefined, true)
+        }
+
+        const { text } = await supertest(BASE_URL)
+            .get(`/events?exclude_categories=1, 4`)
+            .expect(200)
+
+        const data = JSON.parse(text)
+        for (const event of data.data) {
+            assert.notEqual(event.category_id, 1)
+            assert.notEqual(event.category_id, 4)
+        }
+    })
+
+    test('ensure that having an incorrect format is ignored during filtering', async (assert) => {
+        const nation = await NationFactory.create()
+        for (let i = 0; i < numberOfEventsToCreate; i++) {
+            await createTestEvent(nation.oid, undefined, true)
+        }
+
+        const { text } = await supertest(BASE_URL)
+            .get(`/events?exclude_categories=1, asdf, 4`)
+            .expect(200)
+
+        const data = JSON.parse(text)
+        for (const event of data.data) {
+            assert.notEqual(event.category_id, 1)
+            assert.notEqual(event.category_id, 4)
+        }
+    })
 })
