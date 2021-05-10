@@ -11,7 +11,6 @@
 import { column, BaseModel, scope, belongsTo, BelongsTo } from '@ioc:Adonis/Lucid/Orm'
 import { DateTime } from 'luxon'
 import Category from 'App/Models/Category'
-import Logger from '@ioc:Adonis/Core/Logger'
 import { Topics } from 'App/Utils/Subscriptions'
 import Notification from 'App/Models/Notification'
 import { toAbsolutePath, toISO } from 'App/Utils/Serialize'

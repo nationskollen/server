@@ -12,7 +12,6 @@ import {
     NationFactory,
     MenuItemFactory,
     LocationFactory,
-    EventFactory,
     IndividualFactory,
     OpeningHourFactory,
     OpeningHourExceptionFactory,
