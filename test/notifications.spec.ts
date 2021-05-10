@@ -3,8 +3,11 @@ import { DateTime } from 'luxon'
 import supertest from 'supertest'
 import { BASE_URL } from 'App/Utils/Constants'
 import { Topics } from 'App/Utils/Subscriptions'
+import Subscription from 'App/Models/Subscription'
+import Notification from 'App/Models/Notification'
 import SubscriptionTopic from 'App/Models/SubscriptionTopic'
 import { TestNationContract, createTestNation } from 'App/Utils/Test'
+import { NationFactory, PushTokenFactory, SubscriptionTopicFactory } from 'Database/factories/index'
 
 test.group('Notification fetch', (group) => {
     let nation: TestNationContract
@@ -66,6 +69,90 @@ test.group('Notification fetch', (group) => {
 
         const data = JSON.parse(text)
         assert.notEqual(data.data.length, 0)
+    })
+
+    test('ensure we can fetch notifications for a token', async (assert) => {
+        const pushToken = await PushTokenFactory.create()
+        const responseOne = await supertest(BASE_URL)
+            .get(`/notifications?token=${pushToken.token}`)
+            .expect(200)
+        const dataOne = JSON.parse(responseOne.text)
+
+        assert.lengthOf(dataOne.data, 0)
+
+        const topic = await SubscriptionTopicFactory.create()
+        const subscription = await Subscription.create({
+            nationId: nation.oid,
+            subscriptionTopicId: topic.id,
+            pushTokenId: pushToken.id,
+        })
+
+        await Notification.create({
+            title: 'Test',
+            message: 'test',
+            subscriptionTopicId: topic.id,
+            nationId: subscription.nationId,
+        })
+
+        await Notification.create({
+            title: 'Test 2',
+            message: 'test 2',
+            subscriptionTopicId: topic.id,
+            nationId: subscription.nationId,
+        })
+
+        const responseTwo = await supertest(BASE_URL)
+            .get(`/notifications?token=${pushToken.token}`)
+            .expect(200)
+        const dataTwo = JSON.parse(responseTwo.text)
+
+        assert.lengthOf(dataTwo.data, 2)
+    })
+
+    test('ensure we can fetch notifications for a token with multiple subscriptions', async (assert) => {
+        const nationTwo = await NationFactory.create()
+        const pushToken = await PushTokenFactory.create()
+        const responseOne = await supertest(BASE_URL)
+            .get(`/notifications?token=${pushToken.token}`)
+            .expect(200)
+        const dataOne = JSON.parse(responseOne.text)
+
+        assert.lengthOf(dataOne.data, 0)
+
+        const topicOne = await SubscriptionTopicFactory.create()
+        const topicTwo = await SubscriptionTopicFactory.create()
+        const subscriptionOne = await Subscription.create({
+            nationId: nation.oid,
+            subscriptionTopicId: topicOne.id,
+            pushTokenId: pushToken.id,
+        })
+
+        const subscriptionTwo = await Subscription.create({
+            nationId: nationTwo.oid,
+            subscriptionTopicId: topicTwo.id,
+            pushTokenId: pushToken.id,
+        })
+
+        await Notification.create({
+            title: 'Test',
+            message: 'test',
+            subscriptionTopicId: topicOne.id,
+            nationId: subscriptionOne.nationId,
+        })
+
+        await Notification.create({
+            title: 'Test 2',
+            message: 'test 2',
+            subscriptionTopicId: topicTwo.id,
+            nationId: subscriptionTwo.nationId,
+        })
+
+        const responseTwo = await supertest(BASE_URL)
+            .get(`/notifications?token=${pushToken.token}`)
+            .expect(200)
+        const dataTwo = JSON.parse(responseTwo.text)
+
+        assert.lengthOf(dataTwo.data, 2)
     })
 
     test('ensure we cannot fetch a non-existing notification', async () => {

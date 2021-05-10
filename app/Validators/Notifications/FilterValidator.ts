@@ -2,7 +2,7 @@
  * @category Validator
  * @module NotificationFilterValidator
  */
-import { schema } from '@ioc:Adonis/Core/Validator'
+import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
 export default class NotificationFilterValidator {
@@ -12,6 +12,7 @@ export default class NotificationFilterValidator {
         after: schema.date.optional({
             format: 'iso',
         }),
+        token: schema.string.optional({}, [rules.expoToken()]),
     })
 
     public messages = {}

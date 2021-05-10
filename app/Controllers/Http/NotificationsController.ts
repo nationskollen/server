@@ -7,6 +7,7 @@
 import { DateTime } from 'luxon'
 import { getPageNumber } from 'App/Utils/Paginate'
 import Notification from 'App/Models/Notification'
+import Subscription from 'App/Models/Subscription'
 import { getNotification, getValidatedData } from 'App/Utils/Request'
 import { ExtractScopes } from '@ioc:Adonis/Lucid/Model'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
@@ -40,12 +41,24 @@ export default class NotificationsController {
      * in `Routes.ts`
      */
     public async all({ request }: HttpContextContract) {
-        const { after } = await getValidatedData(request, NotificationFilterValidator, true)
+        const { after, token } = await getValidatedData(request, NotificationFilterValidator, true)
         const specified = await getValidatedData(request, PaginationValidator, true)
 
         const query = Notification.query().apply((scopes) => {
             this.applyFilters(scopes, { after })
         })
+
+        if (token) {
+            const subscriptions = await Subscription.forToken(token)
+
+            query.whereIn(
+                ['nation_id', 'subscription_topic_id'],
+                subscriptions.map((subscription) => [
+                    subscription.nationId,
+                    subscription.subscriptionTopicId,
+                ])
+            )
+        }
 
         const notifications = await query.paginate(getPageNumber(specified.page), specified.amount)
         return notifications.toJSON()

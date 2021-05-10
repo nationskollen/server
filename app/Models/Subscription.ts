@@ -15,6 +15,17 @@ import SubscriptionTopic from 'App/Models/SubscriptionTopic'
 import { BaseModel, column, belongsTo, BelongsTo, beforeCreate } from '@ioc:Adonis/Lucid/Orm'
 
 export default class Subscription extends BaseModel {
+    public static async forToken(token: string) {
+        const pushToken = await PushToken.findBy('token', token)
+
+        if (!pushToken) {
+            return []
+        }
+
+        const subscriptions = await Subscription.query().where('pushTokenId', pushToken.id)
+        return subscriptions
+    }
+
     @column({ isPrimary: true })
     public id: number
 
