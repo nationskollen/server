@@ -19,7 +19,7 @@ export default class Subscription extends BaseModel {
         const pushToken = await PushToken.findBy('token', token)
 
         if (!pushToken) {
-            return []
+            return null
         }
 
         const subscriptions = await Subscription.query().where('pushTokenId', pushToken.id)

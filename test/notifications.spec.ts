@@ -155,6 +155,31 @@ test.group('Notification fetch', (group) => {
         assert.lengthOf(dataTwo.data, 2)
     })
 
+    test('ensure fetching notifications for token with no subscriptions returns empty array', async (assert) => {
+        const pushToken = await PushTokenFactory.create()
+        const topic = await SubscriptionTopicFactory.create()
+
+        await Notification.create({
+            title: 'Test',
+            message: 'test',
+            subscriptionTopicId: topic.id,
+            nationId: nation.oid,
+        })
+
+        const { text } = await supertest(BASE_URL)
+            .get(`/notifications?token=${pushToken.token}`)
+            .expect(200)
+        const data = JSON.parse(text)
+
+        assert.lengthOf(data.data, 0)
+    })
+
+    test('ensure fetching notifications for invalid token throws error', async (assert) => {
+        await supertest(BASE_URL)
+            .get(`/notifications?token=ExponentPushToken[asdas]`)
+            .expect(400)
+    })
+
     test('ensure we cannot fetch a non-existing notification', async () => {
         await supertest(BASE_URL).get(`/notifications/999999999`).expect(404)
     })

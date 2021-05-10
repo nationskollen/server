@@ -8,11 +8,12 @@ import { DateTime } from 'luxon'
 import { getPageNumber } from 'App/Utils/Paginate'
 import Notification from 'App/Models/Notification'
 import Subscription from 'App/Models/Subscription'
-import { getNotification, getValidatedData } from 'App/Utils/Request'
 import { ExtractScopes } from '@ioc:Adonis/Lucid/Model'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import NotificationFilterValidator from 'App/Validators/Notifications/FilterValidator'
 import PaginationValidator from 'App/Validators/PaginationValidator'
+import { getNotification, getValidatedData } from 'App/Utils/Request'
+import InvalidPushTokenException from 'App/Exceptions/InvalidPushTokenException'
+import NotificationFilterValidator from 'App/Validators/Notifications/FilterValidator'
 
 export default class NotificationsController {
     /**
@@ -50,6 +51,10 @@ export default class NotificationsController {
 
         if (token) {
             const subscriptions = await Subscription.forToken(token)
+
+            if (!subscriptions) {
+                throw new InvalidPushTokenException()
+            }
 
             query.whereIn(
                 ['nation_id', 'subscription_topic_id'],
