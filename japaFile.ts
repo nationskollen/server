@@ -1,6 +1,3 @@
-// Import current environment
-require('dotenv').config()
-
 import 'reflect-metadata'
 import execa from 'execa'
 import { join } from 'path'
@@ -43,18 +40,7 @@ async function startHttpServer() {
 }
 
 function getTestFilesPattern() {
-    // Check the current database connections
-    const ci = process.env.CI === 'yes'
-    const postgresql = process.env.DB_CONNECTION === 'pg'
-    const defaultPattern = 'test/**/*.spec.ts'
-
-    if (postgresql && !ci) {
-        return [defaultPattern]
-    }
-
-    // Ignore events filtering on SQLite3 since it does not
-    // support datetime filtering.
-    return [defaultPattern, '!test/events-filtering.spec.ts']
+    return ['test/**/*.spec.ts']
 }
 
 // Configure test runner

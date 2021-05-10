@@ -9,12 +9,14 @@
  * @module Request
  */
 import Menu from 'App/Models/Menu'
-import MenuItem from 'App/Models/MenuItem'
-import Nation from 'App/Models/Nation'
-import Individual from 'App/Models/Individual'
-import Location from 'App/Models/Location'
-import OpeningHour from 'App/Models/OpeningHour'
 import Event from 'App/Models/Event'
+import Nation from 'App/Models/Nation'
+import MenuItem from 'App/Models/MenuItem'
+import Location from 'App/Models/Location'
+import Individual from 'App/Models/Individual'
+import OpeningHour from 'App/Models/OpeningHour'
+import Subscription from 'App/Models/Subscription'
+import Notification from 'App/Models/Notification'
 import { RequestContract } from '@ioc:Adonis/Core/Request'
 import BadRequestException from 'App/Exceptions/BadRequestException'
 import MenuNotFoundException from 'App/Exceptions/MenuNotFoundException'
@@ -24,6 +26,8 @@ import IndividualNotFoundException from 'App/Exceptions/IndividualNotFoundExcept
 import LocationNotFoundException from 'App/Exceptions/LocationNotFoundException'
 import MenuItemNotFoundException from 'App/Exceptions/MenuItemNotFoundException'
 import OpeningHourNotFoundException from 'App/Exceptions/OpeningHourNotFoundException'
+import SubscriptionNotFoundException from 'App/Exceptions/SubscriptionNotFoundException'
+import NotificationNotFoundException from 'App/Exceptions/NotificationNotFoundException'
 import { RequestValidatorNode, ParsedTypedSchema, TypedSchema } from '@ioc:Adonis/Core/Validator'
 
 export function getLocation(request: RequestContract): Location {
@@ -94,6 +98,26 @@ export function getEvent(request: RequestContract): Event {
     }
 
     return event
+}
+
+export function getSubscription(request: RequestContract): Subscription {
+    const { subscription } = request
+
+    if (!subscription) {
+        throw new SubscriptionNotFoundException()
+    }
+
+    return subscription
+}
+
+export function getNotification(request: RequestContract): Notification {
+    const { notification } = request
+
+    if (!notification) {
+        throw new NotificationNotFoundException()
+    }
+
+    return notification
 }
 
 export async function getValidatedData<T extends ParsedTypedSchema<TypedSchema>>(

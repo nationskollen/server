@@ -1,38 +1,25 @@
 /**
- * @category Misc
+ * @category Services
  * @module Ws
  */
 import WebSocket from 'ws'
 import Server from '@ioc:Adonis/Core/Server'
 import { ActivityLevels } from 'app/Utils/Activity'
 
-/**
- * @enum WebSocketDataTypes
- */
 export enum WebSocketDataTypes {
     Connected,
     Activity,
 }
 
-/**
- * @interface WebSocketClient
- * @extends WebSocket
- */
 export interface WebSocketClient extends WebSocket {
     isAlive: boolean
 }
 
-/**
- * @interface WebSocketData
- */
 export interface WebSocketData {
     type: WebSocketDataTypes
     data?: any
 }
 
-/**
- * @class Ws
- */
 class Ws {
     public isReady = false
     public server: WebSocket.Server
