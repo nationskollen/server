@@ -203,8 +203,8 @@ export default class Event extends BaseModel {
         this.notificationId = notification.id
         await this.save()
     }
-}
-                               /**
+
+    /**
      * filtering options to query events for members only
      * @param value the boolean for the wether the query is for members or not
      */
@@ -221,16 +221,6 @@ export default class Event extends BaseModel {
     })
 
     /**
-     * filtering options to exclude events for their oid that they belong to
-     * @param oids the number for the id to query for
-     */
-    public static filterOutOids = scope((query, oids?: Array<number>) => {
-        if (oids) {
-            query.whereNotIn('nationId', oids)
-        }
-    })
-
-    /**
      * filtering options to exclude events for their category that they belong to
      * @param categoryId the number for the id to query for
      */
@@ -239,3 +229,4 @@ export default class Event extends BaseModel {
             query.whereNotIn('categoryId', categories)
         }
     })
+}

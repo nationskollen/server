@@ -319,7 +319,6 @@ test.group('Events filtering', async () => {
     )
 
     test.skipInCI('ensure filtering for an empty category has no events', async (assert) => {
-
         const { text } = await supertest(BASE_URL).get(`/events?category=5`).expect(200)
 
         const data = JSON.parse(text)
@@ -406,7 +405,7 @@ test.group('Events filtering', async () => {
                 assert.notEqual(event.nation_id, nation.oid)
             }
         }
-    })
+    )
 
     test('ensure that filtering for only students events is viable', async (assert) => {
         const nation = await NationFactory.create()
@@ -549,5 +548,4 @@ test.group('Events filtering', async () => {
             assert.notEqual(event.category_id, 4)
         }
     })
-    )
 })
