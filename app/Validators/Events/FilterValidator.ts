@@ -14,6 +14,7 @@ export default class EventFilterValidator {
         after: schema.date.optional({ format: 'yyyy-LL-dd' }),
         category: schema.number.optional([rules.unsigned()]),
         exclude_oids: schema.string.optional(),
+        exclude_categories: schema.string.optional(),
         only_members: schema.boolean.optional(),
         only_students: schema.boolean.optional(),
     })

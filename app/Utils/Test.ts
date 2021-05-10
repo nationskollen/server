@@ -78,8 +78,13 @@ export async function createTestNation(): Promise<TestNationContract> {
  * @param oid The nation the event will be from
  * @param occursAt The given date the event will occur at
  */
-export async function createTestEvent(oid: number, occursAt?: DateTime) {
+export async function createTestEvent(oid: number, occursAt?: DateTime, category?: boolean) {
     const mergeData = { nationId: oid }
+
+    if (category) {
+        const category = await createTestCategory()
+        mergeData['category'] = category
+    }
 
     if (occursAt) {
         mergeData['occursAt'] = occursAt.setZone('utc+2')

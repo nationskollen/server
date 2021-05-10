@@ -57,6 +57,26 @@ export default class EventsController {
         }
     }
 
+    private applyExclusionCategory(
+        scopes: ExtractScopes<typeof Event>,
+        excludeCategory?: string | undefined
+    ) {
+        if (excludeCategory) {
+            const initial: Array<number> = []
+            const parsed = excludeCategory.split(',').reduce((reducedArray, oid) => {
+                const tmp = parseInt(oid)
+
+                if (!isNaN(tmp)) {
+                    reducedArray.push(tmp)
+                }
+
+                return reducedArray
+            }, initial)
+
+            scopes.filterOutCategories(parsed)
+        }
+    }
+
     private applyInclusionFilter(
         scopes: ExtractScopes<typeof Event>,
         student?: boolean,
@@ -103,6 +123,7 @@ export default class EventsController {
             after,
             category,
             exclude_oids,
+            exclude_categories,
             only_students,
             only_members,
         } = await getValidatedData(request, EventFilterValidator, true)
@@ -114,6 +135,7 @@ export default class EventsController {
                 this.applyFilters(scopes, { date, before, after })
                 this.applyCategory(scopes, category)
                 this.applyExclusionOids(scopes, exclude_oids)
+                this.applyExclusionCategory(scopes, exclude_categories)
                 this.applyInclusionFilter(scopes, only_students, only_members)
             })
 

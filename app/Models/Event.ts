@@ -173,12 +173,22 @@ export default class Event extends BaseModel {
     })
 
     /**
-     * filtering options to query events for their oid belonging
-     * @param categoryId the number for the id to query for
+     * filtering options to exclude events for their oid that they belong to
+     * @param oids the number for the id to query for
      */
     public static filterOutOids = scope((query, oids?: Array<number>) => {
         if (oids) {
             query.whereNotIn('nationId', oids)
+        }
+    })
+
+    /**
+     * filtering options to exclude events for their category that they belong to
+     * @param categoryId the number for the id to query for
+     */
+    public static filterOutCategories = scope((query, categories?: Array<number>) => {
+        if (categories) {
+            query.whereNotIn('categoryId', categories)
         }
     })
 }
