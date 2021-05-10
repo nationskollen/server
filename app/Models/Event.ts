@@ -157,6 +157,22 @@ export default class Event extends BaseModel {
     })
 
     /**
+     * filtering options to query events for members only
+     * @param value the boolean for the wether the query is for members or not
+     */
+    public static forMembers = scope((query, value: boolean) => {
+        query.where('onlyMembers', value)
+    })
+
+    /**
+     * filtering options to query events for students only
+     * @param value the boolean for the wether the query is for students or not
+     */
+    public static forStudents = scope((query, value: boolean) => {
+        query.where('onlyStudents', value)
+    })
+
+    /**
      * filtering options to query events for their oid belonging
      * @param categoryId the number for the id to query for
      */
