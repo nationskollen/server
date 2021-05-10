@@ -13,7 +13,7 @@ import { DateTime } from 'luxon'
 import Category from 'App/Models/Category'
 import { Topics } from 'App/Utils/Subscriptions'
 import Notification from 'App/Models/Notification'
-import { toAbsolutePath, toISO } from 'App/Utils/Serialize'
+import { toBoolean, toAbsolutePath, toISO } from 'App/Utils/Serialize'
 import SubscriptionTopic from 'App/Models/SubscriptionTopic'
 
 export default class Event extends BaseModel {
@@ -110,13 +110,13 @@ export default class Event extends BaseModel {
     /**
      * specify if the event is only for nation members
      */
-    @column()
+    @column({ consume: toBoolean })
     public onlyMembers: boolean
 
     /**
      * specify if the event is only for students
      */
-    @column()
+    @column({ consume: toBoolean })
     public onlyStudents: boolean
 
     /**
