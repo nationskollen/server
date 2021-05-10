@@ -209,9 +209,7 @@ test.group('Notification fetch', (group) => {
     })
 
     test('ensure fetching notifications for invalid token throws error', async () => {
-        await supertest(BASE_URL)
-            .get(`/notifications?token=ExponentPushToken[asdas]`)
-            .expect(400)
+        await supertest(BASE_URL).get(`/notifications?token=ExponentPushToken[asdas]`).expect(400)
     })
 
     test('ensure we cannot fetch a non-existing notification', async () => {
