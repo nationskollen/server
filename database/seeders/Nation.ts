@@ -1,20 +1,22 @@
 import BaseSeeder from '@ioc:Adonis/Lucid/Seeder'
 import { NationFactory, UserFactory, MenuFactory, LocationFactory } from '../factories'
-import { Categories } from 'App/Utils/Categories'
-import Category from 'App/Models/Category'
 
 export default class NationSeeder extends BaseSeeder {
     public static developmentOnly = true
 
     public async run() {
-        for (const category in Categories) {
-            await Category.create({
-                name: category,
-            })
-        }
-
         const nations = await NationFactory.with('events', 3, (builder) => {
-            builder.merge([{ categoryId: 1 }, { categoryId: 2 }, { categoryId: 3 }])
+            builder.merge([
+                {
+                    categoryId: 1,
+                },
+                {
+                    categoryId: 2,
+                },
+                {
+                    categoryId: 3,
+                },
+            ])
         })
             .with('individuals', 3, (builder) => {
                 builder.merge([
@@ -150,8 +152,7 @@ export default class NationSeeder extends BaseSeeder {
             .apply('admin')
             .createMany(3)
 
-        // TODO: Fix this hacky solution for setting the nationId
-        await LocationFactory.with('openingHours', 7, (builder) => {
+        const locations = await LocationFactory.with('openingHours', 7, (builder) => {
             builder.merge([
                 {
                     day: 0,
@@ -286,13 +287,13 @@ export default class NationSeeder extends BaseSeeder {
             ])
             .createMany(13)
 
-        for (const nation of nations) {
-            if (!nation.locations) continue
-            for (const location of nation.locations) {
-                await MenuFactory.with('items', 3)
-                    .merge({ locationId: location.id, nationId: nation.oid })
-                    .createMany(3)
-            }
+        for (const location of locations) {
+            await MenuFactory.with('items', 3)
+                .merge({
+                    locationId: location.id,
+                    nationId: location.nationId,
+                })
+                .createMany(3)
         }
     }
 }

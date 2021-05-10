@@ -5,12 +5,10 @@
  * @module TestUtils
  */
 
-import { DateTime } from 'luxon'
-import supertest from 'supertest'
-import { BASE_URL } from 'App/Utils/Constants'
 import {
     UserFactory,
     MenuFactory,
+    EventFactory,
     NationFactory,
     MenuItemFactory,
     LocationFactory,
@@ -19,7 +17,11 @@ import {
     OpeningHourFactory,
     OpeningHourExceptionFactory,
 } from 'Database/factories/index'
+
+import { DateTime } from 'luxon'
+import supertest from 'supertest'
 import Category from 'App/Models/Category'
+import { BASE_URL } from 'App/Utils/Constants'
 
 /**
  * @interface TestNationContract

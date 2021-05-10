@@ -15,4 +15,8 @@ export enum DatabaseTables {
     Categories = 'categories',
     Menus = 'menus',
     MenuItems = 'menu_items',
+    PushTokens = 'push_tokens',
+    SubscriptionTopics = 'subscription_topics',
+    Subscriptions = 'subscriptions',
+    Notifications = 'notifications',
 }

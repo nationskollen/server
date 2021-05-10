@@ -5,18 +5,22 @@
  * @category Controller
  * @module EventsController
  */
+import {
+    getNation,
+    getEvent,
+    getValidatedData,
+} from 'App/Utils/Request'
 import { DateTime } from 'luxon'
 import Event from 'App/Models/Event'
 import { getPageNumber } from 'App/Utils/Paginate'
 import { ExtractScopes } from '@ioc:Adonis/Lucid/Model'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { attemptFileUpload, attemptFileRemoval } from 'App/Utils/Upload'
-import { getNation, getEvent, getValidatedData } from 'App/Utils/Request'
+import PaginationValidator from 'App/Validators/PaginationValidator'
 import EventUpdateValidator from 'App/Validators/Events/UpdateValidator'
 import EventCreateValidator from 'App/Validators/Events/CreateValidator'
 import EventUploadValidator from 'App/Validators/Events/UploadValidator'
 import EventFilterValidator from 'App/Validators/Events/FilterValidator'
-import PaginationValidator from 'App/Validators/PaginationValidator'
 
 /**
  * Event controller
@@ -26,7 +30,7 @@ export default class EventsController {
      * Method that applies given filters depedning on what type of event to
      * filter after
      * @param scopes - The different scopes that exists in the system
-     * @param filters - The filder to apply
+     * @param filters - The filter to apply
      */
     private applyFilters(
         scopes: ExtractScopes<typeof Event>,
@@ -37,12 +41,14 @@ export default class EventsController {
             scopes.onDate(filters.date)
         } else {
             if (filters.before) {
-                // Filter based on when the event ends, i.e. all events before a certain date
+                // Filter based on when the event ends, i.e. all events before
+                // a certain date
                 scopes.beforeDate(filters.before)
             }
 
             if (filters.after) {
-                // Filter based on when the event start, i.e. all events after a certain date
+                // Filter based on when the event start, i.e. all events after
+                // a certain date
                 scopes.afterDate(filters.after)
             }
         }
@@ -154,6 +160,8 @@ export default class EventsController {
         if (event.categoryId) {
             await event.preload('category')
         }
+
+        await event.createNotification()
 
         return event.toJSON()
     }

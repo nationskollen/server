@@ -18,10 +18,15 @@ export default class AppProvider {
         // until this callback is executed.
         const App = await import('@ioc:Adonis/Core/Application')
 
-        // Only import socket file, when environment is `web`. In other
+        // Only import services, when environment is `web`. In other
         // words do not import during ace commands.
         if (App.default.environment === 'web') {
             await import('../start/socket')
+
+            // Skip setup of scheduler if testing
+            if (App.default.env.get('NODE_ENV') !== 'testing') {
+                await import('../start/scheduler')
+            }
         }
     }
 

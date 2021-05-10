@@ -249,7 +249,23 @@ Route.group(() => {
     ])
 
     // ----------------------------------------------------------
-    // categories
+    // Subscriptions
+    // ----------------------------------------------------------
+    Route.get('/subscriptions/topics', 'SubscriptionsController.topics')
+    Route.get('/subscriptions', 'SubscriptionsController.all')
+    Route.post('/subscriptions', 'SubscriptionsController.create')
+    Route.delete('/subscriptions/:uuid', 'SubscriptionsController.delete').middleware([
+        'subscription',
+    ])
+
+    // ----------------------------------------------------------
+    // Notifications
+    // ----------------------------------------------------------
+    Route.get('/notifications', 'NotificationsController.all')
+    Route.get('/notifications/:nid', 'NotificationsController.index').middleware(['notification'])
+
+    // ----------------------------------------------------------
+    // Categories
     // ----------------------------------------------------------
     Route.get('/categories', 'CategoriesController.index')
 }).prefix('/api/v1')

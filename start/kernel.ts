@@ -58,4 +58,6 @@ Server.middleware.registerNamed({
     location: 'App/Middleware/Location',
     openingHour: 'App/Middleware/OpeningHour',
     event: 'App/Middleware/Event',
+    subscription: 'App/Middleware/Subscription',
+    notification: 'App/Middleware/Notification',
 })
