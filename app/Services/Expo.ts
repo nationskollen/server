@@ -183,36 +183,28 @@ class ExpoService {
         const validateTicketIds: NotificationRecieptsData = {}
 
         tickets.forEach((ticket, index) => {
-            if (ticket.status !== 'ok') {
-                switch (ticket.details?.error) {
-                    case 'MessageTooBig': /* fallthrough */
-                    case 'MessageRateExceeded':
-                        Logger.error(`Could not send push notification: ${ticket.details.error}`)
-                        break
-                    case 'InvalidCredentials':
-                        Logger.error(
-                            'Invalid Expo push credentials, Please re-generate your credentials and restart'
-                        )
-                        this.expo = undefined
-                        break
-                    case 'DeviceNotRegistered':
-                        if (index >= subscriptions.length) {
-                            Logger.error(
-                                'Could not remove unregistered Expo push token. Ticket index is out-of-bounds for subscriptions'
-                            )
-                            return
-                        }
-
-                        // The tickets are received in the same order as the notifications were sent.
-                        // I.e., the index of the current ticket is related to the subscription
-                        // with the same index. We use this to find the correct push token to remove.
-                        this.deletePushToken(subscriptions[index])
-                        break
-                }
-            } else {
+            if (ticket.status === 'ok') {
                 // Save receipt ids and validate later when they have been delivered
                 validateTicketIds[ticket.id] = subscriptions[index].pushToken.token
+                return
             }
+
+            if (!ticket.details?.error) {
+                // If no error is specified, there is not much we can do
+                return
+            }
+
+            if (index >= subscriptions.length) {
+                Logger.error(
+                    'Could not remove unregistered Expo push token. Ticket index is out-of-bounds for subscriptions'
+                )
+                return
+            }
+
+            // The tickets are received in the same order as the notifications were sent.
+            // I.e., the index of the current ticket is related to the subscription
+            // with the same index. We use this to find the correct push token to remove.
+            this.deletePushToken(subscriptions[index])
         })
 
         // If we have tickets to validate
@@ -312,8 +304,6 @@ class ExpoService {
                 Logger.error(error)
             }
         }
-
-        Logger.info('Successfully sent ')
 
         // Validate the returned tickets and handle any errors
         this.validateTickets(tickets, applicableSubscriptions)
