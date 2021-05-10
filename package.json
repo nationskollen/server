@@ -1,5 +1,5 @@
 {
-    "name": "@dsp-krabby/server",
+    "name": "@nationskollen/server",
     "version": "1.0.0",
     "private": true,
     "scripts": {
@@ -64,7 +64,7 @@
         "ws": "^7.4.4"
     },
     "optionalDependencies": {
-        "@dsp-krabby/typedoc-theme-overrides": "^1.0.2",
+        "@nationskollen/typedoc-theme-overrides": "^1.0.2",
         "insomnia-documenter": "^0.4.4",
         "typedoc": "^0.20.35"
     }

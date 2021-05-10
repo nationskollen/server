@@ -1,5 +1,5 @@
 {
-    "theme": "./node_modules/@dsp-krabby/typedoc-theme-overrides",
+    "theme": "./node_modules/@nationskollen/typedoc-theme-overrides",
     "highlightTheme": "github-dark",
     "tsconfig": "./tsconfig.json",
     "excludeExternals": true,
