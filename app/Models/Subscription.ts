@@ -26,7 +26,7 @@ export default class Subscription extends BaseModel {
         return subscriptions
     }
 
-    @column({ isPrimary: true })
+    @column({ isPrimary: true, serializeAs: null })
     public id: number
 
     /**

@@ -86,25 +86,23 @@ test.group('Subscription create', (group) => {
     })
 
     test('ensure creating a subscription requires a valid token', async () => {
-        const subscription = {
-            oid: nation.oid,
-            topic: topicOne.id,
-        }
-
-        await supertest(BASE_URL).post('/subscriptions?token=').send(subscription).expect(422)
+        await supertest(BASE_URL)
+            .post('/subscriptions')
+            .send({
+                oid: nation.oid,
+                topic: topicOne.id,
+            })
+            .expect(422)
     })
 
     test('ensure creating a subscription is viable with a token', async (assert) => {
-        const subscription = {
-            oid: nation.oid,
-            token: pushToken.id,
-            topic: topicOne.id,
-        }
-
         const { text } = await supertest(BASE_URL)
-            // Has to be specified in the post (the pushToken)
-            .post(`/subscriptions?token=${pushToken.token}`)
-            .send(subscription)
+            .post(`/subscriptions`)
+            .send({
+                oid: nation.oid,
+                token: pushToken.token,
+                topic: topicOne.id,
+            })
             .expect(200)
 
         const data = JSON.parse(text)
@@ -114,29 +112,51 @@ test.group('Subscription create', (group) => {
     })
 
     test('ensure creating a subscription is only viable to existing nations', async () => {
-        const subscription = {
-            oid: 9999999999999,
-            token: pushToken.id,
-            topic: topicOne.id,
-        }
-
         await supertest(BASE_URL)
-            .post(`/subscriptions?token=${pushToken.token}`)
-            .send(subscription)
+            .post(`/subscriptions`)
+            .send({
+                oid: 9999999999999,
+                token: pushToken.token,
+                topic: topicOne.id,
+            })
             .expect(422)
     })
 
     test('ensure creating a subscription is only viable to existing topic', async () => {
+        await supertest(BASE_URL)
+            .post(`/subscriptions`)
+            .send({
+                oid: nation.oid,
+                token: pushToken.token,
+                topic: 999999999,
+            })
+            .expect(422)
+    })
+
+    test('ensure creating a subscription with the same data as an existing subscription is ignored', async (assert) => {
+        const topic = await SubscriptionTopicFactory.create()
         const subscription = {
             oid: nation.oid,
             token: pushToken.id,
-            topic: 9999999999999,
+            topic: topic.id,
         }
 
-        await supertest(BASE_URL)
+        const responseOne = await supertest(BASE_URL)
             .post(`/subscriptions?token=${pushToken.token}`)
             .send(subscription)
-            .expect(422)
+            .expect(200)
+
+        const responseTwo = await supertest(BASE_URL)
+            .post(`/subscriptions?token=${pushToken.token}`)
+            .send(subscription)
+            .expect(200)
+
+        const dataOne = JSON.parse(responseOne.text)
+        const dataTwo = JSON.parse(responseTwo.text)
+
+        assert.equal(dataOne.uuid, dataTwo.uuid)
+        assert.equal(dataOne.subscription_topic_id, dataTwo.subscription_topic_id)
+        assert.equal(dataOne.nation_id, dataTwo.nation_id)
     })
 })
 
@@ -144,21 +164,22 @@ test.group('Subscription delete', (group) => {
     let nation: TestNationContract
     let pushToken: PushToken
     let topicOne: SubscriptionTopic
-    let subscription: Subscription
 
     group.before(async () => {
         nation = await createTestNation()
         pushToken = await PushTokenFactory.create()
         topicOne = await SubscriptionTopicFactory.create()
-        subscription = await Subscription.create({
+    })
+
+    test('ensure deleting a subscription is only viable to existing subscriptions', async () => {
+        const subscription = await Subscription.create({
             nationId: nation.oid,
             pushTokenId: pushToken.id,
             subscriptionTopicId: topicOne.id,
         })
-    })
 
-    test('ensure deleting a subscription is only viable to existing subscriptions', async () => {
         await supertest(BASE_URL).delete(`/subscriptions/${subscription.uuid}`).expect(200)
+        await supertest(BASE_URL).get(`/subscriptions/${subscription.uuid}`).expect(404)
     })
 
     test('ensure deleting a non-existing subscription is not viable', async () => {
