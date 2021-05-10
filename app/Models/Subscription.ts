@@ -33,7 +33,7 @@ export default class Subscription extends BaseModel {
     /**
      * Id of the push token that this subscription belongs to
      */
-    @column()
+    @column({ serializeAs: null })
     public pushTokenId: number
 
     /**

@@ -1,21 +1,22 @@
 import BaseSeeder from '@ioc:Adonis/Lucid/Seeder'
-import {
-    NationFactory,
-    UserFactory,
-    MenuFactory,
-    LocationFactory,
-    PushTokenFactory,
-} from '../factories'
+import { NationFactory, UserFactory, MenuFactory, LocationFactory } from '../factories'
 
 export default class NationSeeder extends BaseSeeder {
     public static developmentOnly = true
 
     public async run() {
-        // Create a test token that can be used in insomnia requests
-        await PushTokenFactory.merge({ token: 'ExponentPushToken[test]' }).create()
-
         const nations = await NationFactory.with('events', 3, (builder) => {
-            builder.merge([{ categoryId: 1 }, { categoryId: 2 }, { categoryId: 3 }])
+            builder.merge([
+                {
+                    categoryId: 1,
+                },
+                {
+                    categoryId: 2,
+                },
+                {
+                    categoryId: 3,
+                },
+            ])
         })
             .with('individuals', 3, (builder) => {
                 builder.merge([

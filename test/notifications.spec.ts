@@ -8,7 +8,7 @@ import { TestNationContract, createTestNation } from 'App/Utils/Test'
 
 test.group('Notification fetch', (group) => {
     let nation: TestNationContract
-    let eventData = {
+    const eventData = {
         name: 'notificationEvent',
         short_description: 'NotEvent',
         long_description: 'Lorem ipsum',
@@ -68,20 +68,42 @@ test.group('Notification fetch', (group) => {
         assert.notEqual(data.data.length, 0)
     })
 
-    test('ensure that the pagination array is empty if the after date is too recent', async (assert) => {
-        const date = new Date().toISOString()
-        const { text } = await supertest(BASE_URL).get(`/notifications?after=${date}`).expect(200)
-
-        const data = JSON.parse(text)
-        assert.equal(data.data.length, 0)
+    test('ensure we cannot fetch a non-existing notification', async () => {
+        await supertest(BASE_URL).get(`/notifications/999999999`).expect(404)
     })
 
-    test('ensure we can fetch notifications after date', async (assert) => {
+    test('ensure that date filtering allows ISO format', async () => {
+        const yesterday = DateTime.local().minus({ day: 1 }).toISO()
+        await supertest(BASE_URL)
+            .get(`/notifications?after=${encodeURIComponent(yesterday)}`)
+            .expect(200)
+    })
+
+    test('ensure that date filtering fails if it is not ISO formatted', async () => {
+        await supertest(BASE_URL).get(`/notifications?after=2021-0101T`).expect(422)
+    })
+
+    test.skipInCI(
+        'ensure that the pagination array is empty if the after date is too recent',
+        async (assert) => {
+            const date = new Date().toISOString()
+            const { text } = await supertest(BASE_URL)
+                .get(`/notifications?after=${date}`)
+                .expect(200)
+
+            const data = JSON.parse(text)
+            assert.equal(data.data.length, 0)
+        }
+    )
+
+    test.skipInCI('ensure we can fetch notifications after date', async (assert) => {
         // Save time before before creating event
         const date = new Date().toISOString()
 
         // Make sure no notifications currently exists after this date
-        const responseOne = await supertest(BASE_URL).get(`/notifications?after=${date}`).expect(200)
+        const responseOne = await supertest(BASE_URL)
+            .get(`/notifications?after=${date}`)
+            .expect(200)
         const dataOne = JSON.parse(responseOne.text)
         assert.equal(dataOne.data.length, 0)
 
@@ -91,25 +113,12 @@ test.group('Notification fetch', (group) => {
             .send(eventData)
             .expect(200)
 
-        const responseTwo = await supertest(BASE_URL).get(`/notifications?after=${date}`).expect(200)
+        const responseTwo = await supertest(BASE_URL)
+            .get(`/notifications?after=${date}`)
+            .expect(200)
 
         const dataTwo = JSON.parse(responseTwo.text)
         assert.equal(dataTwo.data.length, 1)
         assert.equal(dataTwo.data[0].title, eventData.name)
-    })
-
-    test('ensure that notifications have correct ISO format', async () => {
-        const yesterday = DateTime.local().minus({ day: 1 }).toISO()
-        await supertest(BASE_URL)
-            .get(`/notifications?after=${encodeURIComponent(yesterday)}`)
-            .expect(200)
-    })
-
-    test('ensure that incorrect ISO format is not viable', async () => {
-        await supertest(BASE_URL).get(`/notifications?after=2021-0101T`).expect(422)
-    })
-
-    test('ensure we cannot fetch a non-existing notification', async () => {
-        await supertest(BASE_URL).get(`/notifications/999999999`).expect(404)
     })
 })

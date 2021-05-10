@@ -109,7 +109,6 @@ test.group('Subscription create', (group) => {
 
         const data = JSON.parse(text)
         assert.isNotNull(data)
-        assert.equal(data.push_token_id, pushToken.id)
         assert.equal(data.subscription_topic_id, topicOne.id)
         assert.equal(data.nation_id, nation.oid)
     })

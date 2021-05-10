@@ -7,9 +7,13 @@ export default class CategorySeeder extends BaseSeeder {
 
     public async run() {
         for (const category in Categories) {
-            await Category.create({
-                name: category,
-            })
+            // Make sure to only create these once, even if we rerun the seeders
+            await Category.updateOrCreate(
+                {
+                    name: category,
+                },
+                {}
+            )
         }
     }
 }
