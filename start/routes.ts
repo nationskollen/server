@@ -55,6 +55,28 @@ Route.group(() => {
         'scope:admin',
     ])
     // ----------------------------------------------------------
+    // contact information - nation
+    // ----------------------------------------------------------
+    Route.get('/nations/:id/contact', 'ContactsController.index').middleware(['nation'])
+    Route.post('/nations/:id/contact', 'ContactsController.create').middleware([
+        'auth',
+        'nation',
+        'scope:admin',
+    ])
+    Route.put('/nations/:id/contact/:cid', 'ContactsController.update').middleware([
+        'auth',
+        'nation',
+        'contact',
+        'scope:admin',
+    ])
+    Route.delete('/nations/:id/contact/:cid', 'ContactsController.delete').middleware([
+        'auth',
+        'nation',
+        'contact',
+        'scope:admin',
+    ])
+
+    // ----------------------------------------------------------
     // individuals
     // ----------------------------------------------------------
     Route.get('/nations/:id/individuals', 'IndividualsController.index').middleware(['nation'])

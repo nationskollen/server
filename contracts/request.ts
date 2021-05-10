@@ -1,6 +1,7 @@
 import Menu from 'App/Models/Menu'
 import Event from 'App/Models/Event'
 import Nation from 'App/Models/Nation'
+import Contact from 'App/Models/Contact'
 import Category from 'App/Models/Category'
 import Location from 'App/Models/Location'
 import MenuItem from 'App/Models/MenuItem'
@@ -16,6 +17,7 @@ declare module '@ioc:Adonis/Core/Request' {
         menuItem?: MenuItem
         nation?: Nation
         individual?: Individual
+        contact?: Contact
         event?: Event
         category?: Category
         location?: Location
