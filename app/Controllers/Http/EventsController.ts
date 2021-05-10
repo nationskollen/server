@@ -16,7 +16,6 @@ import { getPageNumber } from 'App/Utils/Paginate'
 import { ExtractScopes } from '@ioc:Adonis/Lucid/Model'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { attemptFileUpload, attemptFileRemoval } from 'App/Utils/Upload'
-import { attemptNotificationRemoval } from 'App/Utils/Notification'
 import PaginationValidator from 'App/Validators/PaginationValidator'
 import EventUpdateValidator from 'App/Validators/Events/UpdateValidator'
 import EventCreateValidator from 'App/Validators/Events/CreateValidator'
@@ -190,8 +189,6 @@ export default class EventsController {
      */
     public async delete({ request }: HttpContextContract) {
         const event = getEvent(request)
-
-        await attemptNotificationRemoval(event.notificationId)
         await event.delete()
     }
 
