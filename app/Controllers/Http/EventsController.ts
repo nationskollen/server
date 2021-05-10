@@ -57,24 +57,23 @@ export default class EventsController {
         }
     }
 
-    private applyExclusionCategory(
-        scopes: ExtractScopes<typeof Event>,
-        excludeCategory?: string | undefined
-    ) {
-        if (excludeCategory) {
-            const initial: Array<number> = []
-            const parsed = excludeCategory.split(',').reduce((reducedArray, oid) => {
-                const tmp = parseInt(oid)
-
-                if (!isNaN(tmp)) {
-                    reducedArray.push(tmp)
-                }
-
-                return reducedArray
-            }, initial)
-
-            scopes.filterOutCategories(parsed)
+    private applyExclusionCategory(scopes: ExtractScopes<typeof Event>, excludeCategory?: string) {
+        if (!excludeCategory) {
+            return
         }
+
+        const initial: Array<number> = []
+        const parsed = excludeCategory.split(',').reduce((reducedArray, oid) => {
+            const tmp = parseInt(oid)
+
+            if (!isNaN(tmp)) {
+                reducedArray.push(tmp)
+            }
+
+            return reducedArray
+        }, initial)
+
+        scopes.filterOutCategories(parsed)
     }
 
     private applyInclusionFilter(

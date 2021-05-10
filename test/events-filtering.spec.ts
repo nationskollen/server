@@ -6,7 +6,7 @@ import { createTestCategory, createTestEvent, createTestNation } from 'App/Utils
 import { NationFactory } from '../database/factories/index'
 
 test.group('Events filtering', async () => {
-    const numberOfEventsToCreate = 100
+    const numberOfEventsToCreate = 5
 
     test('ensure that you can filter by specific date', async (assert) => {
         const nation = await NationFactory.create()

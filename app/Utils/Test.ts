@@ -83,7 +83,7 @@ export async function createTestEvent(oid: number, occursAt?: DateTime, category
 
     if (category) {
         const category = await createTestCategory()
-        mergeData['category'] = category
+        mergeData['categoryId'] = category.id
     }
 
     if (occursAt) {
