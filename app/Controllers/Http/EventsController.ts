@@ -57,16 +57,9 @@ export default class EventsController {
         }
     }
 
-    private applyMembershipFilter(scopes: ExtractScopes<typeof Event>, membership?: boolean) {
-        if (membership) {
-            scopes.forMembers(membership)
-        }
-    }
-
-    private applyStudentFilter(scopes: ExtractScopes<typeof Event>, student?: boolean) {
-        if (student) {
-            scopes.forStudents(student)
-        }
+    private applyInclusionFilter(scopes: ExtractScopes<typeof Event>, membership?: boolean, student?: boolean) {
+        scopes.forStudents(!!student)
+        scopes.forMembers(!!membership)
     }
 
     private applyExclusionOids(
@@ -95,7 +88,7 @@ export default class EventsController {
      * in `Routes.ts`
      */
     public async all({ request }: HttpContextContract) {
-        const { date, before, after, category, exclude_oids, for_members, for_students } = await getValidatedData(
+        const { date, before, after, category, exclude_oids, only_students, only_members } = await getValidatedData(
             request,
             EventFilterValidator,
             true
@@ -108,8 +101,7 @@ export default class EventsController {
                 this.applyFilters(scopes, { date, before, after })
                 this.applyCategory(scopes, category)
                 this.applyExclusionOids(scopes, exclude_oids)
-                this.applyMembershipFilter(scopes, for_members)
-                this.applyStudentFilter(scopes, for_students)
+                this.applyInclusionFilter(scopes, only_students, only_members)
             })
 
         const events = await query.paginate(getPageNumber(specified.page), specified.amount)
