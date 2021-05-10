@@ -156,8 +156,42 @@ test.group('Notification fetch', (group) => {
     })
 
     test('ensure fetching notifications for token with no subscriptions returns empty array', async (assert) => {
+        const newNation = await NationFactory.create()
         const pushToken = await PushTokenFactory.create()
         const topic = await SubscriptionTopicFactory.create()
+
+        await Subscription.create({
+            nationId: nation.oid,
+            subscriptionTopicId: topic.id,
+            pushTokenId: pushToken.id,
+        })
+
+        // Create notification for other nation
+        await Notification.create({
+            title: 'Test',
+            message: 'test',
+            subscriptionTopicId: topic.id,
+            nationId: newNation.oid,
+        })
+
+        const { text } = await supertest(BASE_URL)
+            .get(`/notifications?token=${pushToken.token}`)
+            .expect(200)
+        const data = JSON.parse(text)
+
+        assert.lengthOf(data.data, 0)
+    })
+
+    test('ensure fetching notifications only return notifications that match the subscriptions', async (assert) => {
+        const pushToken = await PushTokenFactory.create()
+        const topic = await SubscriptionTopicFactory.create()
+
+        await Notification.create({
+            title: 'Test',
+            message: 'test',
+            subscriptionTopicId: topic.id,
+            nationId: nation.oid,
+        })
 
         await Notification.create({
             title: 'Test',
@@ -174,7 +208,7 @@ test.group('Notification fetch', (group) => {
         assert.lengthOf(data.data, 0)
     })
 
-    test('ensure fetching notifications for invalid token throws error', async (assert) => {
+    test('ensure fetching notifications for invalid token throws error', async () => {
         await supertest(BASE_URL)
             .get(`/notifications?token=ExponentPushToken[asdas]`)
             .expect(400)
