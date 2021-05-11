@@ -6,7 +6,7 @@
  *
  * Exceptions in this middleware are:
  *
- * - {@link ContactNotFound}
+ * - {@link ContactNotFoundException}
  *
  * > You must register this middleware inside
  *   `start/kernel.ts` file under the list of named middleware.

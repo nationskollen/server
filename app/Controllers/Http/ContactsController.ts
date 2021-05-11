@@ -1,3 +1,10 @@
+/**
+ * The ContactsController contains the different methods that gives the ability
+ * to operate upon {@link Contact | Contact} models.
+ *
+ * @category Controller
+ * @module ContactsController
+ */
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { getContact, getNation, getValidatedData } from 'App/Utils/Request'
 import ContactCreateValidator from 'App/Validators/Contacts/CreateValidator'

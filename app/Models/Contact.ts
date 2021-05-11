@@ -1,3 +1,10 @@
+/**
+ * A nation can have contact information that are displayed at a nation page.
+ *
+ * @category Model
+ * @module Contact
+ */
+
 import { DateTime } from 'luxon'
 import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
 
@@ -11,17 +18,29 @@ export default class Contact extends BaseModel {
     @column({ serializeAs: null })
     public nationId: number
 
+    /**
+     * The name of the contact model (if ever needed)
+     */
     @column()
     public name: string
 
+    /**
+     * The email of the contact model
+     */
     @column()
     public email: string
 
+    /**
+     * The telephone of the contact model
+     * uses format: sv-SE (can be seen and configured in {@link ContactCreateValidator} and {@link ContactUpdateValidator})
+     */
     @column()
     public telephone: string
 
     /**
      * web url to a nation, can be specified to any website
+     * Only accepts `http` and `https` websites. 
+     * Can be configured in {@link ContactCreateValidator} and {@link ContactUpdateValidator}
      */
     @column()
     public webURL: string
