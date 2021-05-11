@@ -17,7 +17,7 @@ export default class ContactsController {
      */
     public async index({ request }: HttpContextContract) {
         const { oid } = getNation(request)
-        const contactInformation = await Contact.query().where('nation_id', oid).first()
+        const contactInformation = await Contact.findBy('nationId', oid)
 
         return contactInformation
     }
