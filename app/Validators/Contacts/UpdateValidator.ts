@@ -9,7 +9,6 @@ export default class ContactUpdateValidator {
     constructor(protected ctx: HttpContextContract) {}
 
     public schema = schema.create({
-        name: schema.string.optional(),
         email: schema.string.optional({}, [rules.email()]),
         telephone: schema.string.optional({}, [
             rules.mobile({

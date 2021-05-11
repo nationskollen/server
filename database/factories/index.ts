@@ -70,7 +70,11 @@ export const IndividualFactory = Factory.define(Individual, ({ faker }) => {
 }).build()
 
 export const ContactFactory = Factory.define(Contact, ({ faker }) => {
-    return { name: faker.name.firstName() }
+    return {
+        email: faker.internet.exampleEmail(),
+        telephone: faker.phone.phoneNumber(),
+        webURL: faker.internet.url(),
+    }
 }).build()
 
 export const MenuFactory = Factory.define(Menu, ({ faker }) => {

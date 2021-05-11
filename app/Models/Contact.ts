@@ -15,14 +15,8 @@ export default class Contact extends BaseModel {
     /**
      * The nation the individual belongs to
      */
-    @column({ serializeAs: null })
-    public nationId: number
-
-    /**
-     * The name of the contact model (if ever needed)
-     */
     @column()
-    public name: string
+    public nationId: number
 
     /**
      * The email of the contact model
@@ -39,7 +33,7 @@ export default class Contact extends BaseModel {
 
     /**
      * web url to a nation, can be specified to any website
-     * Only accepts `http` and `https` websites. 
+     * Only accepts `http` and `https` websites.
      * Can be configured in {@link ContactCreateValidator} and {@link ContactUpdateValidator}
      */
     @column()

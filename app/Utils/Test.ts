@@ -104,8 +104,6 @@ export async function createTestCategory() {
 export async function createTestContact(oid: number) {
     return ContactFactory.merge({
         nationId: oid,
-        email: 'testEmail@email.com',
-        telephone: '0700000000',
     }).create()
 }
 
