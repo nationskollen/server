@@ -120,7 +120,6 @@ test.group('Contact create', async (group) => {
 
         assert.equal(data.name, contactData.name)
         assert.equal(data.telephone, contactData.telephone)
-        assert.equal(data.nation_id, nation.oid)
         assert.equal(data.web_url, contactData.web_url)
     })
 
