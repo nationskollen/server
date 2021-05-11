@@ -6,6 +6,6 @@ import DefaultException from 'App/Exceptions/DefaultException'
 
 export default class ContactNotFoundException extends DefaultException {
     constructor() {
-        super('Could not find contact information in nation', 404)
+        super('Could not find contact information of nation', 404)
     }
 }
