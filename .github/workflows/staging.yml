@@ -47,7 +47,11 @@ jobs:
             node ace migration:rollback --force
             node ace migration:run --force
             node ace db:seed --force
-            cp -r ../assets ./public
+
+            # For some reason, copying the files does not include
+            # the asset dir, despite it working locally.
+            mkdir ./public/assets
+            cp -r ../assets ./public/assets
 
             # The public directory must be created manually.
             # Otherwise, any upload that is compressed using sharp
