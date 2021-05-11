@@ -15,7 +15,7 @@ export default class Contact extends BaseModel {
     /**
      * The nation the individual belongs to
      */
-    @column({ serializeAs: null })
+    @column()
     public nationId: number
 
     /**
