@@ -34,9 +34,7 @@ export default class NationMiddleware {
     ) {
         let nation: Nation | null
 
-        if (options.includes('preload')) {
-            nation = await Nation.withLocations(params.id)
-        } else if (options.includes('preloadDefault')) {
+        if (options.includes('preloadDefault')) {
             nation = await Nation.query()
                 .preload('defaultLocation', (query) => {
                     query.preload('openingHours')

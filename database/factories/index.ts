@@ -5,6 +5,7 @@ import Event from 'App/Models/Event'
 import Nation from 'App/Models/Nation'
 import MenuItem from 'App/Models/MenuItem'
 import Location from 'App/Models/Location'
+import Contact from 'App/Models/Contact'
 import PushToken from 'App/Models/PushToken'
 import Individual from 'App/Models/Individual'
 import OpeningHour from 'App/Models/OpeningHour'
@@ -66,6 +67,10 @@ export const IndividualFactory = Factory.define(Individual, ({ faker }) => {
         description: faker.lorem.sentence(),
         role: faker.name.jobTitle(),
     }
+}).build()
+
+export const ContactFactory = Factory.define(Contact, ({ faker }) => {
+    return { name: faker.name.firstName() }
 }).build()
 
 export const MenuFactory = Factory.define(Menu, ({ faker }) => {
@@ -146,6 +151,7 @@ export const NationFactory = Factory.define(Nation, async ({ faker }) => {
     .relation('locations', () => LocationFactory)
     .relation('events', () => EventFactory)
     .relation('individuals', () => IndividualFactory)
+    .relation('contact', () => ContactFactory)
     .build()
 
 export const UserFactory = Factory.define(User, ({ faker }) => {

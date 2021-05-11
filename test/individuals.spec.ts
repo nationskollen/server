@@ -70,7 +70,7 @@ test.group('Individuals create', async (group) => {
 
     test('ensure that creating an individual requires an admin token', async () => {
         await supertest(BASE_URL)
-            .post(`/nations/${nation.oid}/events`)
+            .post(`/nations/${nation.oid}/individuals`)
             .set('Authorization', 'Bearer ' + nation.staffToken)
             .send(individualData)
             .expect(401)
@@ -168,7 +168,7 @@ test.group('Individuals update', async (group) => {
     })
 })
 
-test.group('Event delete', async (group) => {
+test.group('Individual delete', async (group) => {
     let nation: TestNationContract
 
     group.before(async () => {
@@ -242,7 +242,7 @@ test.group('Event delete', async (group) => {
     })
 })
 
-test.group('Event upload', (group) => {
+test.group('Individual upload', (group) => {
     const coverImagePath = path.join(__dirname, 'data/cover.png')
     let nation: TestNationContract
 

@@ -10,7 +10,7 @@ export default class Contacts extends BaseSchema {
             table.string('name').notNullable()
             table.string('email').notNullable()
             table.string('telephone').notNullable()
-            table.string('web_url').notNullable()
+            table.string('web_url')
             table
                 .integer('nation_id')
                 .notNullable()

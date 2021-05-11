@@ -160,30 +160,6 @@ test.group('Nation update', (group) => {
             assert.equal(savedNationData[key], value)
         }
     })
-
-    test('ensure that updating a nation with a web url is viable', async (assert) => {
-        const { text } = await supertest(BASE_URL)
-            .put(`/nations/${nation.oid}`)
-            .set('Authorization', 'Bearer ' + nation.token)
-            .send({
-                web_url: 'https://www.v-dala.se/',
-            })
-            .expect(200)
-
-        const data = JSON.parse(text)
-        assert.isNotNull(data.web_url)
-        assert.equal(data.web_url, 'https://www.v-dala.se/')
-    })
-
-    test("ensure that updating a nation with a web url only accepts 'http' and 'https'", async () => {
-        await supertest(BASE_URL)
-            .put(`/nations/${nation.oid}`)
-            .set('Authorization', 'Bearer ' + nation.token)
-            .send({
-                web_url: 'ftp://www.v-dala.se/',
-            })
-            .expect(422)
-    })
 })
 
 test.group('Nation upload', (group) => {
