@@ -22,7 +22,7 @@ test.group('Contact fetch', async (group) => {
         assert.equal(data.email, contact.email)
     })
 
-    test('ensure that fetching for contact infomration for a nation that is missing contact information returns nothing', async () => {
+    test('ensure that fetching for contact infomration in a nation that is missing contact information returns nothing', async () => {
         const nation2 = await createTestNation()
         await supertest(BASE_URL).get(`/nations/${nation2.oid}/contact`).expect(204)
     })
