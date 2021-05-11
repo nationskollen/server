@@ -13,6 +13,7 @@ import {
     MenuItemFactory,
     LocationFactory,
     IndividualFactory,
+    ContactFactory,
     OpeningHourFactory,
     OpeningHourExceptionFactory,
 } from 'Database/factories/index'
@@ -98,6 +99,12 @@ export async function createTestCategory() {
     return Category.create({
         name: 'testCategory',
     })
+}
+
+export async function createTestContact(oid: number) {
+    return ContactFactory.merge({
+        nationId: oid,
+    }).create()
 }
 
 export async function createTestIndividual(oid: number) {

@@ -52,8 +52,8 @@ export default class IndividualsController {
      * update a individual from system
      */
     public async update({ request }: HttpContextContract) {
-        const changes = await getValidatedData(request, IndividualUpdateValidator)
         const individual = getIndividual(request)
+        const changes = await getValidatedData(request, IndividualUpdateValidator)
 
         individual.merge(changes)
         await individual.save()

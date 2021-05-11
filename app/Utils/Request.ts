@@ -11,6 +11,7 @@
 import Menu from 'App/Models/Menu'
 import Event from 'App/Models/Event'
 import Nation from 'App/Models/Nation'
+import Contact from 'App/Models/Contact'
 import MenuItem from 'App/Models/MenuItem'
 import Location from 'App/Models/Location'
 import Individual from 'App/Models/Individual'
@@ -22,6 +23,7 @@ import BadRequestException from 'App/Exceptions/BadRequestException'
 import MenuNotFoundException from 'App/Exceptions/MenuNotFoundException'
 import EventNotFoundException from 'App/Exceptions/EventNotFoundException'
 import NationNotFoundException from 'App/Exceptions/NationNotFoundException'
+import ContactNotFoundException from 'App/Exceptions/ContactNotFoundException'
 import IndividualNotFoundException from 'App/Exceptions/IndividualNotFoundException'
 import LocationNotFoundException from 'App/Exceptions/LocationNotFoundException'
 import MenuItemNotFoundException from 'App/Exceptions/MenuItemNotFoundException'
@@ -48,6 +50,16 @@ export function getNation(request: RequestContract): Nation {
     }
 
     return nation
+}
+
+export function getContact(request: RequestContract): Contact {
+    const { contact } = request
+
+    if (!contact) {
+        throw new ContactNotFoundException()
+    }
+
+    return contact
 }
 
 export function getIndividual(request: RequestContract): Individual {

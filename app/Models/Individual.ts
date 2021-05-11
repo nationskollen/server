@@ -1,3 +1,11 @@
+/**
+ * A nation can have individuals that are displayed at a nation page. These
+ * indivudals have roles in the nation. This way a nation can inform users of
+ * what people are working at the nation
+ *
+ * @category Model
+ * @module Individual
+ */
 import { DateTime } from 'luxon'
 import { BaseModel, column, scope } from '@ioc:Adonis/Lucid/Orm'
 import { toAbsolutePath } from 'App/Utils/Serialize'

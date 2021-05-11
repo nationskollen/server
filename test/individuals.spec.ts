@@ -70,7 +70,7 @@ test.group('Individuals create', async (group) => {
 
     test('ensure that creating an individual requires an admin token', async () => {
         await supertest(BASE_URL)
-            .post(`/nations/${nation.oid}/events`)
+            .post(`/nations/${nation.oid}/individuals`)
             .set('Authorization', 'Bearer ' + nation.staffToken)
             .send(individualData)
             .expect(401)
@@ -218,17 +218,14 @@ test.group('Individual delete', async (group) => {
             .expect(404)
     })
 
-    test('ensure that deleting an individual truly removes it by trying to fetchi it', async () => {
+    test('ensure that deleting an individual truly removes it by trying to fetch it', async () => {
         const individual = await createTestIndividual(nation.oid)
         await supertest(BASE_URL)
             .delete(`/nations/${nation.oid}/individuals/${individual.id}`)
             .set('Authorization', 'Bearer ' + nation.token)
             .expect(200)
 
-        await supertest(BASE_URL)
-            .get(`/individuals/${individual.id}`)
-            .set('Authorization', 'Bearer ' + nation.token)
-            .expect(404)
+        await supertest(BASE_URL).get(`/individuals/${individual.id}`).expect(404)
     })
 
     test('ensure that deleting an individual is only viable to given admins of the same nation', async () => {

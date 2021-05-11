@@ -44,6 +44,7 @@
 import { DateTime } from 'luxon'
 import User from 'App/Models/User'
 import Location from 'App/Models/Location'
+import Contact from 'App/Models/Contact'
 import Event from 'App/Models/Event'
 import Individual from 'App/Models/Individual'
 import { toAbsolutePath } from 'App/Utils/Serialize'
@@ -71,12 +72,6 @@ export default class Nation extends BaseModel {
      */
     @column()
     public name: string
-
-    /**
-     * web url to a nation, can be specified to any website
-     */
-    @column()
-    public webURL: string
 
     /**
      * Short student nation name, e.g. V-dala
@@ -130,7 +125,13 @@ export default class Nation extends BaseModel {
     public updatedAt: DateTime
 
     /**
-     * The different locations related to the nation
+     * The contact information related to the nation
+     */
+    @hasOne(() => Contact, { localKey: 'oid' })
+    public contact: HasOne<typeof Contact>
+
+    /**
+     * The default location related to the nation
      */
     @hasOne(() => Location, {
         localKey: 'oid',

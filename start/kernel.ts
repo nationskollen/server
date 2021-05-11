@@ -54,6 +54,7 @@ Server.middleware.registerNamed({
     menu: 'App/Middleware/Menu',
     nation: 'App/Middleware/Nation',
     individual: 'App/Middleware/Individual',
+    contact: 'App/Middleware/Contact',
     menuItem: 'App/Middleware/MenuItem',
     location: 'App/Middleware/Location',
     openingHour: 'App/Middleware/OpeningHour',
