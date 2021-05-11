@@ -25,6 +25,7 @@ export default class Events extends BaseSchema {
                 .references('id')
                 .inTable(DatabaseTables.Categories)
             table.integer('notification_id')
+            table.boolean('recurring').defaultTo(false)
             table.dateTime('occurs_at').notNullable()
             table.dateTime('ends_at').notNullable()
             table.string('cover_img_src')

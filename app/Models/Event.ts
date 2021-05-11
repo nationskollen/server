@@ -170,6 +170,13 @@ export default class Event extends BaseModel {
     public endsAt: DateTime
 
     /**
+     * This flag specifies if an event is recurring or not
+     * Scheduled to be checked within the scheduler.
+     */
+    @column({ consume: toBoolean })
+    public recurring: boolean
+
+    /**
      * At what date the event was updated at
      */
     @column.dateTime({ autoCreate: true, autoUpdate: true, serializeAs: null })
@@ -229,4 +236,35 @@ export default class Event extends BaseModel {
             query.whereNotIn('categoryId', categories)
         }
     })
+
+    /**
+     * Method to cleanup events that have ended
+     * Unless they are `recurring`, then we simply ignore
+     */
+    public static async dailyCleanup() {
+        // The amount of weeks to lookback to
+        // This is for fetching events that ended 1 week ago
+        const weekLookback = 1
+        // Fetch todays date
+        const today = new Date().toISOString()
+
+        // Query for the event with the help of the constant above.
+        // We are specifying the endAt field because we want to cleanup events
+        // that has only occured and finished.
+        // The reason for the `lessthanequal` operator is because if a
+        // recurring event gets set as not recurring, then it is a dangling
+        // event that never gets removed if not added to the query in the sense
+        // of always making sure to pick events before a certain date
+        const events = await Event.query().where(
+            'endsAt',
+            '<=',
+            DateTime.fromISO(today).minus({ week: weekLookback }).toISO()
+        )
+
+        events.forEach(async (event) => {
+            if (!event.recurring) {
+                await event.delete()
+            }
+        })
+    }
 }

@@ -17,6 +17,7 @@ export default class EventFilterValidator {
         exclude_categories: schema.string.optional(),
         only_members: schema.boolean.optional(),
         only_students: schema.boolean.optional(),
+        // recurring: schema.boolean.optional(),
     })
 
     public messages = {}

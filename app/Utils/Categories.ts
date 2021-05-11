@@ -12,7 +12,7 @@ export enum Categories {
     Lunch = 'Lunch',
     Fika = 'Fika',
     Sport = 'Sport',
-    Resturaunt = 'Resturaung',
+    Restaurant = 'Restaurang',
     Pub = 'Pub',
     Culture = 'Kultur',
     Gasque = 'Gasque',

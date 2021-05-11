@@ -25,6 +25,7 @@ export default class EventCreateValidator {
 
         only_members: schema.boolean.optional(),
         only_students: schema.boolean.optional(),
+        recurring: schema.boolean.optional(),
         category_id: schema.number.optional([
             rules.exists({
                 table: DatabaseTables.Categories,
