@@ -196,12 +196,8 @@ test.group('Contact create', async (group) => {
 })
 
 test.group('Contact delete', async (group) => {
-    let nation: TestNationContract
-
-    group.before(async () => {
-        nation = await createTestNation()
-    })
     test('ensure that deleting a contact requires a valid token', async () => {
+        const nation = await createTestNation()
         const contact = await createTestContact(nation.oid)
 
         await supertest(BASE_URL)
@@ -211,6 +207,7 @@ test.group('Contact delete', async (group) => {
     })
 
     test('ensure that deleting a contact requires an admin token', async () => {
+        const nation = await createTestNation()
         const contact = await createTestContact(nation.oid)
 
         await supertest(BASE_URL)
@@ -220,6 +217,7 @@ test.group('Contact delete', async (group) => {
     })
 
     test('ensure that deleting a contact requires is viable', async () => {
+        const nation = await createTestNation()
         const contact = await createTestContact(nation.oid)
 
         await supertest(BASE_URL)
@@ -229,6 +227,7 @@ test.group('Contact delete', async (group) => {
     })
 
     test('ensure that deleting a contact requires an existing contact', async () => {
+        const nation = await createTestNation()
         await supertest(BASE_URL)
             .delete(`/nations/${nation.oid}/contact/99999999`)
             .set('Authorization', 'Bearer ' + nation.token)
@@ -236,6 +235,7 @@ test.group('Contact delete', async (group) => {
     })
 
     test('ensure that deleting a contact requires an existing nation', async () => {
+        const nation = await createTestNation()
         const contact = await createTestContact(nation.oid)
 
         await supertest(BASE_URL)
@@ -245,6 +245,7 @@ test.group('Contact delete', async (group) => {
     })
 
     test('ensure that deleting a contact truly removes it by trying to fetch it', async () => {
+        const nation = await createTestNation()
         const contact = await createTestContact(nation.oid)
         await supertest(BASE_URL)
             .delete(`/nations/${nation.oid}/contact/${contact.id}`)
@@ -255,6 +256,7 @@ test.group('Contact delete', async (group) => {
     })
 
     test('ensure that deleting a contact is only viable to given admins of the same nation', async () => {
+        const nation = await createTestNation()
         const nation2 = await createTestNation()
         const contact = await createTestContact(nation.oid)
 
