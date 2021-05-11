@@ -7,15 +7,15 @@ import { TestNationContract, createTestNation, createTestIndividual } from 'App/
 
 test.group('Individuals fetch', async (group) => {
     let nation: TestNationContract
-    const amountOfIndividualsToCreated = 10
     let individual: Individual
+    const amountOfIndividualsToCreated = 3
 
     group.before(async () => {
         nation = await createTestNation()
         individual = await createTestIndividual(nation.oid)
     })
 
-    test('ensure that you can fetch an individual', async (assert) => {
+    test('ensure that you can fetch a single individual', async (assert) => {
         const { text } = await supertest(BASE_URL).get(`/individuals/${individual.id}`).expect(200)
 
         const data = JSON.parse(text)
@@ -168,7 +168,7 @@ test.group('Individuals update', async (group) => {
     })
 })
 
-test.group('Event delete', async (group) => {
+test.group('Individual delete', async (group) => {
     let nation: TestNationContract
 
     group.before(async () => {
@@ -242,9 +242,9 @@ test.group('Event delete', async (group) => {
     })
 })
 
-test.group('Event upload', (group) => {
-    const coverImagePath = path.join(__dirname, 'data/cover.png')
+test.group('Individual upload', (group) => {
     let nation: TestNationContract
+    const coverImagePath = path.join(__dirname, 'data/cover.png')
 
     group.before(async () => {
         nation = await createTestNation()
@@ -254,7 +254,7 @@ test.group('Event upload', (group) => {
         const individual = await createTestIndividual(nation.oid)
 
         await supertest(BASE_URL)
-            .post(`/nations/${nation.oid}/individuals/${individual.id}/upload`)
+            .post(`/individuals/${individual.id}/upload`)
             .set('Authorization', 'Bearer ' + '.token')
             .attach('cover', coverImagePath)
             .expect(401)
@@ -264,7 +264,7 @@ test.group('Event upload', (group) => {
         const individual = await createTestIndividual(nation.oid)
 
         await supertest(BASE_URL)
-            .post(`/nations/${nation.oid}/individuals/${individual.id}/upload`)
+            .post(`/individuals/${individual.id}/upload`)
             .set('Authorization', 'Bearer ' + nation.staffToken)
             .attach('cover', coverImagePath)
             .expect(401)
@@ -274,7 +274,7 @@ test.group('Event upload', (group) => {
         const individual = await createTestIndividual(nation.oid)
 
         const text1 = await supertest(BASE_URL)
-            .post(`/nations/${nation.oid}/individuals/${individual.id}/upload`)
+            .post(`/individuals/${individual.id}/upload`)
             .set('Authorization', 'Bearer ' + nation.token)
             .attach('profile', coverImagePath)
             .expect(200)
@@ -289,7 +289,7 @@ test.group('Event upload', (group) => {
         const individual = await createTestIndividual(nation.oid)
 
         await supertest(BASE_URL)
-            .post(`/nations/${nation.oid}/individuals/${individual.id}/upload`)
+            .post(`/individuals/${individual.id}/upload`)
             .set('Authorization', 'Bearer ' + nation2.token)
             .attach('profile', coverImagePath)
             .expect(401)
@@ -297,17 +297,7 @@ test.group('Event upload', (group) => {
 
     test('ensure that uploading is only viable to existing individuals', async () => {
         await supertest(BASE_URL)
-            .post(`/nations/${nation.oid}/individuals/99999999/upload`)
-            .set('Authorization', 'Bearer ' + nation.token)
-            .attach('profile', coverImagePath)
-            .expect(404)
-    })
-
-    test('ensure that uploading to an individual is only viable to existing nations', async () => {
-        const individual = await createTestIndividual(nation.oid)
-
-        await supertest(BASE_URL)
-            .post(`/nations/99999999/individuals/${individual.id}/upload`)
+            .post(`/individuals/99999999/upload`)
             .set('Authorization', 'Bearer ' + nation.token)
             .attach('profile', coverImagePath)
             .expect(404)
