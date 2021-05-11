@@ -195,7 +195,7 @@ test.group('Contact create', async (group) => {
     })
 })
 
-test.group('Contact delete', async (group) => {
+test.group('Contact delete', async () => {
     test('ensure that deleting a contact requires a valid token', async () => {
         const nation = await createTestNation()
         const contact = await createTestContact(nation.oid)
