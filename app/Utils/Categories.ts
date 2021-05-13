@@ -7,16 +7,16 @@
  * @enum Categories The enum type for the different categories available
  */
 export enum Categories {
-    Breakfast = 'Frukost',
+    Breakfast = 'Breakfast',
     Brunch = 'Brunch',
     Lunch = 'Lunch',
     Fika = 'Fika',
     Sport = 'Sport',
-    Restaurant = 'Restaurang',
+    Restaurant = 'Restaurant',
     Pub = 'Pub',
-    Culture = 'Kultur',
+    Culture = 'Culture',
     Gasque = 'Gasque',
     Club = 'Club',
-    Consert = 'Konsert',
-    Other = 'Övrigt',
+    Consert = 'Consert',
+    Other = 'Other',
 }
