@@ -237,14 +237,13 @@ export default class Event extends BaseModel {
         }
     })
 
-    /**
-     * Method to cleanup events that have ended
+    /** Method to cleanup events that have ended
      * Unless they are `recurring`, then we simply ignore
      */
     public static async dailyCleanup() {
         // The amount of weeks to lookback to
         // This is for fetching events that ended 1 week ago
-        const weekLookback = 1
+        const monthLookback = 3
         // Fetch todays date
         const today = new Date().toISOString()
 
@@ -258,7 +257,7 @@ export default class Event extends BaseModel {
         const events = await Event.query().where(
             'endsAt',
             '<=',
-            DateTime.fromISO(today).minus({ week: weekLookback }).toISO()
+            DateTime.fromISO(today).minus({ month: monthLookback }).toISO()
         )
 
         events.forEach(async (event) => {
