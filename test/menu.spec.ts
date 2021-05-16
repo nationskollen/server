@@ -158,7 +158,7 @@ test.group('Menu create', async (group) => {
 
         assert.deepEqual(data.name, menuData.name)
         assert.deepEqual(data.hidden, menuData.hidden)
-        assert.deepEqual(data.oid, nation.oid)
+        assert.deepEqual(data.nation_id, nation.oid)
         assert.deepEqual(data.location_id, location.id)
     })
 

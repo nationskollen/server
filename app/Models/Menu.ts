@@ -24,7 +24,7 @@ export default class Menu extends BaseModel {
     //       Or rather, is there an easier way to verify that a certain user is
     //       allowed to access the resource? Right now, we must extract the oid
     //       somehow from every resource that we need to modify.
-    @column({ serializeAs: 'oid' })
+    @column()
     public nationId: number
 
     /**
