@@ -11,6 +11,7 @@ on:
     - 'contracts/**/*'
     - 'config/**/*'
     - 'contracts/**/*'
+    - 'assets/**/*'
 
 jobs:
   deploy:
