@@ -11,6 +11,7 @@ on:
     - 'contracts/**/*'
     - 'config/**/*'
     - 'contracts/**/*'
+    - 'assets/**/*'
 
 jobs:
   deploy:
@@ -53,7 +54,7 @@ jobs:
             # will fail until the public directory is created
             # (e.g. by uploading a file that does not get compressed)
             mkdir -p public
-            cp -r ../assets/**/* ./public
+            cp -r ../assets ./public
 
             # Replace current version with the new one
             cd ../..
