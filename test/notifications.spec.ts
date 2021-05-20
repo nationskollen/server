@@ -266,26 +266,19 @@ test.group('Notification fetch', (group) => {
         assert.equal(dataTwo.data[0].title, eventData.name)
     })
 
-    test.skipInCI('ensure that notifications are ordered by descending order', async (assert) => {
+    test('ensure that notifications are ordered by descending order', async (assert) => {
         const numberOfEvents = 3
         for (let i = 0; i < numberOfEvents; i++) {
-            createTestEvent(nation.oid)
+            await createTestEvent(nation.oid)
         }
 
-        const { text } = await supertest(BASE_URL)
-            .get(`/notifications`)
-            .expect(200)
+        const { text } = await supertest(BASE_URL).get(`/notifications`).expect(200)
 
-        const data = JSON.parse(text)
+        const data = JSON.parse(text).data
 
-        let tmp: Array<Notification> = []
-        for (const notification of data.data) {
-            tmp.push(notification)
-        } 
-
-        for (let i = 0; i < data.meta.total; i++) {
-            if (tmp[i+1]) {
-                assert.isAbove(tmp[i].id, tmp[i+1].id)
+        for (const index in data) {
+            if (data[index + 1]) {
+                assert.isTrue(data[index].created_at.toISO > data[index + 1].created_at.toISO)
             }
         }
     })
