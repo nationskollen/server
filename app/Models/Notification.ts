@@ -18,7 +18,7 @@ export default class Notification extends BaseModel {
      * Ordering options to query notifications at ascending order
      */
     public static inOrder = scope((query) => {
-        query.orderBy('created_at', 'asc')
+        query.orderBy('created_at', 'desc')
     })
 
     @column({ isPrimary: true })
