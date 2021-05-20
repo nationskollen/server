@@ -6,7 +6,7 @@ import { Topics } from 'App/Utils/Subscriptions'
 import Subscription from 'App/Models/Subscription'
 import Notification from 'App/Models/Notification'
 import SubscriptionTopic from 'App/Models/SubscriptionTopic'
-import { TestNationContract, createTestNation } from 'App/Utils/Test'
+import { TestNationContract, createTestNation, createTestEvent } from 'App/Utils/Test'
 import { NationFactory, PushTokenFactory, SubscriptionTopicFactory } from 'Database/factories/index'
 
 test.group('Notification fetch', (group) => {
@@ -264,5 +264,29 @@ test.group('Notification fetch', (group) => {
         const dataTwo = JSON.parse(responseTwo.text)
         assert.equal(dataTwo.data.length, 1)
         assert.equal(dataTwo.data[0].title, eventData.name)
+    })
+
+    test.skipInCI('ensure that notifications are ordered by descending order', async (assert) => {
+        const numberOfEvents = 3
+        for (let i = 0; i < numberOfEvents; i++) {
+            createTestEvent(nation.oid)
+        }
+
+        const { text } = await supertest(BASE_URL)
+            .get(`/notifications`)
+            .expect(200)
+
+        const data = JSON.parse(text)
+
+        let tmp: Array<Notification> = []
+        for (const notification of data.data) {
+            tmp.push(notification)
+        } 
+
+        for (let i = 0; i < data.meta.total; i++) {
+            if (tmp[i+1]) {
+                assert.isAbove(tmp[i].id, tmp[i+1].id)
+            }
+        }
     })
 })
