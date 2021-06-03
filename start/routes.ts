@@ -78,6 +78,28 @@ Route.group(() => {
     ])
 
     // ----------------------------------------------------------
+    // news
+    // ----------------------------------------------------------
+    Route.get('/nations/:id/news', 'NewsController.index').middleware(['nation'])
+    Route.post('/nations/:id/news', 'NewsController.create').middleware([
+        'auth',
+        'nation',
+        'scope:admin',
+    ])
+    Route.put('/nations/:id/news/:nid', 'NewsController.update').middleware([
+        'auth',
+        'nation',
+        'news',
+        'scope:admin',
+    ])
+    Route.delete('/nations/:id/news/:cid', 'NewsController.delete').middleware([
+        'auth',
+        'nation',
+        'news',
+        'scope:admin',
+    ])
+
+    // ----------------------------------------------------------
     // Individuals
     // ----------------------------------------------------------
     Route.get('/nations/:id/individuals', 'IndividualsController.index').middleware(['nation'])

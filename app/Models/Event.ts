@@ -192,6 +192,7 @@ export default class Event extends BaseModel {
         }
 
         // Creating this in the afterCreate hook resulted in weird behavior
+        // So this will have to do for now
         const notification = await Notification.create({
             title: this.name,
             message: this.shortDescription,
