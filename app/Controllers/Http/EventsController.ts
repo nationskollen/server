@@ -7,6 +7,7 @@
  */
 import { getNation, getEvent, getValidatedData } from 'App/Utils/Request'
 import { DateTime } from 'luxon'
+// import FilteringOptions from 'App/Utils/FilteringOptions'
 import Event from 'App/Models/Event'
 import { getPageNumber } from 'App/Utils/Paginate'
 import { ExtractScopes } from '@ioc:Adonis/Lucid/Model'
@@ -53,12 +54,22 @@ export default class EventsController {
         scopes.inOrder()
     }
 
+    /**
+     * Filtering method for events in order to filter after categories
+     * @param scopes - The different scopes that exists in the system
+     * @param category - The category to apply filter after
+     */
     private applyCategory(scopes: ExtractScopes<typeof Event>, category?: number) {
         if (category) {
             scopes.perCategory(category)
         }
     }
 
+    /**
+     * Filtering method for events in order to filter after exluded categories
+     * @param scopes - The different scopes that exists in the system
+     * @param excludeCategory - The category to apply filter after
+     */
     private applyExclusionCategory(scopes: ExtractScopes<typeof Event>, excludeCategory?: string) {
         if (!excludeCategory) {
             return

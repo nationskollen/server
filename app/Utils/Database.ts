@@ -13,6 +13,7 @@ export enum DatabaseTables {
     Locations = 'locations',
     OpeningHours = 'opening_hours',
     Events = 'events',
+    News = 'news',
     Categories = 'categories',
     Menus = 'menus',
     MenuItems = 'menu_items',

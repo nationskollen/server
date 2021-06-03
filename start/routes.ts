@@ -80,7 +80,9 @@ Route.group(() => {
     // ----------------------------------------------------------
     // news
     // ----------------------------------------------------------
+    Route.get('/news', 'NewsController.all')
     Route.get('/nations/:id/news', 'NewsController.index').middleware(['nation'])
+    Route.get('/news/:nid', 'NewsController.single').middleware(['news'])
     Route.post('/nations/:id/news', 'NewsController.create').middleware([
         'auth',
         'nation',
@@ -92,7 +94,13 @@ Route.group(() => {
         'news',
         'scope:admin',
     ])
-    Route.delete('/nations/:id/news/:cid', 'NewsController.delete').middleware([
+    Route.post('/nations/:id/news/:nid/upload', 'NewsController.upload').middleware([
+        'auth',
+        'nation',
+        'news',
+        'scope:admin',
+    ])
+    Route.delete('/nations/:id/news/:nid', 'NewsController.delete').middleware([
         'auth',
         'nation',
         'news',

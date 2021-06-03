@@ -1,11 +1,11 @@
 /**
  * @category Validator
- * @module EventFilterValidator
+ * @module NewsFilterValidator
  */
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
-export default class EventFilterValidator {
+export default class NewsFilterValidator {
     constructor(protected ctx: HttpContextContract) {}
 
     public schema = schema.create({
