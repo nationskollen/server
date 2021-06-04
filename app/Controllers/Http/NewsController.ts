@@ -99,9 +99,8 @@ export default class NewsController {
         const data = await getValidatedData(request, NewsCreateValidator)
         const newsObject = await nation.related('news').create(data)
 
-        // @todo
-        // Add maybe a createNotification method for the news model just as its
-        // used in EventsController
+        // Create notification related to the news message created above
+        await newsObject.createNotification()
 
         return newsObject.toJSON()
     }
