@@ -38,7 +38,7 @@ export default class News extends BaseModel {
      * Ordering options to query events at ascending order
      */
     public static inOrder = scope((query) => {
-        query.orderBy('updated_at', 'desc')
+        query.orderBy('created_at', 'desc')
     })
 
     /**
