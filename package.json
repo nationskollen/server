@@ -4,8 +4,11 @@
     "private": true,
     "scripts": {
         "pg:start": "docker-compose start",
+        "pg:sudo-start": "sudo docker-compose start",
         "pg:up": "docker-compose up",
+        "pg:sudo-up": "sudo docker-compose up",
         "pg:stop": "docker container stop $(docker container list -q)",
+        "pg:sudo-stop": "sudo docker container stop $(sudo docker container list -q)",
         "setup": "node ace migration:rollback && node ace migration:run && node ace db:seed && cp -R assets/ public/",
         "dev": "node ace serve --watch",
         "build": "node ace build --production",
