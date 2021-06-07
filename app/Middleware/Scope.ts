@@ -101,7 +101,7 @@ export default class ScopeMiddleware {
             oid = request.news.nationId
         } else {
             // If the oid could not be determined, prevent access to the route (programmer error)
-            throw new InternalErrorException( 
+            throw new InternalErrorException(
                 'Could not verify authentication scope. Nation id could not be extracted from request resource. Did you forget to add it the resource to the scope middleware?'
             )
         }

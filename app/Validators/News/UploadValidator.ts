@@ -13,7 +13,7 @@ export default class NewsUploadValidator {
         cover: schema.file.optional({
             size: MAX_FILE_SIZE,
             extnames: ALLOWED_FILE_EXTS,
-        })
+        }),
     })
 
     public messages = {}
