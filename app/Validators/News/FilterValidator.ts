@@ -12,6 +12,7 @@ export default class NewsFilterValidator {
         date: schema.date.optional({ format: 'yyyy-LL-dd' }),
         before: schema.date.optional({ format: 'yyyy-LL-dd' }),
         after: schema.date.optional({ format: 'yyyy-LL-dd' }),
+        exclude_oids: schema.string.optional(),
     })
 
     public messages = {}

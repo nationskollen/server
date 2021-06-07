@@ -26,24 +26,6 @@ export default class Event extends OrderableModel {
     })
 
     /**
-     * filtering options to query events for their categoryId
-     * @param categoryId the number for the id to query for
-     */
-    public static perCategory = scope((query, categoryId: number) => {
-        query.where('categoryId', categoryId)
-    })
-
-    /**
-     * filtering options to query events for their oid belonging
-     * @param categoryId the number for the id to query for
-     */
-    public static filterOutOids = scope((query, oids?: Array<number>) => {
-        if (oids) {
-            query.whereNotIn('nationId', oids)
-        }
-    })
-
-    /**
      * The id for the event
      */
     @column({ isPrimary: true })
@@ -178,29 +160,4 @@ export default class Event extends OrderableModel {
         await this.save()
     }
 
-    /**
-     * filtering options to query events for members only
-     * @param value the boolean for the wether the query is for members or not
-     */
-    public static forMembers = scope((query, value: boolean) => {
-        query.where('onlyMembers', value)
-    })
-
-    /**
-     * filtering options to query events for students only
-     * @param value the boolean for the wether the query is for students or not
-     */
-    public static forStudents = scope((query, value: boolean) => {
-        query.where('onlyStudents', value)
-    })
-
-    /**
-     * filtering options to exclude events for their category that they belong to
-     * @param categoryId the number for the id to query for
-     */
-    public static filterOutCategories = scope((query, categories?: Array<number>) => {
-        if (categories) {
-            query.whereNotIn('categoryId', categories)
-        }
-    })
 }

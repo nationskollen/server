@@ -6,10 +6,8 @@
  * @module EventsController
  */
 import { getNation, getEvent, getValidatedData } from 'App/Utils/Request'
-// import { DateTime } from 'luxon'
 import Event from 'App/Models/Event'
 import { getPageNumber } from 'App/Utils/Paginate'
-// import { ExtractScopes } from '@ioc:Adonis/Lucid/Model'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { attemptFileUpload, attemptFileRemoval } from 'App/Utils/Upload'
 import PaginationValidator from 'App/Validators/PaginationValidator'

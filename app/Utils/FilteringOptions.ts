@@ -1,6 +1,4 @@
 /**
- *@todo refactor filtering functions and place them in this file
- *
  * This file contains all the filtering options that can be used in controllers.
  *
  * @category Utils
@@ -8,7 +6,6 @@
  */
 
 import { DateTime } from 'luxon'
-import Event from 'App/Models/Event'
 import { ExtractScopes } from '@ioc:Adonis/Lucid/Model'
 import OrderableModel from 'App/Utils/OrderableModel'
 
@@ -49,7 +46,10 @@ export default class FilteringOptions {
      * @param scopes - The different scopes that exists in the system
      * @param category - The category to apply filter after
      */
-    public applyCategory(scopes: ExtractScopes<typeof Event>, category?: number) {
+    public applyCategory(
+        scopes: ExtractScopes<typeof OrderableModel>,
+        category?: number
+    ) {
         if (category) {
             scopes.perCategory(category)
         }
@@ -60,7 +60,10 @@ export default class FilteringOptions {
      * @param scopes - The different scopes that exists in the system
      * @param excludeCategory - The category to apply filter after
      */
-    public applyExclusionCategory(scopes: ExtractScopes<typeof Event>, excludeCategory?: string) {
+    public applyExclusionCategory(
+        scopes: ExtractScopes<typeof OrderableModel>,
+        excludeCategory?: string
+    ) {
         if (!excludeCategory) {
             return
         }
@@ -80,7 +83,7 @@ export default class FilteringOptions {
     }
 
     public applyInclusionFilter(
-        scopes: ExtractScopes<typeof Event>,
+        scopes: ExtractScopes<typeof OrderableModel>,
         student?: boolean,
         membership?: boolean
     ) {
@@ -94,7 +97,7 @@ export default class FilteringOptions {
     }
 
     public applyExclusionOids(
-        scopes: ExtractScopes<typeof Event>,
+        scopes: ExtractScopes<typeof OrderableModel>,
         excludeOids?: string | undefined
     ) {
         if (excludeOids) {

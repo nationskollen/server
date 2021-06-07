@@ -316,7 +316,7 @@ test.group('News Deletion', (group) => {
         nation = await createTestNation()
     })
 
-    test('ensure that uploading images requires a valid token', async (assert) => {
+    test('ensure that deleting news requires a valid token', async (assert) => {
         const news = await createTestNews(nation.oid)
 
         const { text } = await supertest(BASE_URL)
@@ -354,5 +354,15 @@ test.group('News Deletion', (group) => {
             .delete(`/news/99999`)
             .set('Authorization', 'Bearer ' + nation.token)
             .expect(404)
+    })
+
+    test('ensure that an admin cannot delete news for the incorrect nation', async () => {
+        const nation2 = await createTestNation()
+        const news = await createTestNews(nation.oid)
+
+        await supertest(BASE_URL)
+            .delete(`/nations/${nation.oid}/news/${news.id}`)
+            .set('Authorization', 'Bearer ' + nation2.token)
+            .expect(401)
     })
 })
