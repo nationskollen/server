@@ -106,7 +106,7 @@ export default class News extends BaseModel {
      * Creates a new notification for the news model.
      */
     public async createNotification() {
-        const topic = await SubscriptionTopic.findBy('name', Topics.Events)
+        const topic = await SubscriptionTopic.findBy('name', Topics.News)
 
         if (!topic) {
             return

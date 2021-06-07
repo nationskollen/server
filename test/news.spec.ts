@@ -9,32 +9,18 @@ import {
     createTestNews,
     toRelativePath,
 } from 'App/Utils/Test'
-// import { Topics } from 'App/Utils/Subscriptions'
 
 test.group('News fetch', () => {
-    const newsData = {
-        title: 'NEWSS!!!',
-        short_description: 'NotEvent',
-        long_description: 'Lorem ipsum',
-    }
-
-    test('ensure creating news, we can fetch the notification', async (assert) => {
+    test('ensure we can fetch news', async (assert) => {
         const nation = await createTestNation()
+        const news = await createTestNews(nation.oid)
 
-        const { text } = await supertest(BASE_URL)
-            .post(`/nations/${nation.oid}/news`)
-            .set('Authorization', 'Bearer ' + nation.token)
-            .send(newsData)
-            .expect(200)
-
-        const data = JSON.parse(text)
-
-        const text1 = await supertest(BASE_URL).get(`/news/${data.id}`).expect(200)
+        const text1 = await supertest(BASE_URL).get(`/news/${news.id}`).expect(200)
 
         const data1 = JSON.parse(text1.text)
         assert.isNotNull(data1)
-        assert.equal(newsData.short_description, data1.short_description)
-        assert.equal(newsData.title, data1.title)
+        assert.equal(news.shortDescription, data1.short_description)
+        assert.equal(news.title, data1.title)
     })
 
     test('ensure we can fetch all news', async (assert) => {
@@ -42,19 +28,11 @@ test.group('News fetch', () => {
         const nation3 = await createTestNation()
 
         for (let i = 0; i < 3; i++) {
-            await supertest(BASE_URL)
-                .post(`/nations/${nation3.oid}/news`)
-                .set('Authorization', 'Bearer ' + nation3.token)
-                .send(newsData)
-                .expect(200)
+            await createTestNews(nation2.oid)
         }
 
         for (let i = 0; i < 3; i++) {
-            await supertest(BASE_URL)
-                .post(`/nations/${nation2.oid}/news`)
-                .set('Authorization', 'Bearer ' + nation2.token)
-                .send(newsData)
-                .expect(200)
+            await createTestNews(nation3.oid)
         }
 
         const { text } = await supertest(BASE_URL).get(`/news`).expect(200)
@@ -70,19 +48,11 @@ test.group('News fetch', () => {
         const nation3 = await createTestNation()
 
         for (let i = 0; i < 3; i++) {
-            await supertest(BASE_URL)
-                .post(`/nations/${nation3.oid}/news`)
-                .set('Authorization', 'Bearer ' + nation3.token)
-                .send(newsData)
-                .expect(200)
+            await createTestNews(nation2.oid)
         }
 
         for (let i = 0; i < 3; i++) {
-            await supertest(BASE_URL)
-                .post(`/nations/${nation2.oid}/news`)
-                .set('Authorization', 'Bearer ' + nation2.token)
-                .send(newsData)
-                .expect(200)
+            await createTestNews(nation3.oid)
         }
 
         const { text } = await supertest(BASE_URL).get(`/news?page=1&amount=2`).expect(200)
