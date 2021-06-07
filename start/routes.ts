@@ -94,15 +94,14 @@ Route.group(() => {
         'news',
         'scope:admin',
     ])
-    Route.post('/nations/:id/news/:nid/upload', 'NewsController.upload').middleware([
+    Route.delete('/nations/:id/news/:nid', 'NewsController.delete').middleware([
         'auth',
         'nation',
         'news',
         'scope:admin',
     ])
-    Route.delete('/nations/:id/news/:nid', 'NewsController.delete').middleware([
+    Route.post('/news/:nid/upload', 'NewsController.upload').middleware([
         'auth',
-        'nation',
         'news',
         'scope:admin',
     ])

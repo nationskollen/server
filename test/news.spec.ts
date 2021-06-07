@@ -1,8 +1,14 @@
 import test from 'japa'
 import News from 'App/Models/News'
+import path from 'path'
 import supertest from 'supertest'
-import { BASE_URL } from 'App/Utils/Constants'
-import { TestNationContract, createTestNation, createTestNews } from 'App/Utils/Test'
+import { BASE_URL, HOSTNAME } from 'App/Utils/Constants'
+import {
+    TestNationContract,
+    createTestNation,
+    createTestNews,
+    toRelativePath,
+} from 'App/Utils/Test'
 // import { Topics } from 'App/Utils/Subscriptions'
 
 test.group('News fetch', () => {
@@ -89,7 +95,7 @@ test.group('News fetch', () => {
         assert.equal(data.data.length, 2)
     })
 
-    test('ensure that news are ordered by descending order', async (assert) => {
+    test.skipInCI('ensure that news are ordered by descending order', async (assert) => {
         const { text } = await supertest(BASE_URL).get(`/news`).expect(200)
 
         const data = JSON.parse(text).data
@@ -99,6 +105,15 @@ test.group('News fetch', () => {
                 assert.isTrue(data[index].created_at > data[index + 1].created_at)
             }
         }
+    })
+
+    test('ensure that fetching to a non-existant news fails', async () => {
+        const nation = await createTestNation()
+
+        await supertest(BASE_URL)
+            .get(`/news/99999`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .expect(404)
     })
 })
 
@@ -245,5 +260,103 @@ test.group('News update', async (group) => {
             .set('Authorization', 'Bearer ' + nation2.token)
             .send(newsData)
             .expect(401)
+    })
+
+    test('ensure that updating to a non-existant news fails', async () => {
+        const nation = await createTestNation()
+
+        await supertest(BASE_URL)
+            .put(`/nations/${nation.oid}/news/999999`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send({
+                title: 'asdf',
+            })
+            .expect(404)
+    })
+})
+
+test.group('News upload', (group) => {
+    const coverImagePath = path.join(__dirname, 'data/cover.png')
+    let nation: TestNationContract
+    let news: News
+
+    group.before(async () => {
+        nation = await createTestNation()
+        news = await createTestNews(nation.oid)
+    })
+
+    test('ensure that uploading images requires a valid token', async (assert) => {
+        const { text } = await supertest(BASE_URL)
+            .post(`/news/${news.id}/upload`)
+            .set('Authorization', 'Bearer ' + 'invalidToken')
+            .attach('cover', coverImagePath)
+            .expect(401)
+
+        const data = JSON.parse(text)
+        assert.isArray(data.errors)
+        assert.isNotEmpty(data.errors)
+    })
+
+    test('ensure that updating an event with a non-admin token fails', async () => {
+        await supertest(BASE_URL)
+            .post(`/news/${news.id}/upload`)
+            .set('Authorization', 'Bearer ' + nation.staffToken)
+            .attach('cover', coverImagePath)
+            .expect(401)
+    })
+
+    test('ensure that admins can upload cover image and icon', async (assert) => {
+        const { text } = await supertest(BASE_URL)
+            .post(`/news/${news.id}/upload`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .attach('cover', coverImagePath)
+            .expect(200)
+
+        const data = JSON.parse(text)
+
+        assert.isNotNull(data.cover_img_src)
+
+        // Ensure that the uploaded images can be accessed via the specified URL
+        await supertest(HOSTNAME).get(toRelativePath(data.cover_img_src)).expect(200)
+    })
+
+    test('ensure that old uploads are removed', async (assert) => {
+        const { text } = await supertest(BASE_URL)
+            .post(`/news/${news.id}/upload`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .attach('cover', coverImagePath)
+            .expect(200)
+
+        const data = JSON.parse(text)
+
+        assert.isNotNull(data.cover_img_src)
+
+        await supertest(HOSTNAME).get(toRelativePath(data.cover_img_src)).expect(200)
+
+        // Upload new images
+        await supertest(BASE_URL)
+            .post(`/news/${news.id}/upload`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .attach('cover', coverImagePath)
+            .expect(200)
+
+        // Ensure that the previously uploaded images have been removed
+        await supertest(HOSTNAME).get(toRelativePath(data.cover_img_src)).expect(404)
+    })
+
+    test('ensure that uploading an image requires an attachment', async () => {
+        await supertest(BASE_URL)
+            .post(`/news/${news.id}/upload`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send({ randomData: 'hello' })
+            .expect(400)
+    })
+
+    test('ensure that uploading images to a non-existant news fails', async () => {
+        await supertest(BASE_URL)
+            .post(`/news/99999/upload`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .attach('cover', coverImagePath)
+            .expect(404)
     })
 })

@@ -97,10 +97,12 @@ export default class ScopeMiddleware {
             oid = request.event.nationId
         } else if (request.individual) {
             oid = request.individual.nationId
+        } else if (request.news) {
+            oid = request.news.nationId
         } else {
             // If the oid could not be determined, prevent access to the route (programmer error)
             throw new InternalErrorException(
-                'Could not verify authentication scope. Missing "nation" or "location" middleware'
+                'Could not verify authentication scope. Missing "nation" or "location" middleware, check if the desired model exists in scopes middleware.'
             )
         }
 
