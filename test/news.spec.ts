@@ -143,7 +143,7 @@ test.group('News create', async (group) => {
             .post(`/nations/${nation.oid}/news`)
             .set('Authorization', 'Bearer ' + nation.token)
             .send({
-                "title": "hello"
+                title: 'hello',
             })
             .expect(422)
 
@@ -151,9 +151,9 @@ test.group('News create', async (group) => {
             .post(`/nations/${nation.oid}/news`)
             .set('Authorization', 'Bearer ' + nation.token)
             .send({
-                "title": "hello",
-                "short_description": "hello",
-                "long_description": 42
+                title: 'hello',
+                short_description: 'hello',
+                long_description: 42,
             })
             .expect(422)
     })
@@ -346,9 +346,7 @@ test.group('News Deletion', (group) => {
             .set('Authorization', 'Bearer ' + nation.token)
             .expect(200)
 
-        await supertest(BASE_URL)
-            .get(`/news/${news.id}`)
-            .expect(404)
+        await supertest(BASE_URL).get(`/news/${news.id}`).expect(404)
     })
 
     test('ensure that deleting non-existant news fails', async () => {
