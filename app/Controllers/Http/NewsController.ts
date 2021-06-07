@@ -41,7 +41,11 @@ export default class NewsController extends FilteringOptions {
      */
     public async index({ request }: HttpContextContract) {
         const { oid } = getNation(request)
-        const { exclude_oids, date, before, after } = await getValidatedData(request, NewsFilterValidator, true)
+        const { exclude_oids, date, before, after } = await getValidatedData(
+            request,
+            NewsFilterValidator,
+            true
+        )
         const specified = await getValidatedData(request, PaginationValidator, true)
 
         const query = News.query()

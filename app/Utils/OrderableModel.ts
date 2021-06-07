@@ -95,5 +95,4 @@ export default class OrderableModel extends BaseModel {
     public static perCategory = scope((query, categoryId: number) => {
         query.where('categoryId', categoryId)
     })
-
 }

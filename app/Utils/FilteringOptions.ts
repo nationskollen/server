@@ -46,10 +46,7 @@ export default class FilteringOptions {
      * @param scopes - The different scopes that exists in the system
      * @param category - The category to apply filter after
      */
-    public applyCategory(
-        scopes: ExtractScopes<typeof OrderableModel>,
-        category?: number
-    ) {
+    public applyCategory(scopes: ExtractScopes<typeof OrderableModel>, category?: number) {
         if (category) {
             scopes.perCategory(category)
         }

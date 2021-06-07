@@ -159,5 +159,4 @@ export default class Event extends OrderableModel {
         this.notificationId = notification.id
         await this.save()
     }
-
 }
