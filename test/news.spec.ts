@@ -138,33 +138,25 @@ test.group('News create', async (group) => {
             .expect(401)
     })
 
-    // For some reason, a notification is not created when running the below code.
-    // Though when running through insomnia it creates a notification and can confirm that it works.
-    // weird...
-    //
-    // test('ensure that creation of a news model also creates a notification alongside it with corresponding information', async (assert) => {
-    //     const nation2 = await createTestNation()
+    test('ensure that validation for creating news works', async () => {
+        await supertest(BASE_URL)
+            .post(`/nations/${nation.oid}/news`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send({
+                "title": "hello"
+            })
+            .expect(422)
 
-    //     const { text } = await supertest(BASE_URL)
-    //         .post(`/nations/${nation2.oid}/news`)
-    //         .set('Authorization', 'Bearer ' + nation2.token)
-    //         .send(newsData)
-    //         .expect(200)
-
-    //     const data = JSON.parse(text)
-    //     console.log(data)
-
-    //     const notificationText = await supertest(BASE_URL)
-    //         .get(`/notifications`)
-    //         .expect(200)
-
-    //     const dataNotification = JSON.parse(notificationText.text)
-    //     console.log(dataNotification)
-
-    //     assert.equal(data.title, dataNotification.title)
-    //     assert.equal(data.short_description, dataNotification.message)
-    //     assert.equal(dataNotification.subscription_topic_id, Topics.News)
-    // })
+        await supertest(BASE_URL)
+            .post(`/nations/${nation.oid}/news`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send({
+                "title": "hello",
+                "short_description": "hello",
+                "long_description": 42
+            })
+            .expect(422)
+    })
 })
 
 test.group('News update', async (group) => {
@@ -253,7 +245,7 @@ test.group('News upload', (group) => {
         assert.isNotEmpty(data.errors)
     })
 
-    test('ensure that updating an event with a non-admin token fails', async () => {
+    test('ensure that uploading to news with a non-admin token fails', async () => {
         await supertest(BASE_URL)
             .post(`/news/${news.id}/upload`)
             .set('Authorization', 'Bearer ' + nation.staffToken)
@@ -313,6 +305,56 @@ test.group('News upload', (group) => {
             .post(`/news/99999/upload`)
             .set('Authorization', 'Bearer ' + nation.token)
             .attach('cover', coverImagePath)
+            .expect(404)
+    })
+})
+
+test.group('News Deletion', (group) => {
+    let nation: TestNationContract
+
+    group.before(async () => {
+        nation = await createTestNation()
+    })
+
+    test('ensure that uploading images requires a valid token', async (assert) => {
+        const news = await createTestNews(nation.oid)
+
+        const { text } = await supertest(BASE_URL)
+            .delete(`/nations/${nation.oid}/news/${news.id}`)
+            .set('Authorization', 'Bearer ' + 'invalidToken')
+            .expect(401)
+
+        const data = JSON.parse(text)
+        assert.isArray(data.errors)
+        assert.isNotEmpty(data.errors)
+    })
+
+    test('ensure that deleting news with a non-admin token fails', async () => {
+        const news = await createTestNews(nation.oid)
+
+        await supertest(BASE_URL)
+            .delete(`/nations/${nation.oid}/news/${news.id}`)
+            .set('Authorization', 'Bearer ' + nation.staffToken)
+            .expect(401)
+    })
+
+    test('ensure that admins can delete news', async () => {
+        const news = await createTestNews(nation.oid)
+
+        await supertest(BASE_URL)
+            .delete(`/nations/${nation.oid}/news/${news.id}`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .expect(200)
+
+        await supertest(BASE_URL)
+            .get(`/news/${news.id}`)
+            .expect(404)
+    })
+
+    test('ensure that deleting non-existant news fails', async () => {
+        await supertest(BASE_URL)
+            .delete(`/news/99999`)
+            .set('Authorization', 'Bearer ' + nation.token)
             .expect(404)
     })
 })
