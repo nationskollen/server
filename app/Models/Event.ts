@@ -8,45 +8,18 @@
  * @category Model
  * @module Event
  */
-import { column, BaseModel, scope, belongsTo, BelongsTo } from '@ioc:Adonis/Lucid/Orm'
+import { column, scope, belongsTo, BelongsTo } from '@ioc:Adonis/Lucid/Orm'
 import { DateTime } from 'luxon'
 import Category from 'App/Models/Category'
 import { Topics } from 'App/Utils/Subscriptions'
 import Notification from 'App/Models/Notification'
 import { toBoolean, toAbsolutePath, toISO } from 'App/Utils/Serialize'
 import SubscriptionTopic from 'App/Models/SubscriptionTopic'
+import OrderableModel from 'App/Utils/OrderableModel'
 
-export default class Event extends BaseModel {
+export default class Event extends OrderableModel {
     /**
-     * Filtering options to query events before specified date
-     */
-    public static beforeDate = scope((query, date: DateTime) => {
-        query.where('occurs_at', '<', date.toISO())
-    })
-
-    /**
-     * Filtering options to query events after specified date
-     */
-    public static afterDate = scope((query, date: DateTime) => {
-        /**
-         * NOTE: Simply filtering by '>' with 'date.toISO()' does not work.
-         * No idea why this is, but I don't really care either.
-         */
-        query.where('occurs_at', '>=', date.plus({ day: 1 }).toISO())
-    })
-
-    /**
-     * Filtering options to query events at specified date
-     */
-    public static onDate = scope((query, date: DateTime) => {
-        query.whereBetween('occurs_at', [
-            date.set({ hour: 0, minute: 0 }).toISO(),
-            date.set({ hour: 23, minute: 59 }).toISO(),
-        ])
-    })
-
-    /**
-     * Ordering options to query events at ascending order
+     * Ordering options to query at ascending order
      */
     public static inOrder = scope((query) => {
         query.orderBy('occurs_at', 'asc')

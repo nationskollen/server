@@ -6,11 +6,10 @@
  * @module EventsController
  */
 import { getNation, getEvent, getValidatedData } from 'App/Utils/Request'
-import { DateTime } from 'luxon'
-// import FilteringOptions from 'App/Utils/FilteringOptions'
+// import { DateTime } from 'luxon'
 import Event from 'App/Models/Event'
 import { getPageNumber } from 'App/Utils/Paginate'
-import { ExtractScopes } from '@ioc:Adonis/Lucid/Model'
+// import { ExtractScopes } from '@ioc:Adonis/Lucid/Model'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { attemptFileUpload, attemptFileRemoval } from 'App/Utils/Upload'
 import PaginationValidator from 'App/Validators/PaginationValidator'
@@ -18,111 +17,12 @@ import EventUpdateValidator from 'App/Validators/Events/UpdateValidator'
 import EventCreateValidator from 'App/Validators/Events/CreateValidator'
 import EventUploadValidator from 'App/Validators/Events/UploadValidator'
 import EventFilterValidator from 'App/Validators/Events/FilterValidator'
+import FilteringOptions from 'App/Utils/FilteringOptions'
 
 /**
  * Event controller
  */
-export default class EventsController {
-    /**
-     * Method that applies given filters depedning on what type of event to
-     * filter after
-     * @param scopes - The different scopes that exists in the system
-     * @param filters - The filter to apply
-     */
-    private applyFilters(
-        scopes: ExtractScopes<typeof Event>,
-        filters: Record<string, DateTime | undefined>
-    ) {
-        if (filters.date) {
-            // Filter based on selected date
-            scopes.onDate(filters.date)
-        } else {
-            if (filters.before) {
-                // Filter based on when the event ends, i.e. all events before
-                // a certain date
-                scopes.beforeDate(filters.before)
-            }
-
-            if (filters.after) {
-                // Filter based on when the event start, i.e. all events after
-                // a certain date
-                scopes.afterDate(filters.after)
-            }
-        }
-
-        // Order events based on the 'occurs_at' field
-        scopes.inOrder()
-    }
-
-    /**
-     * Filtering method for events in order to filter after categories
-     * @param scopes - The different scopes that exists in the system
-     * @param category - The category to apply filter after
-     */
-    private applyCategory(scopes: ExtractScopes<typeof Event>, category?: number) {
-        if (category) {
-            scopes.perCategory(category)
-        }
-    }
-
-    /**
-     * Filtering method for events in order to filter after exluded categories
-     * @param scopes - The different scopes that exists in the system
-     * @param excludeCategory - The category to apply filter after
-     */
-    private applyExclusionCategory(scopes: ExtractScopes<typeof Event>, excludeCategory?: string) {
-        if (!excludeCategory) {
-            return
-        }
-
-        const initial: Array<number> = []
-        const parsed = excludeCategory.split(',').reduce((reducedArray, oid) => {
-            const tmp = parseInt(oid)
-
-            if (!isNaN(tmp)) {
-                reducedArray.push(tmp)
-            }
-
-            return reducedArray
-        }, initial)
-
-        scopes.filterOutCategories(parsed)
-    }
-
-    private applyInclusionFilter(
-        scopes: ExtractScopes<typeof Event>,
-        student?: boolean,
-        membership?: boolean
-    ) {
-        if (membership !== undefined) {
-            scopes.forMembers(membership)
-        }
-
-        if (student !== undefined) {
-            scopes.forStudents(student)
-        }
-    }
-
-    private applyExclusionOids(
-        scopes: ExtractScopes<typeof Event>,
-        excludeOids?: string | undefined
-    ) {
-        if (excludeOids) {
-            const initial: Array<number> = []
-            const parsed = excludeOids.split(',').reduce((reducedArray, oid) => {
-                const tmp = parseInt(oid)
-
-                if (!isNaN(tmp)) {
-                    reducedArray.push(tmp)
-                }
-
-                return reducedArray
-            }, initial)
-
-            scopes.filterOutOids(parsed)
-        }
-    }
-
+export default class EventsController extends FilteringOptions {
     /**
      * Method to retrieve all the events in the system
      * The actual function call is done by a request (CRUD) which are specified

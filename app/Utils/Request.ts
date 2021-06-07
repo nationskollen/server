@@ -64,7 +64,7 @@ export function getContact(request: RequestContract): Contact {
     return contact
 }
 
-export function getNewsObject(request: RequestContract): News {
+export function getNews(request: RequestContract): News {
     const { news } = request
 
     if (!news) {

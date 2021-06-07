@@ -10,6 +10,7 @@
 import { DateTime } from 'luxon'
 import Event from 'App/Models/Event'
 import { ExtractScopes } from '@ioc:Adonis/Lucid/Model'
+import OrderableModel from 'App/Utils/OrderableModel'
 
 export default class FilteringOptions {
     /**
@@ -19,7 +20,7 @@ export default class FilteringOptions {
      * @param filters - The filter to apply
      */
     public applyFilters(
-        scopes: ExtractScopes<typeof Event>,
+        scopes: ExtractScopes<typeof OrderableModel>,
         filters: Record<string, DateTime | undefined>
     ) {
         if (filters.date) {

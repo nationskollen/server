@@ -8,9 +8,6 @@
  *
  * - `NewsNotFoundException`
  *
- * > You must register this middleware inside
- *   `start/kernel.ts` file under the list of named middleware.
- *
  * @category Middleware
  * @module NewsMiddleware
  *
@@ -24,9 +21,7 @@ export default class NewsMiddleware {
      * Handle request
      */
     public async handle({ request, params }: HttpContextContract, next: () => Promise<void>) {
-        let news: News | null
-
-        news = await News.find(params.nid)
+        const news = await News.find(params.nid)
 
         if (!news) {
             throw new NewsNotFoundException()

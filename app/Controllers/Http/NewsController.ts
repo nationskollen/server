@@ -6,7 +6,7 @@
  * @module NewsController
  */
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import { getNewsObject, getNation, getValidatedData } from 'App/Utils/Request'
+import { getNews, getNation, getValidatedData } from 'App/Utils/Request'
 import { attemptFileUpload, attemptFileRemoval } from 'App/Utils/Upload'
 import NewsCreateValidator from 'App/Validators/News/CreateValidator'
 import NewsUpdateValidator from 'App/Validators/News/UpdateValidator'
@@ -14,40 +14,10 @@ import NewsFilterValidator from 'App/Validators/News/FilterValidator'
 import NewsUploadValidator from 'App/Validators/News/UploadValidator'
 import PaginationValidator from 'App/Validators/PaginationValidator'
 import { getPageNumber } from 'App/Utils/Paginate'
-import { ExtractScopes } from '@ioc:Adonis/Lucid/Model'
 import News from 'App/Models/News'
-import { DateTime } from 'luxon'
+import FilteringOptions from 'App/Utils/FilteringOptions'
 
-export default class NewsController {
-    /**
-     * Method that applies given filters depedning on what type of event to
-     * filter after
-     * @param scopes - The different scopes that exists in the system
-     * @param filters - The filter to apply
-     */
-    private applyFilters(
-        scopes: ExtractScopes<typeof News>,
-        filters: Record<string, DateTime | undefined>
-    ) {
-        if (filters.date) {
-            // Filter based on selected date
-            scopes.onDate(filters.date)
-        } else {
-            if (filters.before) {
-                // Filter based on when the news were produced at a certain date
-                scopes.beforeDate(filters.before)
-            }
-
-            if (filters.after) {
-                // Filter based on after the news were produced at a certain date
-                scopes.afterDate(filters.after)
-            }
-        }
-
-        // Order news based on the 'created_at' field
-        scopes.inOrder()
-    }
-
+export default class NewsController extends FilteringOptions {
     /**
      * Method to retrieve all the news and messages in the system
      * for a given nation.
@@ -88,7 +58,7 @@ export default class NewsController {
      * Method to retrieve a single news in the system
      */
     public async single({ request }: HttpContextContract) {
-        return getNewsObject(request).toJSON()
+        return getNews(request).toJSON()
     }
 
     /**
@@ -109,7 +79,7 @@ export default class NewsController {
      * Update a news model in a nation
      */
     public async update({ request }: HttpContextContract) {
-        const newsObject = getNewsObject(request)
+        const newsObject = getNews(request)
         const changes = await getValidatedData(request, NewsUpdateValidator)
 
         newsObject.merge(changes)
@@ -122,7 +92,7 @@ export default class NewsController {
      * Delete a contacts model in a nation
      */
     public async delete({ request }: HttpContextContract) {
-        const news = getNewsObject(request)
+        const news = getNews(request)
         await news.delete()
     }
 
@@ -130,7 +100,7 @@ export default class NewsController {
      * Method to upload an image to news in the system
      */
     public async upload({ request }: HttpContextContract) {
-        const news = getNewsObject(request)
+        const news = getNews(request)
         const { cover } = await getValidatedData(request, NewsUploadValidator)
         const coverName = await attemptFileUpload(cover)
 

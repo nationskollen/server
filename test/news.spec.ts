@@ -77,7 +77,7 @@ test.group('News fetch', () => {
         }
     })
 
-    test('ensure that fetching to a non-existant news fails', async () => {
+    test('ensure that fetching a non-existant news fails', async () => {
         const nation = await createTestNation()
 
         await supertest(BASE_URL)
@@ -123,8 +123,8 @@ test.group('News create', async (group) => {
             .expect(200)
 
         const data = JSON.parse(text)
-        const compareData: Record<string, unknown> = { ...newsData }
-        delete compareData.long_description
+        const compareData: Partial<News> = { ...newsData }
+        delete compareData.shortDescription
         assert.containsAllKeys(data, compareData)
     })
 
@@ -136,12 +136,6 @@ test.group('News create', async (group) => {
             .set('Authorization', 'Bearer ' + nation.token)
             .send(newsData)
             .expect(401)
-
-        await supertest(BASE_URL)
-            .post(`/nations/${nation2.oid}/news`)
-            .set('Authorization', 'Bearer ' + nation2.token)
-            .send(newsData)
-            .expect(200)
     })
 
     // For some reason, a notification is not created when running the below code.
@@ -195,7 +189,7 @@ test.group('News update', async (group) => {
             .expect(401)
     })
 
-    test('ensure that creating news requires an admin token', async () => {
+    test('ensure that updating news requires an admin token', async () => {
         await supertest(BASE_URL)
             .put(`/nations/${nation.oid}/news/${news.id}`)
             .set('Authorization', 'Bearer ' + nation.staffToken)
@@ -203,7 +197,7 @@ test.group('News update', async (group) => {
             .expect(401)
     })
 
-    test('ensure that admins can create news', async (assert) => {
+    test('ensure that admins can update news', async (assert) => {
         const { text } = await supertest(BASE_URL)
             .put(`/nations/${nation.oid}/news/${news.id}`)
             .set('Authorization', 'Bearer ' + nation.token)
@@ -211,8 +205,8 @@ test.group('News update', async (group) => {
             .expect(200)
 
         const data = JSON.parse(text)
-        const compareData: Record<string, unknown> = { ...newsData }
-        delete compareData.long_description
+        const compareData: Partial<News> = { ...newsData }
+        delete compareData.longDescription
         assert.containsAllKeys(data, compareData)
     })
 
@@ -221,20 +215,12 @@ test.group('News update', async (group) => {
 
         await supertest(BASE_URL)
             .put(`/nations/${nation.oid}/news/${news.id}`)
-            .set('Authorization', 'Bearer ' + nation.token)
-            .send(newsData)
-            .expect(200)
-
-        await supertest(BASE_URL)
-            .put(`/nations/${nation.oid}/news/${news.id}`)
             .set('Authorization', 'Bearer ' + nation2.token)
             .send(newsData)
             .expect(401)
     })
 
-    test('ensure that updating to a non-existant news fails', async () => {
-        const nation = await createTestNation()
-
+    test('ensure that updating a non-existant news fails', async () => {
         await supertest(BASE_URL)
             .put(`/nations/${nation.oid}/news/999999`)
             .set('Authorization', 'Bearer ' + nation.token)
@@ -275,7 +261,7 @@ test.group('News upload', (group) => {
             .expect(401)
     })
 
-    test('ensure that admins can upload cover image and icon', async (assert) => {
+    test('ensure that admins can upload cover image ', async (assert) => {
         const { text } = await supertest(BASE_URL)
             .post(`/news/${news.id}/upload`)
             .set('Authorization', 'Bearer ' + nation.token)

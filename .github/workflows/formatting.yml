@@ -1,8 +1,6 @@
 name: Formatting Code
 
 on:
-  push:
-    branches: [ main ]
   pull_request:
     branches: [ main ]
 
@@ -31,5 +29,5 @@ jobs:
         
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: Formatted code using "npm run format" (prettier package)
+          commit_message: Formatted code 
           branch: ${{ github.head_ref }}

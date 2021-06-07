@@ -28,13 +28,13 @@ export default class Notification extends BaseModel {
     public id: number
 
     /**
-     * nationId that the notification object belongs to
+     * nation that the notification object belongs to
      */
     @column()
     public nationId: number
 
     /**
-     * subscriptionTopicId that the notification belongs to
+     * Subscription topic that the notification belongs to
      */
     @column()
     public subscriptionTopicId: number
