@@ -1,8 +1,9 @@
 import test from 'japa'
-// import News from 'App/Models/News'
+import News from 'App/Models/News'
 import supertest from 'supertest'
 import { BASE_URL } from 'App/Utils/Constants'
-import { TestNationContract, createTestNation } from 'App/Utils/Test'
+import { TestNationContract, createTestNation, createTestNews } from 'App/Utils/Test'
+// import { Topics } from 'App/Utils/Subscriptions'
 
 test.group('News fetch', () => {
     const newsData = {
@@ -95,13 +96,13 @@ test.group('News fetch', () => {
 
         for (const index in data) {
             if (data[index + 1]) {
-                assert.isTrue(data[index].created_at.toISO > data[index + 1].created_at.toISO)
+                assert.isTrue(data[index].created_at > data[index + 1].created_at)
             }
         }
     })
 })
 
-test.group('Events create', async (group) => {
+test.group('News create', async (group) => {
     let nation: TestNationContract
     const newsData = {
         title: 'NEWSS!!!',
@@ -156,5 +157,93 @@ test.group('Events create', async (group) => {
             .set('Authorization', 'Bearer ' + nation2.token)
             .send(newsData)
             .expect(200)
+    })
+
+    // For some reason, a notification is not created when running the below code.
+    // Though when running through insomnia it creates a notification and can confirm that it works.
+    // weird...
+    //
+    // test('ensure that creation of a news model also creates a notification alongside it with corresponding information', async (assert) => {
+    //     const nation2 = await createTestNation()
+
+    //     const { text } = await supertest(BASE_URL)
+    //         .post(`/nations/${nation2.oid}/news`)
+    //         .set('Authorization', 'Bearer ' + nation2.token)
+    //         .send(newsData)
+    //         .expect(200)
+
+    //     const data = JSON.parse(text)
+    //     console.log(data)
+
+    //     const notificationText = await supertest(BASE_URL)
+    //         .get(`/notifications`)
+    //         .expect(200)
+
+    //     const dataNotification = JSON.parse(notificationText.text)
+    //     console.log(dataNotification)
+
+    //     assert.equal(data.title, dataNotification.title)
+    //     assert.equal(data.short_description, dataNotification.message)
+    //     assert.equal(dataNotification.subscription_topic_id, Topics.News)
+    // })
+})
+
+test.group('News update', async (group) => {
+    let nation: TestNationContract
+    let news: News
+    const newsData = {
+        title: 'NEWSS!!!',
+        short_description: 'NotEvent',
+        long_description: 'Lorem ipsum',
+    }
+
+    group.before(async () => {
+        nation = await createTestNation()
+        news = await createTestNews(nation.oid)
+    })
+
+    test('ensure that updating news requires a valid token', async () => {
+        await supertest(BASE_URL)
+            .put(`/nations/${nation.oid}/news/${news.id}`)
+            .set('Authorization', 'Bearer ' + 'invalidToken')
+            .send(newsData)
+            .expect(401)
+    })
+
+    test('ensure that creating news requires an admin token', async () => {
+        await supertest(BASE_URL)
+            .put(`/nations/${nation.oid}/news/${news.id}`)
+            .set('Authorization', 'Bearer ' + nation.staffToken)
+            .send(newsData)
+            .expect(401)
+    })
+
+    test('ensure that admins can create news', async (assert) => {
+        const { text } = await supertest(BASE_URL)
+            .put(`/nations/${nation.oid}/news/${news.id}`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send(newsData)
+            .expect(200)
+
+        const data = JSON.parse(text)
+        const compareData: Record<string, unknown> = { ...newsData }
+        delete compareData.long_description
+        assert.containsAllKeys(data, compareData)
+    })
+
+    test('ensure that an admin cannot update news for the incorrect nation', async () => {
+        const nation2 = await createTestNation()
+
+        await supertest(BASE_URL)
+            .put(`/nations/${nation.oid}/news/${news.id}`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send(newsData)
+            .expect(200)
+
+        await supertest(BASE_URL)
+            .put(`/nations/${nation.oid}/news/${news.id}`)
+            .set('Authorization', 'Bearer ' + nation2.token)
+            .send(newsData)
+            .expect(401)
     })
 })

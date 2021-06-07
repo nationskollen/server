@@ -1,7 +1,7 @@
 import { DateTime } from 'luxon'
 import { Topics } from 'App/Utils/Subscriptions'
 import Notification from 'App/Models/Notification'
-import { toAbsolutePath } from 'App/Utils/Serialize'
+import { toAbsolutePath, toISO } from 'App/Utils/Serialize'
 import { BaseModel, column, scope } from '@ioc:Adonis/Lucid/Orm'
 import SubscriptionTopic from 'App/Models/SubscriptionTopic'
 
@@ -85,10 +85,21 @@ export default class News extends BaseModel {
     @column({ serialize: toAbsolutePath })
     public coverImgSrc: string
 
-    @column.dateTime({ autoCreate: true })
+    // I think that adonijs creates ISO dates for the regular
+    // created_at and updated_at fields without the need of
+    // serializing them in the model. Though, just in case ive
+    // serialized them as `toIso`
+    @column.dateTime({
+        autoCreate: true,
+        serialize: toISO,
+    })
     public createdAt: DateTime
 
-    @column.dateTime({ autoCreate: true, autoUpdate: true })
+    @column.dateTime({
+        autoCreate: true,
+        autoUpdate: true,
+        serialize: toISO,
+    })
     public updatedAt: DateTime
 
     /**

@@ -7,6 +7,7 @@
 
 import {
     UserFactory,
+    NewsFactory,
     MenuFactory,
     EventFactory,
     NationFactory,
@@ -101,6 +102,12 @@ export async function createTestCategory() {
     })
 }
 
+export async function createTestNews(oid: number) {
+    return NewsFactory.merge({
+        nationId: oid,
+    }).create()
+}
+
 export async function createTestContact(oid: number) {
     return ContactFactory.merge({
         nationId: oid,
@@ -108,7 +115,9 @@ export async function createTestContact(oid: number) {
 }
 
 export async function createTestIndividual(oid: number) {
-    return IndividualFactory.merge({ nationId: oid }).create()
+    return IndividualFactory.merge({
+        nationId: oid,
+    }).create()
 }
 
 /**

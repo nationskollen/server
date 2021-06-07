@@ -1,6 +1,7 @@
 import { DateTime } from 'luxon'
 import User from 'App/Models/User'
 import Menu from 'App/Models/Menu'
+import News from 'App/Models/News'
 import Event from 'App/Models/Event'
 import Nation from 'App/Models/Nation'
 import MenuItem from 'App/Models/MenuItem'
@@ -86,6 +87,14 @@ export const MenuFactory = Factory.define(Menu, ({ faker }) => {
 })
     .relation('items', () => MenuItemFactory)
     .build()
+
+export const NewsFactory = Factory.define(News, ({ faker }) => {
+    return {
+        title: faker.lorem.sentence(),
+        shortDescription: faker.lorem.sentences(),
+        longDescription: faker.lorem.paragraph(),
+    }
+}).build()
 
 export const OpeningHourFactory = Factory.define(OpeningHour, ({ faker }) => {
     return {

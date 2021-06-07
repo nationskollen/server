@@ -44,7 +44,7 @@ export default class NewsController {
             }
         }
 
-        // Order news based on the 'updated_at' field
+        // Order news based on the 'created_at' field
         scopes.inOrder()
     }
 
