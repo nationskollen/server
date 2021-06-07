@@ -25,7 +25,11 @@ export default class NewsController extends FilteringOptions {
      * in `Routes.ts`
      */
     public async all({ request }: HttpContextContract) {
-        const { exclude_oids, date, before, after } = await getValidatedData(request, NewsFilterValidator, true)
+        const { exclude_oids, date, before, after } = await getValidatedData(
+            request,
+            NewsFilterValidator,
+            true
+        )
         const specified = await getValidatedData(request, PaginationValidator, true)
 
         const query = News.query().apply((scopes) => {
