@@ -27,7 +27,7 @@ test.group('News fetch', () => {
             .send(newsData)
             .expect(200)
 
-        const data = JSON.parse(text  )
+        const data = JSON.parse(text)
 
         const text1 = await supertest(BASE_URL).get(`/news/${data.id}`).expect(200)
 
