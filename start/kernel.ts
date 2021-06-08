@@ -27,7 +27,7 @@ import Server from '@ioc:Adonis/Core/Server'
 | are defined for every HTTP requests.
 |
 */
-Server.middleware.register(['Adonis/Core/BodyParserMiddleware'])
+Server.middleware.register([() => import('@ioc:Adonis/Core/BodyParser')])
 
 /*
 |--------------------------------------------------------------------------
@@ -47,19 +47,19 @@ Server.middleware.register(['Adonis/Core/BodyParserMiddleware'])
 */
 Server.middleware.registerNamed({
     // Authentication
-    auth: 'App/Middleware/Auth',
-    scope: 'App/Middleware/Scope',
+    auth: () => import('App/Middleware/Auth'),
+    scope: () => import('App/Middleware/Scope'),
 
     // Resources
-    menu: 'App/Middleware/Menu',
-    nation: 'App/Middleware/Nation',
-    individual: 'App/Middleware/Individual',
-    contact: 'App/Middleware/Contact',
-    menuItem: 'App/Middleware/MenuItem',
-    location: 'App/Middleware/Location',
-    openingHour: 'App/Middleware/OpeningHour',
-    event: 'App/Middleware/Event',
-    news: 'App/Middleware/News',
-    subscription: 'App/Middleware/Subscription',
-    notification: 'App/Middleware/Notification',
+    menu: () => import('App/Middleware/Menu'),
+    nation: () => import('App/Middleware/Nation'),
+    individual: () => import('App/Middleware/Individual'),
+    contact: () => import('App/Middleware/Contact'),
+    menuItem: () => import('App/Middleware/MenuItem'),
+    location: () => import('App/Middleware/Location'),
+    openingHour: () => import('App/Middleware/OpeningHour'),
+    event: () => import('App/Middleware/Event'),
+    news: () => import('App/Middleware/News'),
+    subscription: () => import('App/Middleware/Subscription'),
+    notification: () => import('App/Middleware/Notification'),
 })
