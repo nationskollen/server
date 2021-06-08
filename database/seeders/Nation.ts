@@ -167,8 +167,7 @@ export default class NationSeeder extends BaseSeeder {
                 password: 'norrlandsstaff',
                 nationId: nations[2].oid,
             },
-        ])
-            .createMany(3)
+        ]).createMany(3)
 
         const locations = await LocationFactory.with('openingHours', 7, (builder) => {
             builder.merge([

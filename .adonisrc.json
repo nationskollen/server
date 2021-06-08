@@ -19,9 +19,7 @@
         "./start/kernel",
         {
             "file": "./start/rules",
-            "environment": [
-                "web"
-            ]
+            "environment": ["web"]
         },
         "./start/bouncer"
     ],
@@ -32,9 +30,7 @@
         "@adonisjs/auth",
         "@adonisjs/bouncer"
     ],
-    "aceProviders": [
-        "@adonisjs/repl"
-    ],
+    "aceProviders": ["@adonisjs/repl"],
     "metaFiles": [
         ".env",
         ".adonisrc.json",

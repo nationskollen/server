@@ -1,9 +1,8 @@
 /**
- * The different permission values in the system.
- *
  * @category Utils
  * @module Permissions
  *
+ * @enum Permissions The different permission values in the system.
  */
 export enum Permissions {
     Events = 'Events',

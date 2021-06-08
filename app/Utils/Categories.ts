@@ -1,6 +1,4 @@
 /**
- *
- *
  * @category Utils
  * @module Categories
  *

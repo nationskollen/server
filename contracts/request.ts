@@ -1,5 +1,7 @@
 import News from 'App/Models/News'
 import Menu from 'App/Models/Menu'
+import User from 'App/Models/User'
+import Permission from 'App/Models/Permission'
 import Event from 'App/Models/Event'
 import Nation from 'App/Models/Nation'
 import Contact from 'App/Models/Contact'
@@ -19,6 +21,8 @@ declare module '@ioc:Adonis/Core/Request' {
         nation?: Nation
         individual?: Individual
         contact?: Contact
+        permission?: Permission
+        User?: User
         news?: News
         event?: Event
         category?: Category

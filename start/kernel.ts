@@ -46,9 +46,10 @@ Server.middleware.register([() => import('@ioc:Adonis/Core/BodyParser')])
 |
 */
 Server.middleware.registerNamed({
-    // Authentication
+    // Authentication and Bouncer
     auth: () => import('App/Middleware/Auth'),
     scope: () => import('App/Middleware/Scope'),
+    permission: () => import('App/Middleware/Permission'),
 
     // Resources
     menu: () => import('App/Middleware/Menu'),
