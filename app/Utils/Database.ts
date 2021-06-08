@@ -21,4 +21,5 @@ export enum DatabaseTables {
     SubscriptionTopics = 'subscription_topics',
     Subscriptions = 'subscriptions',
     Notifications = 'notifications',
+    Permissions = 'Permissions',
 }

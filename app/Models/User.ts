@@ -8,13 +8,16 @@
  * A user is part of the {@link NationOwnerScopes | Scopes} that either characterize a user with
  * different amount of priviliges in the system.
  *
+ * @todo add more user infromation such as names and etc.
+ *
  * @category Model
  * @module User
  */
 import { DateTime } from 'luxon'
 import Hash from '@ioc:Adonis/Core/Hash'
 import { toBoolean } from 'App/Utils/Serialize'
-import { column, beforeSave, BaseModel } from '@ioc:Adonis/Lucid/Orm'
+import Permission from 'App/Models/Permission'
+import { column, beforeSave, hasMany, HasMany, BaseModel } from '@ioc:Adonis/Lucid/Orm'
 
 export default class User extends BaseModel {
     /**
@@ -64,6 +67,12 @@ export default class User extends BaseModel {
      */
     @column.dateTime({ autoCreate: true, autoUpdate: true })
     public updatedAt: DateTime
+
+    /**
+     * The different permissions a user has in the system
+     */
+    @hasMany(() => Permission)
+    public permissions: HasMany<typeof Permission>
 
     /**
      * Method that hashes passwords for a user

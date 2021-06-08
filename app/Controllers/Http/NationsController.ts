@@ -35,6 +35,8 @@ export default class NationsController {
      * update a nation from system
      */
     public async update({ request }: HttpContextContract) {
+        // await bouncer.authorize('admin')
+
         const changes = await getValidatedData(request, NationUpdateValidator)
         const nation = getNation(request)
 
