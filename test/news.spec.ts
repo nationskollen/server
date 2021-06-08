@@ -43,28 +43,6 @@ test.group('News fetch', () => {
         assert.equal(data.data.length, 7)
     })
 
-    test('ensure we can fetch all news and paginate', async (assert) => {
-        const nation2 = await createTestNation()
-        const nation3 = await createTestNation()
-
-        for (let i = 0; i < 3; i++) {
-            await createTestNews(nation2.oid)
-        }
-
-        for (let i = 0; i < 3; i++) {
-            await createTestNews(nation3.oid)
-        }
-
-        const { text } = await supertest(BASE_URL).get(`/news?page=1&amount=2`).expect(200)
-
-        const data = JSON.parse(text)
-        assert.notEqual(data.data.length, 0)
-        assert.equal(data.meta.total, 13)
-        assert.equal(data.meta.per_page, 2)
-        assert.equal(data.meta.current_page, 1)
-        assert.equal(data.data.length, 2)
-    })
-
     test.skipInCI('ensure that news are ordered by descending order', async (assert) => {
         const { text } = await supertest(BASE_URL).get(`/news`).expect(200)
 
@@ -364,5 +342,51 @@ test.group('News Deletion', (group) => {
             .delete(`/nations/${nation.oid}/news/${news.id}`)
             .set('Authorization', 'Bearer ' + nation2.token)
             .expect(401)
+    })
+})
+
+test.group('News Filtering', (group) => {
+    let nation: TestNationContract
+    let nation2: TestNationContract
+    let nation3: TestNationContract
+
+    group.before(async () => {
+        nation = await createTestNation()
+        nation2 = await createTestNation()
+        nation3 = await createTestNation()
+    })
+
+    test('ensure we can fetch all news and paginate', async (assert) => {
+        for (let i = 0; i < 3; i++) {
+            await createTestNews(nation2.oid)
+        }
+
+        for (let i = 0; i < 3; i++) {
+            await createTestNews(nation3.oid)
+        }
+
+        const { text } = await supertest(BASE_URL).get(`/news?page=1&amount=2`).expect(200)
+
+        const data = JSON.parse(text)
+        assert.notEqual(data.data.length, 0)
+        assert.equal(data.meta.per_page, 2)
+        assert.equal(data.meta.current_page, 1)
+        assert.equal(data.data.length, 2)
+    })
+
+    test('ensure we can exclude oids when filtering all the news', async (assert) => {
+        for (let i = 0; i < 3; i++) {
+            await createTestNews(nation.oid)
+        }
+
+        const { text } = await supertest(BASE_URL)
+            .get(`/news?exclude_oids=${nation.oid}`)
+            .expect(200)
+
+        const data = JSON.parse(text).data
+
+        for (const news of data) {
+            assert.notEqual(news.nation_id, nation.oid)
+        }
     })
 })
