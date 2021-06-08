@@ -81,8 +81,8 @@ Route.group(() => {
     // news
     // ----------------------------------------------------------
     Route.get('/news', 'NewsController.all')
-    Route.get('/nations/:id/news', 'NewsController.index').middleware(['nation'])
     Route.get('/news/:nid', 'NewsController.single').middleware(['news'])
+    Route.get('/nations/:id/news', 'NewsController.index').middleware(['nation'])
     Route.post('/nations/:id/news', 'NewsController.create').middleware([
         'auth',
         'nation',
