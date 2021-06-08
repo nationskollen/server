@@ -8,6 +8,7 @@
  * @category Utils
  * @module Request
  */
+import News from 'App/Models/News'
 import Menu from 'App/Models/Menu'
 import Event from 'App/Models/Event'
 import Nation from 'App/Models/Nation'
@@ -21,6 +22,7 @@ import Notification from 'App/Models/Notification'
 import { RequestContract } from '@ioc:Adonis/Core/Request'
 import BadRequestException from 'App/Exceptions/BadRequestException'
 import MenuNotFoundException from 'App/Exceptions/MenuNotFoundException'
+import NewsNotFoundException from 'App/Exceptions/NewsNotFoundException'
 import EventNotFoundException from 'App/Exceptions/EventNotFoundException'
 import NationNotFoundException from 'App/Exceptions/NationNotFoundException'
 import ContactNotFoundException from 'App/Exceptions/ContactNotFoundException'
@@ -60,6 +62,16 @@ export function getContact(request: RequestContract): Contact {
     }
 
     return contact
+}
+
+export function getNews(request: RequestContract): News {
+    const { news } = request
+
+    if (!news) {
+        throw new NewsNotFoundException()
+    }
+
+    return news
 }
 
 export function getIndividual(request: RequestContract): Individual {

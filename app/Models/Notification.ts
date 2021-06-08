@@ -21,18 +21,33 @@ export default class Notification extends BaseModel {
         query.orderBy('created_at', 'desc')
     })
 
+    /**
+     * Id to identify the notification
+     */
     @column({ isPrimary: true })
     public id: number
 
+    /**
+     * nation that the notification object belongs to
+     */
     @column()
     public nationId: number
 
+    /**
+     * Subscription topic that the notification belongs to
+     */
     @column()
     public subscriptionTopicId: number
 
+    /**
+     * The title or name that the notification has
+     */
     @column()
     public title: string
 
+    /**
+     * The message that the notification has
+     */
     @column()
     public message: string
 

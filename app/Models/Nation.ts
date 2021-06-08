@@ -46,6 +46,7 @@ import User from 'App/Models/User'
 import Location from 'App/Models/Location'
 import Contact from 'App/Models/Contact'
 import Event from 'App/Models/Event'
+import News from 'App/Models/News'
 import Individual from 'App/Models/Individual'
 import { toAbsolutePath } from 'App/Utils/Serialize'
 import { hasOne, hasMany, HasOne, HasMany, column, BaseModel } from '@ioc:Adonis/Lucid/Orm'
@@ -163,6 +164,12 @@ export default class Nation extends BaseModel {
      */
     @hasMany(() => Individual, { localKey: 'oid' })
     public individuals: HasMany<typeof Individual>
+
+    /**
+     * The different news and messages related to the nation
+     */
+    @hasMany(() => News, { localKey: 'oid' })
+    public news: HasMany<typeof News>
 
     /**
      * Create nation query builder with locations preloaded

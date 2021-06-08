@@ -1,3 +1,4 @@
+import News from 'App/Models/News'
 import Menu from 'App/Models/Menu'
 import Event from 'App/Models/Event'
 import Nation from 'App/Models/Nation'
@@ -18,6 +19,7 @@ declare module '@ioc:Adonis/Core/Request' {
         nation?: Nation
         individual?: Individual
         contact?: Contact
+        news?: News
         event?: Event
         category?: Category
         location?: Location
