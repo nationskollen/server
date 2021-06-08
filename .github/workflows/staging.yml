@@ -45,9 +45,9 @@ jobs:
             # Run migrations and copy assets
             # Must navigate to the build folder so that we get the correct DB credentials
             cd build
-            node build/ace migration:rollback --force
-            node build/ace migration:run --force
-            node build/ace db:seed
+            node ace migration:rollback --force
+            node ace migration:run --force
+            node ace db:seed
 
             # The public directory must be created manually.
             # Otherwise, any upload that is compressed using sharp
