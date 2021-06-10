@@ -36,6 +36,11 @@ Route.group(() => {
     Route.post('/users/logout', 'AuthController.logout').middleware(['auth'])
 
     // ----------------------------------------------------------
+    // Permission(s)
+    // ----------------------------------------------------------
+    Route.get('/permissions', 'PermissionTypesController.index')
+
+    // ----------------------------------------------------------
     // Nations
     // ----------------------------------------------------------
     Route.get('/nations', 'NationsController.index')
