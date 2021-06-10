@@ -18,6 +18,9 @@ export default class Permission extends BaseModel {
     @hasOne(() => PermissionType)
     public type: HasOne<typeof PermissionType>
 
+    @column()
+    public permissionTypeId: number
+
     /**
      * The user that the permission `cookie` belongs to. heh.
      */

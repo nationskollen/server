@@ -13,6 +13,12 @@ export default class Permissions extends BaseSchema {
                 .unsigned()
                 .references('id')
                 .inTable(DatabaseTables.Users)
+            table
+                .integer('permission_type_id')
+                .notNullable()
+                .unsigned()
+                .references('id')
+                .inTable(DatabaseTables.PermissionTypes)
             table.timestamps(true)
         })
     }

@@ -32,7 +32,10 @@ import MenuItemNotFoundException from 'App/Exceptions/MenuItemNotFoundException'
 import OpeningHourNotFoundException from 'App/Exceptions/OpeningHourNotFoundException'
 import SubscriptionNotFoundException from 'App/Exceptions/SubscriptionNotFoundException'
 import NotificationNotFoundException from 'App/Exceptions/NotificationNotFoundException'
+import PermissionDataNotFoundException from 'App/Exceptions/PermissionDataNotFoundException'
 import { RequestValidatorNode, ParsedTypedSchema, TypedSchema } from '@ioc:Adonis/Core/Validator'
+
+import PermissionData from 'App/Utils/PermissionData'
 
 export function getLocation(request: RequestContract): Location {
     const { location } = request
@@ -142,6 +145,16 @@ export function getNotification(request: RequestContract): Notification {
     }
 
     return notification
+}
+
+export function getPermissionData(request: RequestContract): PermissionData {
+    const { permissionData } = request
+
+    if (!permissionData) {
+        throw new PermissionDataNotFoundException()
+    }
+
+    return permissionData
 }
 
 export async function getValidatedData<T extends ParsedTypedSchema<TypedSchema>>(

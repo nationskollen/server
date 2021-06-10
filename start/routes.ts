@@ -38,7 +38,13 @@ Route.group(() => {
     // ----------------------------------------------------------
     // Permission(s)
     // ----------------------------------------------------------
-    Route.get('/permissions', 'PermissionTypesController.index')
+    Route.get('/permissions', 'PermissionsController.index')
+    Route.post('/permissions', 'PermissionsController.add').middleware(['auth', 'permission'])
+
+    Route.delete('/permissions', 'PermissionsController.remove').middleware([
+        'auth',
+        'permission:delete',
+    ])
 
     // ----------------------------------------------------------
     // Nations

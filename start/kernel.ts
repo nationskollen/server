@@ -49,6 +49,7 @@ Server.middleware.registerNamed({
     // Authentication
     auth: () => import('App/Middleware/Auth'),
     scope: () => import('App/Middleware/Scope'),
+    permission: () => import('App/Middleware/Permission'),
 
     // Resources
     menu: () => import('App/Middleware/Menu'),
