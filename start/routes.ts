@@ -30,10 +30,33 @@ Route.group(() => {
     })
 
     // ----------------------------------------------------------
-    // Authentication
+    // Authentication / User
     // ----------------------------------------------------------
     Route.post('/users/login', 'AuthController.login')
     Route.post('/users/logout', 'AuthController.logout').middleware(['auth'])
+    Route.get('/nations/:id/users', 'UsersController.index').middleware([
+        'auth',
+        'nation',
+        'scope:staff',
+    ])
+
+    Route.get('/users/:uid', 'UsersController.single').middleware(['auth', 'user', 'scope:admin'])
+    Route.post('/nations/:id/users', 'UsersController.create').middleware([
+        'auth',
+        'nation',
+        'scope:admin',
+    ])
+    Route.put('/users/:uid', 'UsersController.update').middleware(['auth', 'user', 'scope:admin'])
+    Route.post('/users/:uid/upload', 'UsersController.upload').middleware([
+        'auth',
+        'user',
+        'scope:admin',
+    ])
+    Route.delete('/users/:uid', 'UsersController.delete').middleware([
+        'auth',
+        'user',
+        'scope:admin',
+    ])
 
     // ----------------------------------------------------------
     // Permission(s)

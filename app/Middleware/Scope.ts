@@ -99,6 +99,8 @@ export default class ScopeMiddleware {
             oid = request.individual.nationId
         } else if (request.news) {
             oid = request.news.nationId
+        } else if (request.user) {
+            oid = request.user.nationId
         } else {
             // If the oid could not be determined, prevent access to the route (programmer error)
             throw new InternalErrorException(

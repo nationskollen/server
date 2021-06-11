@@ -1,5 +1,6 @@
 import News from 'App/Models/News'
 import Menu from 'App/Models/Menu'
+import User from 'App/Models/User'
 import Event from 'App/Models/Event'
 import Nation from 'App/Models/Nation'
 import Contact from 'App/Models/Contact'
@@ -31,5 +32,6 @@ declare module '@ioc:Adonis/Core/Request' {
         subscription?: Subscription
         notification?: Notification
         permissionData?: PermissionData
+        user?: User
     }
 }

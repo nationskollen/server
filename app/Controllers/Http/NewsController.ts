@@ -94,7 +94,7 @@ export default class NewsController extends FilteringOptions {
     }
 
     /**
-     * Delete a contacts model in a nation
+     * Delete a news model in a nation
      */
     public async delete({ request }: HttpContextContract) {
         const news = getNews(request)

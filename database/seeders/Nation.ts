@@ -134,16 +134,19 @@ export default class NationSeeder extends BaseSeeder {
 
         await UserFactory.merge([
             {
+                fullname: 'admin adminsson',
                 email: 'admin@vdala.se',
                 password: 'vdalaadmin',
                 nationId: nations[0].oid,
             },
             {
+                fullname: 'admin adminsson',
                 email: 'admin@stocken.se',
                 password: 'stockenadmin',
                 nationId: nations[1].oid,
             },
             {
+                fullname: 'admin adminsson',
                 email: 'admin@norrlands.se',
                 password: 'norrlandsadmin',
                 nationId: nations[2].oid,
@@ -153,16 +156,19 @@ export default class NationSeeder extends BaseSeeder {
             .createMany(3)
         await UserFactory.merge([
             {
+                fullname: 'staff staffsson',
                 email: 'staff@vdala.se',
                 password: 'vdalastaff',
                 nationId: nations[0].oid,
             },
             {
+                fullname: 'staff staffsson',
                 email: 'staff@stocken.se',
                 password: 'stockenstaff',
                 nationId: nations[1].oid,
             },
             {
+                fullname: 'staff staffsson',
                 email: 'staff@norrlands.se',
                 password: 'norrlandsstaff',
                 nationId: nations[2].oid,

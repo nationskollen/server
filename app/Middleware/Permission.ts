@@ -39,7 +39,7 @@ export default class PermissionMiddleware {
             throw new UserNotPartOfNationException()
         }
 
-        // Make sure that the requested permission action does is not operated
+        // Make sure that the requested permission action is not operated
         // onto an already existing nation admin
         if (user.nationAdmin) {
             throw new UserAlreadyNationAdminException()

@@ -52,15 +52,19 @@ Server.middleware.registerNamed({
     permission: () => import('App/Middleware/Permission'),
 
     // Resources
-    menu: () => import('App/Middleware/Menu'),
+    user: () => import('App/Middleware/User'),
     nation: () => import('App/Middleware/Nation'),
     individual: () => import('App/Middleware/Individual'),
     contact: () => import('App/Middleware/Contact'),
+    news: () => import('App/Middleware/News'),
+
+    menu: () => import('App/Middleware/Menu'),
     menuItem: () => import('App/Middleware/MenuItem'),
+
     location: () => import('App/Middleware/Location'),
     openingHour: () => import('App/Middleware/OpeningHour'),
     event: () => import('App/Middleware/Event'),
-    news: () => import('App/Middleware/News'),
+
     subscription: () => import('App/Middleware/Subscription'),
     notification: () => import('App/Middleware/Notification'),
 })

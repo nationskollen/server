@@ -9,6 +9,7 @@
  * @module Request
  */
 import News from 'App/Models/News'
+import User from 'App/Models/User'
 import Menu from 'App/Models/Menu'
 import Event from 'App/Models/Event'
 import Nation from 'App/Models/Nation'
@@ -21,6 +22,7 @@ import Subscription from 'App/Models/Subscription'
 import Notification from 'App/Models/Notification'
 import { RequestContract } from '@ioc:Adonis/Core/Request'
 import BadRequestException from 'App/Exceptions/BadRequestException'
+import UserNotFoundException from 'App/Exceptions/UserNotFoundException'
 import MenuNotFoundException from 'App/Exceptions/MenuNotFoundException'
 import NewsNotFoundException from 'App/Exceptions/NewsNotFoundException'
 import EventNotFoundException from 'App/Exceptions/EventNotFoundException'
@@ -36,6 +38,16 @@ import PermissionDataNotFoundException from 'App/Exceptions/PermissionDataNotFou
 import { RequestValidatorNode, ParsedTypedSchema, TypedSchema } from '@ioc:Adonis/Core/Validator'
 
 import PermissionData from 'App/Utils/PermissionData'
+
+export function getUser(request: RequestContract): User {
+    const { user } = request
+
+    if (!user) {
+        throw new UserNotFoundException()
+    }
+
+    return user
+}
 
 export function getLocation(request: RequestContract): Location {
     const { location } = request

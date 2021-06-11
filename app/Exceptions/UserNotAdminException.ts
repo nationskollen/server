@@ -4,8 +4,8 @@
  */
 import DefaultException from 'App/Exceptions/DefaultException'
 
-export default class UserAlreadyNationAdminException extends DefaultException {
+export default class UserNotPartOfNationException extends DefaultException {
     constructor() {
-        super('Specified user is a nation admin, cannot perform changes.', 401)
+        super('Authorized user is not admin', 401)
     }
 }
