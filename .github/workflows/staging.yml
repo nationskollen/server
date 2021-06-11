@@ -39,7 +39,7 @@ jobs:
             git reset --hard origin/main
             git pull
             npm rebuild
-            npm install
+            npm install --production
 
             # Build the api
             npm run build
