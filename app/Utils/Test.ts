@@ -77,6 +77,20 @@ export async function createTestNation(): Promise<TestNationContract> {
 }
 
 /**
+ * Function that creates a test nation to use in testing
+ */
+export async function createTestUser(oid: number, admin: boolean) {
+    const data = {
+        fullname: 'test',
+        email: 'test@test.se',
+        password: 'test123',
+        nationAdmin: admin,
+        nation_id: oid,
+    }
+    return await UserFactory.merge(data).create()
+}
+
+/**
  * Function that creates a test event to test with
  * @param oid The nation the event will be from
  * @param occursAt The given date the event will occur at

@@ -13,8 +13,8 @@
  */
 import { DateTime } from 'luxon'
 import Hash from '@ioc:Adonis/Core/Hash'
-import { toBoolean, toAbsolutePath } from 'App/Utils/Serialize'
-import { column, beforeSave, BaseModel, hasMany, HasMany } from '@ioc:Adonis/Lucid/Orm'
+import { toBoolean, toAbsolutePath, toISO } from 'App/Utils/Serialize'
+import { BaseModel, column, beforeSave, hasMany, HasMany } from '@ioc:Adonis/Lucid/Orm'
 import Permission from 'App/Models/Permission'
 
 export default class User extends BaseModel {
@@ -60,13 +60,20 @@ export default class User extends BaseModel {
     /**
      * The date the user was created on
      */
-    @column.dateTime({ autoCreate: true })
+    @column.dateTime({
+        autoCreate: true,
+        serialize: toISO,
+    })
     public createdAt: DateTime
 
     /**
      * The date the user was updated on
      */
-    @column.dateTime({ autoCreate: true, autoUpdate: true })
+    @column.dateTime({
+        autoCreate: true,
+        autoUpdate: true,
+        serialize: toISO,
+    })
     public updatedAt: DateTime
 
     /**
