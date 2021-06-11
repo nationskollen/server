@@ -39,7 +39,7 @@ jobs:
             git reset --hard origin/main
             git pull
             npm rebuild
-            npm install --production
+            npm install
 
             # Build the api
             npm run build
@@ -48,6 +48,7 @@ jobs:
             # Run migrations and copy assets
             # Must navigate to the build folder so that we get the correct DB credentials
             cd build
+            npm install --production
             node ace migration:rollback --force
             node ace migration:run --force
             node ace db:seed
