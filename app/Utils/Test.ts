@@ -22,6 +22,7 @@ import {
 import { DateTime } from 'luxon'
 import supertest from 'supertest'
 import Category from 'App/Models/Category'
+import PermissionType from 'App/Models/PermissionType'
 import { BASE_URL } from 'App/Utils/Constants'
 
 /**
@@ -113,6 +114,12 @@ export async function createTestEvent(oid: number, occursAt?: DateTime, category
 export async function createTestCategory() {
     return Category.create({
         name: 'testCategory',
+    })
+}
+
+export async function createTestPermissions() {
+    return PermissionType.create({
+        type: 'testPermission',
     })
 }
 

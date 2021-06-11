@@ -14,4 +14,5 @@ export enum Permissions {
     OpeningHours = 'OpeningHours',
     Location = 'Location',
     Contact = 'Contact',
+    Activity = 'Activity',
 }
