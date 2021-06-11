@@ -170,6 +170,7 @@ export const NationFactory = Factory.define(Nation, async ({ faker }) => {
 export const UserFactory = Factory.define(User, ({ faker }) => {
     return {
         email: faker.internet.email(),
+        fullname: faker.name.firstName(),
         password: faker.internet.password(),
         nationAdmin: false,
     }
