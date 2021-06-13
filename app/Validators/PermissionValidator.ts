@@ -16,7 +16,7 @@ export default class PermissionValidator {
                 column: 'id',
             }),
         ]),
-        permission: schema.number([
+        permission_type_id: schema.number([
             rules.exists({
                 table: DatabaseTables.PermissionTypes,
                 column: 'id',

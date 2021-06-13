@@ -40,7 +40,11 @@ Route.group(() => {
         'scope:staff',
     ])
 
-    Route.get('/users/:uid', 'UsersController.single').middleware(['auth', 'user', 'scope:admin'])
+    Route.get('/users/:uid', 'UsersController.single').middleware([
+        'auth',
+        'user:permissions',
+        'scope:admin',
+    ])
     Route.post('/nations/:id/users', 'UsersController.create').middleware([
         'auth',
         'nation',

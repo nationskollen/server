@@ -11,8 +11,6 @@
  */
 import PermissionType from 'App/Models/PermissionType'
 
-// import PermissionValidator from 'App/Validators/PermissionValidator'
-
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { getPermissionData } from 'App/Utils/Request'
 
@@ -38,6 +36,8 @@ export default class PermissionsController {
         await user.related('permissions').create({
             permissionTypeId: permissionType?.id,
         })
+
+        await user.preload('permissions')
 
         return user.toJSON()
     }

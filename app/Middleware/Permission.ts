@@ -11,6 +11,7 @@ import BadRequestException from 'App/Exceptions/BadRequestException'
 import UserNotPartOfNationException from 'App/Exceptions/UserNotPartOfNationException'
 import UserAlreadyNationAdminException from 'App/Exceptions/UserAlreadyNationAdminException'
 import UserAlreadyHasPermissionException from 'App/Exceptions/UserAlreadyHasPermissionException'
+import UserPermissionAlreadyRemovedException from 'App/Exceptions/UserPermissionAlreadyRemovedException'
 
 export default class PermissionMiddleware {
     public async handle(
@@ -48,15 +49,20 @@ export default class PermissionMiddleware {
         // Check if the user already has the permission or not
         const permission = await Permission.query()
             .where('user_id', user.id)
-            .where('permission_type_id', data.permission)
+            .where('permission_type_id', data.permission_type_id)
             .first()
 
         if (permission && !options.includes('delete')) {
             throw new UserAlreadyHasPermissionException()
         }
 
+        if (!permission && options.includes('delete')) {
+            console.log('here')
+            throw new UserPermissionAlreadyRemovedException()
+        }
+
         // extract the permission type model
-        const permissionType = await PermissionType.findBy('id', data.permission)
+        const permissionType = await PermissionType.findBy('id', data.permission_type_id)
 
         // Store the values in an object in the request contract
         request.permissionData = { user, permission, permissionType }

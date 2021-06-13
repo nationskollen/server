@@ -23,12 +23,22 @@ import UserAlreadyNationAdminException from 'App/Exceptions/UserAlreadyNationAdm
 import UserNotAdminException from 'App/Exceptions/UserNotAdminException'
 
 export default class UserMiddleware {
-    public async handle({ request, params, auth }: HttpContextContract, next: () => Promise<void>) {
+    public async handle(
+        { request, params, auth }: HttpContextContract,
+        next: () => Promise<void>,
+        options: string[]
+    ) {
         if (!auth?.user?.nationAdmin) {
             throw new UserNotAdminException()
         }
 
-        const user = await User.find(params.uid)
+        let user: User | null
+        if (options.includes('permissions')) {
+            user = await User.query().preload('permissions').where('id', params.uid).first()
+        } else {
+            user = await User.find(params.uid)
+        }
+
         if (!user) {
             throw new UserNotFoundException()
         }

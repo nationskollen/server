@@ -117,7 +117,7 @@ export async function createTestCategory() {
     })
 }
 
-export async function createTestPermissions() {
+export async function createTestPermissionType() {
     return PermissionType.create({
         type: 'testPermission',
     })
