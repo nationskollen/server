@@ -46,12 +46,12 @@ function getTestFilesPattern() {
     // lot of tests and running them takes time. If you want to test something
     // quick, you can uncomment the following line and specify the test file.
     // Remember to comment out this and then run all the tests.
-    // return ['test/permissions.spec.ts']
+    // return ['test/activity.spec.ts']
 }
 
 // Configure test runner
 configure({
     files: getTestFilesPattern(),
-    before: [clearAssets, rollbackMigrations, runMigrations, startHttpServer],
+    before: [clearAssets, rollbackMigrations, runMigrations, startHttpServer, runSeeding],
     after: [rollbackMigrations, runMigrations, runSeeding, clearAssets],
 })

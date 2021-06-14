@@ -97,9 +97,10 @@ export default class EventsController extends FilteringOptions {
      * Method to create a single event in the system
      */
     public async create({ bouncer, request }: HttpContextContract) {
-        await bouncer.authorize('permissionRights', Permissions.Events)
-
         const nation = getNation(request)
+
+        await bouncer.authorize('permissionRights', Permissions.Events, nation.oid)
+
         const data = await getValidatedData(request, EventCreateValidator)
         const event = await nation.related('events').create(data)
 
@@ -118,9 +119,10 @@ export default class EventsController extends FilteringOptions {
      * Method to update a single event in the system
      */
     public async update({ bouncer, request }: HttpContextContract) {
-        await bouncer.authorize('permissionRights', Permissions.Events)
-
         const event = getEvent(request)
+
+        await bouncer.authorize('permissionRights', Permissions.Events, event.nationId)
+
         const changes = await getValidatedData(request, EventUpdateValidator)
 
         // Apply the changes that was requested and save
@@ -138,9 +140,9 @@ export default class EventsController extends FilteringOptions {
      * Method to delete a single event in the system
      */
     public async delete({ bouncer, request }: HttpContextContract) {
-        await bouncer.authorize('permissionRights', Permissions.Events)
-
         const event = getEvent(request)
+        await bouncer.authorize('permissionRights', Permissions.Events, event.nationId)
+
         await event.delete()
     }
 
@@ -148,9 +150,10 @@ export default class EventsController extends FilteringOptions {
      * Method to upload an image to an event in the system
      */
     public async upload({ bouncer, request }: HttpContextContract) {
-        await bouncer.authorize('permissionRights', Permissions.Events)
-
         const event = getEvent(request)
+
+        await bouncer.authorize('permissionRights', Permissions.Events, event.nationId)
+
         const { icon, cover } = await getValidatedData(request, EventUploadValidator)
         const iconName = await attemptFileUpload(icon, true)
         const coverName = await attemptFileUpload(cover)

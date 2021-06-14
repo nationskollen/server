@@ -39,9 +39,10 @@ export default class LocationsController {
      * create a location
      */
     public async create({ bouncer, request }: HttpContextContract) {
-        await bouncer.authorize('permissionRights', Permissions.Location)
-
         const nation = getNation(request)
+
+        await bouncer.authorize('permissionRights', Permissions.Location, nation.oid)
+
         const data = await getValidatedData(request, LocationCreateValidator)
         const location = await nation.related('locations').create(data)
 
@@ -56,9 +57,10 @@ export default class LocationsController {
      * update a location
      */
     public async update({ bouncer, request }: HttpContextContract) {
-        await bouncer.authorize('permissionRights', Permissions.Location)
-
         const location = getLocation(request)
+
+        await bouncer.authorize('permissionRights', Permissions.Location, location.nationId)
+
         const changes = await getValidatedData(request, LocationUpdateValidator)
 
         if (changes.is_default && !location.isDefault) {
@@ -76,9 +78,8 @@ export default class LocationsController {
      * delete a location
      */
     public async delete({ bouncer, request }: HttpContextContract) {
-        await bouncer.authorize('permissionRights', Permissions.Location)
-
         const location = getLocation(request)
+        await bouncer.authorize('permissionRights', Permissions.Location, location.nationId)
 
         if (location.isDefault) {
             await Location.setNotDefault(location.nationId)
@@ -97,9 +98,9 @@ export default class LocationsController {
      * ```
      */
     public async activity({ bouncer, request }: HttpContextContract) {
-        await bouncer.authorize('permissionRights', Permissions.Activity)
-
         const location = getLocation(request)
+        await bouncer.authorize('permissionRights', Permissions.Activity, location.nationId)
+
         const { change } = await getValidatedData(request, ActivityValidator)
 
         // Clamp value between 0 and maxCapacity.
@@ -119,9 +120,8 @@ export default class LocationsController {
      * Open a location
      */
     public async open({ bouncer, request }: HttpContextContract) {
-        await bouncer.authorize('permissionRights', Permissions.Location)
-
         const location = await getLocation(request).setOpen()
+        await bouncer.authorize('permissionRights', Permissions.Location, location.nationId)
 
         return location.toJSON()
     }
@@ -130,9 +130,8 @@ export default class LocationsController {
      * Close a location
      */
     public async close({ bouncer, request }: HttpContextContract) {
-        await bouncer.authorize('permissionRights', Permissions.Location)
-
         const location = await getLocation(request).setClosed()
+        await bouncer.authorize('permissionRights', Permissions.Location, location.nationId)
 
         return location.toJSON()
     }
@@ -141,9 +140,9 @@ export default class LocationsController {
      * upload a file to a location
      */
     public async upload({ bouncer, request }: HttpContextContract) {
-        await bouncer.authorize('permissionRights', Permissions.Location)
-
         const location = getLocation(request)
+        await bouncer.authorize('permissionRights', Permissions.Location, location.nationId)
+
         const { cover } = await getValidatedData(request, LocationUploadValidator)
         const filename = await attemptFileUpload(cover)
 

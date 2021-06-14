@@ -33,9 +33,10 @@ export default class UsersController {
      * Create a user for a nation specified in the route
      */
     public async create({ bouncer, request }: HttpContextContract) {
-        await bouncer.authorize('permissionRights', Permissions.User)
-
         const nation = getNation(request)
+
+        await bouncer.authorize('permissionRights', Permissions.User, nation.oid)
+
         const data = await getValidatedData(request, UserCreateValidator)
         const user = await nation.related('staff').create(data)
 
@@ -46,9 +47,10 @@ export default class UsersController {
      * Update a user model in a nation
      */
     public async update({ bouncer, request }: HttpContextContract) {
-        await bouncer.authorize('permissionRights', Permissions.User)
-
         const user = getUser(request)
+
+        await bouncer.authorize('permissionRights', Permissions.User, user.nationId)
+
         const changes = await getValidatedData(request, UserUpdateValidator)
 
         user.merge(changes)
@@ -61,9 +63,9 @@ export default class UsersController {
      * Delete a user model in a nation
      */
     public async delete({ bouncer, request }: HttpContextContract) {
-        await bouncer.authorize('permissionRights', Permissions.User)
-
         const user = getUser(request)
+        await bouncer.authorize('permissionRights', Permissions.User, user.nationId)
+
         await user.delete()
     }
 
@@ -71,9 +73,10 @@ export default class UsersController {
      * Method to upload an image to a user in the system
      */
     public async upload({ bouncer, request }: HttpContextContract) {
-        await bouncer.authorize('permissionRights', Permissions.User)
-
         const user = getUser(request)
+
+        await bouncer.authorize('permissionRights', Permissions.User, user.nationId)
+
         const { cover } = await getValidatedData(request, UserUploadValidator)
         const coverName = await attemptFileUpload(cover)
 

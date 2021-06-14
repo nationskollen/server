@@ -27,9 +27,9 @@ export default class ContactsController {
      * Create a contacts model for a nation specified in the route
      */
     public async create({ bouncer, request }: HttpContextContract) {
-        await bouncer.authorize('permissionRights', Permissions.Contact)
-
         const nation = getNation(request)
+        await bouncer.authorize('permissionRights', Permissions.Contact, nation.oid)
+
         const data = await getValidatedData(request, ContactCreateValidator)
 
         const contactInformation = await nation
@@ -43,9 +43,9 @@ export default class ContactsController {
      * Update a contacts model in a nation
      */
     public async update({ bouncer, request }: HttpContextContract) {
-        await bouncer.authorize('permissionRights', Permissions.Contact)
-
         const contact = getContact(request)
+        await bouncer.authorize('permissionRights', Permissions.Contact, contact.nationId)
+
         const changes = await getValidatedData(request, ContactUpdateValidator)
 
         contact.merge(changes)
@@ -58,9 +58,9 @@ export default class ContactsController {
      * Delete a contacts model in a nation
      */
     public async delete({ bouncer, request }: HttpContextContract) {
-        await bouncer.authorize('permissionRights', Permissions.Contact)
-
         const contact = getContact(request)
+        await bouncer.authorize('permissionRights', Permissions.Contact, contact.nationId)
+
         await contact.delete()
     }
 }

@@ -1,24 +1,31 @@
 import test from 'japa'
 import supertest from 'supertest'
 import Permission from 'App/Models/Permission'
+import PermissionType from 'App/Models/PermissionType'
 import User from 'App/Models/User'
 import { BASE_URL } from 'App/Utils/Constants'
+import { Permissions } from 'App/Utils/Permissions'
 import {
     TestNationContract,
     createTestNation,
     createTestPermissionType,
     createTestUser,
+    assignPermissions,
 } from 'App/Utils/Test'
 
 test.group('Permissions fetch', (group) => {
     let nation: TestNationContract
-    const numberOfPermissionsInTest = 5
+    let numberOfPermissionsInSystem: number
 
     group.before(async () => {
         nation = await createTestNation()
-        for (let i = 0; i < numberOfPermissionsInTest; i++) {
-            await createTestPermissionType()
-        }
+
+        const { text } = await supertest(BASE_URL)
+            .get(`/permissions`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .expect(200)
+
+        numberOfPermissionsInSystem = JSON.parse(text).length
     })
 
     test('ensure we can fetch permissions in system', async (assert) => {
@@ -29,7 +36,7 @@ test.group('Permissions fetch', (group) => {
 
         const data = JSON.parse(text)
         assert.isNotNull(data)
-        assert.equal(data.length, numberOfPermissionsInTest)
+        assert.equal(data.length, numberOfPermissionsInSystem)
     })
 })
 
@@ -40,10 +47,14 @@ test.group('Permissions add', async (group) => {
     group.before(async () => {
         nation = await createTestNation()
         user = await createTestUser(nation.oid, false)
+
+        const permissions = await PermissionType.query().where('type', Permissions.Permission)
+
+        await assignPermissions(nation.staffUser, permissions)
+        await assignPermissions(nation.adminUser, permissions)
     })
 
     test('ensure that adding a permission requires a valid token', async () => {
-        const user = await createTestUser(nation.oid, false)
         const permission = await createTestPermissionType()
 
         await supertest(BASE_URL)
@@ -57,7 +68,6 @@ test.group('Permissions add', async (group) => {
     })
 
     test('ensure that adding a permission requires an admin token', async () => {
-        const user = await createTestUser(nation.oid, false)
         const permission = await createTestPermissionType()
 
         await supertest(BASE_URL)
@@ -122,6 +132,7 @@ test.group('Permissions add', async (group) => {
 
     test('ensure we cannot add existing permission(s) from a user', async () => {
         const permission = await createTestPermissionType()
+
         await supertest(BASE_URL)
             .delete(`/permissions`)
             .set('Authorization', 'Bearer ' + nation.token)
@@ -140,6 +151,11 @@ test.group('Permissions remove', async (group) => {
     group.before(async () => {
         nation = await createTestNation()
         user = await createTestUser(nation.oid, false)
+
+        const permissions = await PermissionType.query().where('type', Permissions.Permission)
+
+        await assignPermissions(nation.staffUser, permissions)
+        await assignPermissions(nation.adminUser, permissions)
     })
 
     test('ensure that removing a permission requires a valid token', async () => {

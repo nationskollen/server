@@ -16,6 +16,5 @@ export enum Permissions {
     Location = 'Location',
     Contact = 'Contact',
     Activity = 'Activity',
-    Permissions = 'Permissions',
-    // NationAdmin = 'NationAdmin'
+    Permission = 'Permission',
 }

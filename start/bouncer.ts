@@ -33,28 +33,40 @@ import PermissionType from 'App/Models/PermissionType'
 */
 export const { actions } = Bouncer
     // Defined action can be used at any controller that exists in the system
-    .define('permissionRights', async (user: User | undefined, permission: string) => {
-        if (!user) {
-            return false
-        }
+    .define(
+        'permissionRights',
+        async (user: User | undefined, permission: string, oid: number | undefined) => {
+            if (!user) {
+                return Bouncer.deny('Permission denied', 401)
+            }
 
-        // Extract the permissionType
-        const type = await PermissionType.findBy('type', permission)
-        if (!type) {
-            return false
-        }
-
-        // Load in the user permissions so that they are iterable
-        await user.load('permissions')
-        for (const permission of user.permissions) {
-            if (type.id == permission.permissionTypeId) {
+            // Make sure if a nationAdmin is performing the update, it is performed in the same nation
+            if (user.nationAdmin && user.nationId == oid) {
                 return true
             }
-        }
 
-        // If all fails, return false and the bouncer will throw an exception
-        return false
-    })
+            if (user.nationId != oid) {
+                return Bouncer.deny('Permission denied', 401)
+            }
+
+            // Extract the permissionType
+            const type = await PermissionType.findBy('type', permission)
+            if (!type) {
+                return Bouncer.deny('Permission denied', 401)
+            }
+
+            // Load in the user permissions so that they are iterable
+            await user.load('permissions')
+            for (const permission of user.permissions) {
+                if (type.id == permission.permissionTypeId) {
+                    return true
+                }
+            }
+
+            // If all fails, return false and the bouncer will throw an exception
+            return Bouncer.deny('Permission denied', 401)
+        }
+    )
 
 /*
 |--------------------------------------------------------------------------

@@ -1,19 +1,31 @@
 import test from 'japa'
 import wstest from 'superwstest'
 import supertest from 'supertest'
+import PermissionType from 'App/Models/PermissionType'
 import Location from 'App/Models/Location'
 import { ActivityLevels } from 'App/Utils/Activity'
+import { Permissions } from 'App/Utils/Permissions'
 import { WebSocketDataTypes } from 'App/Services/Ws'
 import { BASE_URL, HOSTNAME } from 'App/Utils/Constants'
-import { TestNationContract, createTestNation, createTestLocation } from 'App/Utils/Test'
+import {
+    TestNationContract,
+    createTestNation,
+    createTestLocation,
+    assignPermissions,
+} from 'App/Utils/Test'
 
 test.group('Activity update', (group) => {
     let nation: TestNationContract
+    let permissions: Array<PermissionType>
     let location: Location
 
     group.before(async () => {
         nation = await createTestNation()
         location = await createTestLocation(nation.oid)
+        permissions = await PermissionType.query().where('type', Permissions.Activity)
+
+        await assignPermissions(nation.adminUser, permissions)
+        await assignPermissions(nation.staffUser, permissions)
     })
 
     test('ensure that updating activity requires a valid token', async () => {
@@ -47,7 +59,9 @@ test.group('Activity update', (group) => {
         const { text } = await supertest(BASE_URL)
             .put(`/locations/${testLocation.id}/activity`)
             .set('Authorization', 'Bearer ' + nation.staffToken)
-            .send({ change: testLocation.maxCapacity })
+            .send({
+                change: testLocation.maxCapacity,
+            })
             .expect(200)
 
         const data = await JSON.parse(text)

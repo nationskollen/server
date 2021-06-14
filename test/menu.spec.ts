@@ -1,6 +1,8 @@
 import test from 'japa'
 import supertest from 'supertest'
 import Menu from 'App/Models/Menu'
+import PermissionType from 'App/Models/PermissionType'
+import { Permissions } from 'App/Utils/Permissions'
 import Location from 'App/Models/Location'
 import { BASE_URL } from 'App/Utils/Constants'
 import {
@@ -8,18 +10,24 @@ import {
     createTestNation,
     createTestLocation,
     TestNationContract,
+    assignPermissions,
 } from 'App/Utils/Test'
 
 test.group('Menu fetch', async (group) => {
     let nation: TestNationContract
     let location: Location
     let menuOne: Menu
+    let permissions: Array<PermissionType>
 
     group.before(async () => {
         nation = await createTestNation()
         location = await createTestLocation(nation.oid)
         menuOne = await createTestMenu(nation.oid, location.id)
         await createTestMenu(nation.oid, location.id)
+
+        permissions = await PermissionType.query().where('type', Permissions.Menus)
+
+        await assignPermissions(nation.adminUser, permissions)
     })
 
     test('ensure that you can fetch all menus of a location', async (assert) => {
@@ -59,6 +67,8 @@ test.group('Menu fetch', async (group) => {
         const tmpNation = await createTestNation()
         const tmpLocation = await createTestLocation(tmpNation.oid)
 
+        await assignPermissions(tmpNation.adminUser, permissions)
+
         await createTestMenu(tmpNation.oid, tmpLocation.id)
         await createTestMenu(tmpNation.oid, tmpLocation.id)
         await createTestMenu(tmpNation.oid, tmpLocation.id)
@@ -95,6 +105,8 @@ test.group('Menu fetch', async (group) => {
         const tmpLocation = await createTestLocation(tmpNation.oid)
         const numberOfHiddenMenus = 1
 
+        await assignPermissions(tmpNation.adminUser, permissions)
+
         const hiddenMenu = {
             name: 'Frukost',
             hidden: true,
@@ -125,10 +137,15 @@ test.group('Menu create', async (group) => {
 
     let nation: TestNationContract
     let location: Location
+    let permissions: Array<PermissionType>
 
     group.before(async () => {
         nation = await createTestNation()
         location = await createTestLocation(nation.oid)
+
+        permissions = await PermissionType.query().where('type', Permissions.Menus)
+
+        await assignPermissions(nation.adminUser, permissions)
     })
 
     test('ensure that creating menus requires a valid token', async () => {
@@ -228,10 +245,15 @@ test.group('Menu update', async (group) => {
 
     let nation: TestNationContract
     let location: Location
+    let permissions: Array<PermissionType>
 
     group.before(async () => {
         nation = await createTestNation()
         location = await createTestLocation(nation.oid)
+
+        permissions = await PermissionType.query().where('type', Permissions.Menus)
+
+        await assignPermissions(nation.adminUser, permissions)
     })
 
     test('ensure that updating menus requires a valid token', async () => {
@@ -326,10 +348,15 @@ test.group('Menu update', async (group) => {
 test.group('Menu delete', async (group) => {
     let nation: TestNationContract
     let location: Location
+    let permissions: Array<PermissionType>
 
     group.before(async () => {
         nation = await createTestNation()
         location = await createTestLocation(nation.oid)
+
+        permissions = await PermissionType.query().where('type', Permissions.Menus)
+
+        await assignPermissions(nation.adminUser, permissions)
     })
 
     test('ensure that deleting menus requires a valid token', async () => {

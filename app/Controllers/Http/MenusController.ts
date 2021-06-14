@@ -45,7 +45,7 @@ export default class MenusController {
      * Create a menu
      */
     public async create({ bouncer, request }: HttpContextContract) {
-        await bouncer.authorize('permissionRights', Permissions.Menus)
+        await bouncer.authorize('permissionRights', Permissions.Menus, request.location?.nationId)
 
         const data = await getValidatedData(request, MenuCreateController)
         const location = getLocation(request)
@@ -65,10 +65,11 @@ export default class MenusController {
      * Update a menu
      */
     public async update({ bouncer, request }: HttpContextContract) {
-        await bouncer.authorize('permissionRights', Permissions.Menus)
+        const menu = getMenu(request)
+
+        await bouncer.authorize('permissionRights', Permissions.Menus, menu.nationId)
 
         const data = await getValidatedData(request, MenuUpdateValidator)
-        const menu = getMenu(request)
 
         menu.merge(data)
         await menu.save()
@@ -80,18 +81,19 @@ export default class MenusController {
      * Delete a menu
      */
     public async delete({ bouncer, request }: HttpContextContract) {
-        await bouncer.authorize('permissionRights', Permissions.Menus)
+        const menu = getMenu(request)
+        await bouncer.authorize('permissionRights', Permissions.Menus, menu.nationId)
 
-        await getMenu(request).delete()
+        await menu.delete()
     }
 
     /**
      * Method to upload an image to a menu in the system
      */
     public async upload({ bouncer, request }: HttpContextContract) {
-        await bouncer.authorize('permissionRights', Permissions.Menus)
-
         const menu = getMenu(request)
+        await bouncer.authorize('permissionRights', Permissions.Menus, menu.nationId)
+
         const { icon, cover } = await getValidatedData(request, MenuUploadValidator)
         const iconName = await attemptFileUpload(icon, true)
         const coverName = await attemptFileUpload(cover)
