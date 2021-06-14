@@ -57,7 +57,6 @@ export default class PermissionMiddleware {
         }
 
         if (!permission && options.includes('delete')) {
-            console.log('here')
             throw new UserPermissionAlreadyRemovedException()
         }
 

@@ -85,12 +85,10 @@ Route.group(() => {
     Route.put('/nations/:id', 'NationsController.update').middleware([
         'auth',
         'nation:preloadDefault',
-        'scope:admin',
     ])
     Route.post('/nations/:id/upload', 'NationsController.upload').middleware([
         'auth',
         'nation:preloadDefault',
-        'scope:admin',
     ])
 
     // ----------------------------------------------------------
