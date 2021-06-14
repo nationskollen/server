@@ -8,6 +8,7 @@
  * @module IndividualsController
  */
 import Individual from 'App/Models/Individual'
+import { Permissions } from 'App/Utils/Permissions'
 import { getIndividual, getNation, getValidatedData } from 'App/Utils/Request'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { attemptFileUpload, attemptFileRemoval } from 'App/Utils/Upload'
@@ -39,7 +40,9 @@ export default class IndividualsController {
     /**
      * create a single individual
      */
-    public async create({ request }: HttpContextContract) {
+    public async create({ bouncer, request }: HttpContextContract) {
+        await bouncer.authorize('permissionRights', Permissions.Individuals)
+
         const nation = getNation(request)
         const data = await getValidatedData(request, IndividualCreateValidator)
 
@@ -51,7 +54,9 @@ export default class IndividualsController {
     /**
      * update a individual from system
      */
-    public async update({ request }: HttpContextContract) {
+    public async update({ bouncer, request }: HttpContextContract) {
+        await bouncer.authorize('permissionRights', Permissions.Individuals)
+
         const individual = getIndividual(request)
         const changes = await getValidatedData(request, IndividualUpdateValidator)
 
@@ -64,7 +69,9 @@ export default class IndividualsController {
     /**
      * delete a single individual from system
      */
-    public async delete({ request }: HttpContextContract) {
+    public async delete({ bouncer, request }: HttpContextContract) {
+        await bouncer.authorize('permissionRights', Permissions.Individuals)
+
         const individual = getIndividual(request)
         await individual.delete()
     }
@@ -72,7 +79,9 @@ export default class IndividualsController {
     /**
      * upload a file to a individual from system
      */
-    public async upload({ request }: HttpContextContract) {
+    public async upload({ bouncer, request }: HttpContextContract) {
+        await bouncer.authorize('permissionRights', Permissions.Individuals)
+
         const individual = getIndividual(request)
         const { profile } = await getValidatedData(request, IndividualUploadValidator)
         const profileName = await attemptFileUpload(profile)

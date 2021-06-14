@@ -1,5 +1,6 @@
 import User from 'App/Models/User'
 import { getPageNumber } from 'App/Utils/Paginate'
+import { Permissions } from 'App/Utils/Permissions'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { getValidatedData, getUser, getNation } from 'App/Utils/Request'
 import { attemptFileUpload, attemptFileRemoval } from 'App/Utils/Upload'
@@ -31,7 +32,9 @@ export default class UsersController {
     /**
      * Create a user for a nation specified in the route
      */
-    public async create({ request }: HttpContextContract) {
+    public async create({ bouncer, request }: HttpContextContract) {
+        await bouncer.authorize('permissionRights', Permissions.User)
+
         const nation = getNation(request)
         const data = await getValidatedData(request, UserCreateValidator)
         const user = await nation.related('staff').create(data)
@@ -42,7 +45,9 @@ export default class UsersController {
     /**
      * Update a user model in a nation
      */
-    public async update({ request }: HttpContextContract) {
+    public async update({ bouncer, request }: HttpContextContract) {
+        await bouncer.authorize('permissionRights', Permissions.User)
+
         const user = getUser(request)
         const changes = await getValidatedData(request, UserUpdateValidator)
 
@@ -55,7 +60,9 @@ export default class UsersController {
     /**
      * Delete a user model in a nation
      */
-    public async delete({ request }: HttpContextContract) {
+    public async delete({ bouncer, request }: HttpContextContract) {
+        await bouncer.authorize('permissionRights', Permissions.User)
+
         const user = getUser(request)
         await user.delete()
     }
@@ -63,7 +70,9 @@ export default class UsersController {
     /**
      * Method to upload an image to a user in the system
      */
-    public async upload({ request }: HttpContextContract) {
+    public async upload({ bouncer, request }: HttpContextContract) {
+        await bouncer.authorize('permissionRights', Permissions.User)
+
         const user = getUser(request)
         const { cover } = await getValidatedData(request, UserUploadValidator)
         const coverName = await attemptFileUpload(cover)

@@ -8,6 +8,7 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { getNews, getNation, getValidatedData } from 'App/Utils/Request'
 import { attemptFileUpload, attemptFileRemoval } from 'App/Utils/Upload'
+import { Permissions } from 'App/Utils/Permissions'
 import NewsCreateValidator from 'App/Validators/News/CreateValidator'
 import NewsUpdateValidator from 'App/Validators/News/UpdateValidator'
 import NewsFilterValidator from 'App/Validators/News/FilterValidator'
@@ -69,7 +70,9 @@ export default class NewsController extends FilteringOptions {
     /**
      * Create a news model for a nation specified in the route
      */
-    public async create({ request }: HttpContextContract) {
+    public async create({ bouncer, request }: HttpContextContract) {
+        await bouncer.authorize('permissionRights', Permissions.News)
+
         const nation = getNation(request)
         const data = await getValidatedData(request, NewsCreateValidator)
         const newsObject = await nation.related('news').create(data)
@@ -83,7 +86,9 @@ export default class NewsController extends FilteringOptions {
     /**
      * Update a news model in a nation
      */
-    public async update({ request }: HttpContextContract) {
+    public async update({ bouncer, request }: HttpContextContract) {
+        await bouncer.authorize('permissionRights', Permissions.News)
+
         const newsObject = getNews(request)
         const changes = await getValidatedData(request, NewsUpdateValidator)
 
@@ -96,7 +101,9 @@ export default class NewsController extends FilteringOptions {
     /**
      * Delete a news model in a nation
      */
-    public async delete({ request }: HttpContextContract) {
+    public async delete({ bouncer, request }: HttpContextContract) {
+        await bouncer.authorize('permissionRights', Permissions.News)
+
         const news = getNews(request)
         await news.delete()
     }
@@ -104,7 +111,9 @@ export default class NewsController extends FilteringOptions {
     /**
      * Method to upload an image to news in the system
      */
-    public async upload({ request }: HttpContextContract) {
+    public async upload({ bouncer, request }: HttpContextContract) {
+        await bouncer.authorize('permissionRights', Permissions.News)
+
         const news = getNews(request)
         const { cover } = await getValidatedData(request, NewsUploadValidator)
         const coverName = await attemptFileUpload(cover)

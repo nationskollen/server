@@ -10,6 +10,7 @@
  */
 import Menu from 'App/Models/Menu'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import { Permissions } from 'App/Utils/Permissions'
 import MenuUpdateValidator from 'App/Validators/Menus/UpdateValidator'
 import MenuUploadValidator from 'App/Validators/Menus/UploadValidator'
 import MenuFilterValidator from 'App/Validators/Menus/FilterValidator'
@@ -43,7 +44,9 @@ export default class MenusController {
     /**
      * Create a menu
      */
-    public async create({ request }: HttpContextContract) {
+    public async create({ bouncer, request }: HttpContextContract) {
+        await bouncer.authorize('permissionRights', Permissions.Menus)
+
         const data = await getValidatedData(request, MenuCreateController)
         const location = getLocation(request)
 
@@ -61,7 +64,9 @@ export default class MenusController {
     /**
      * Update a menu
      */
-    public async update({ request }: HttpContextContract) {
+    public async update({ bouncer, request }: HttpContextContract) {
+        await bouncer.authorize('permissionRights', Permissions.Menus)
+
         const data = await getValidatedData(request, MenuUpdateValidator)
         const menu = getMenu(request)
 
@@ -74,14 +79,18 @@ export default class MenusController {
     /**
      * Delete a menu
      */
-    public async delete({ request }: HttpContextContract) {
+    public async delete({ bouncer, request }: HttpContextContract) {
+        await bouncer.authorize('permissionRights', Permissions.Menus)
+
         await getMenu(request).delete()
     }
 
     /**
      * Method to upload an image to a menu in the system
      */
-    public async upload({ request }: HttpContextContract) {
+    public async upload({ bouncer, request }: HttpContextContract) {
+        await bouncer.authorize('permissionRights', Permissions.Menus)
+
         const menu = getMenu(request)
         const { icon, cover } = await getValidatedData(request, MenuUploadValidator)
         const iconName = await attemptFileUpload(icon, true)

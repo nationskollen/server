@@ -10,7 +10,7 @@
  * @module Permissions
  */
 import PermissionType from 'App/Models/PermissionType'
-
+import { Permissions } from 'App/Utils/Permissions'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { getPermissionData } from 'App/Utils/Request'
 
@@ -30,7 +30,9 @@ export default class PermissionsController {
      *
      * add user(s) permission access right
      */
-    public async add({ request }: HttpContextContract) {
+    public async add({ bouncer, request }: HttpContextContract) {
+        await bouncer.authorize('permissionRights', Permissions.Permissions)
+
         const { user, permissionType } = getPermissionData(request)
 
         await user.related('permissions').create({
@@ -45,7 +47,9 @@ export default class PermissionsController {
     /**
      * remove user(s) permission access right
      */
-    public async remove({ request }: HttpContextContract) {
+    public async remove({ bouncer, request }: HttpContextContract) {
+        await bouncer.authorize('permissionRights', Permissions.Permissions)
+
         const { permission } = getPermissionData(request)
         await permission?.delete()
     }
