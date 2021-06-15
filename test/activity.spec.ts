@@ -24,7 +24,6 @@ test.group('Activity update', (group) => {
         location = await createTestLocation(nation.oid)
         permissions = await PermissionType.query().where('type', Permissions.Activity)
 
-        await assignPermissions(nation.adminUser, permissions)
         await assignPermissions(nation.staffUser, permissions)
     })
 

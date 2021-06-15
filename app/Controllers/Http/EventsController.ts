@@ -99,7 +99,7 @@ export default class EventsController extends FilteringOptions {
     public async create({ bouncer, request }: HttpContextContract) {
         const nation = getNation(request)
 
-        await bouncer.authorize('permissionRights', Permissions.Events, nation.oid)
+        await bouncer.authorize('permissions', Permissions.Events, nation.oid)
 
         const data = await getValidatedData(request, EventCreateValidator)
         const event = await nation.related('events').create(data)
@@ -121,7 +121,7 @@ export default class EventsController extends FilteringOptions {
     public async update({ bouncer, request }: HttpContextContract) {
         const event = getEvent(request)
 
-        await bouncer.authorize('permissionRights', Permissions.Events, event.nationId)
+        await bouncer.authorize('permissions', Permissions.Events, event.nationId)
 
         const changes = await getValidatedData(request, EventUpdateValidator)
 
@@ -141,7 +141,7 @@ export default class EventsController extends FilteringOptions {
      */
     public async delete({ bouncer, request }: HttpContextContract) {
         const event = getEvent(request)
-        await bouncer.authorize('permissionRights', Permissions.Events, event.nationId)
+        await bouncer.authorize('permissions', Permissions.Events, event.nationId)
 
         await event.delete()
     }
@@ -152,7 +152,7 @@ export default class EventsController extends FilteringOptions {
     public async upload({ bouncer, request }: HttpContextContract) {
         const event = getEvent(request)
 
-        await bouncer.authorize('permissionRights', Permissions.Events, event.nationId)
+        await bouncer.authorize('permissions', Permissions.Events, event.nationId)
 
         const { icon, cover } = await getValidatedData(request, EventUploadValidator)
         const iconName = await attemptFileUpload(icon, true)

@@ -38,7 +38,7 @@ export default class NationsController {
     public async update({ bouncer, request }: HttpContextContract) {
         const nation = getNation(request)
 
-        await bouncer.authorize('permissionRights', Permissions.Nation, nation.oid)
+        await bouncer.authorize('permissions', Permissions.Nation, nation.oid)
 
         const changes = await getValidatedData(request, NationUpdateValidator)
         nation.merge(changes)
@@ -53,7 +53,7 @@ export default class NationsController {
     public async upload({ bouncer, request }: HttpContextContract) {
         const nation = getNation(request)
 
-        await bouncer.authorize('permissionRights', Permissions.Nation, nation.oid)
+        await bouncer.authorize('permissions', Permissions.Nation, nation.oid)
 
         const { cover, icon } = await getValidatedData(request, NationUploadValidator)
         const iconName = await attemptFileUpload(icon, true)

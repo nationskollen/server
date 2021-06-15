@@ -22,7 +22,7 @@ import {
     assignPermissions,
 } from 'App/Utils/Test'
 
-test.group('Permissions fetch', (group) => {
+test.group('Permission types fetch', (group) => {
     let nation: TestNationContract
     let numberOfPermissionsInSystem: number
 
@@ -30,7 +30,7 @@ test.group('Permissions fetch', (group) => {
         nation = await createTestNation()
 
         const { text } = await supertest(BASE_URL)
-            .get(`/permissions`)
+            .get(`/permissions/types`)
             .set('Authorization', 'Bearer ' + nation.token)
             .expect(200)
 
@@ -39,7 +39,7 @@ test.group('Permissions fetch', (group) => {
 
     test('ensure we can fetch permissions in system', async (assert) => {
         const { text } = await supertest(BASE_URL)
-            .get(`/permissions`)
+            .get(`/permissions/types`)
             .set('Authorization', 'Bearer ' + nation.token)
             .expect(200)
 
@@ -56,11 +56,6 @@ test.group('Permissions add', async (group) => {
     group.before(async () => {
         nation = await createTestNation()
         user = await createTestUser(nation.oid, false)
-
-        const permissions = await PermissionType.query().where('type', Permissions.Permission)
-
-        await assignPermissions(nation.staffUser, permissions)
-        await assignPermissions(nation.adminUser, permissions)
     })
 
     test('ensure that adding a permission requires a valid token', async () => {
@@ -160,11 +155,6 @@ test.group('Permissions remove', async (group) => {
     group.before(async () => {
         nation = await createTestNation()
         user = await createTestUser(nation.oid, false)
-
-        const permissions = await PermissionType.query().where('type', Permissions.Permission)
-
-        await assignPermissions(nation.staffUser, permissions)
-        await assignPermissions(nation.adminUser, permissions)
     })
 
     test('ensure that removing a permission requires a valid token', async () => {
@@ -277,7 +267,7 @@ test.group('Permissions in action', (group) => {
             .send({ name: 'new name' })
             .expect(401)
 
-        const permissions = await PermissionType.query().where('type', Permissions.Location)
+        const permissions = await PermissionType.query().where('type', Permissions.Locations)
         await assignPermissions(nation.staffUser, permissions)
 
         await supertest(BASE_URL)
@@ -433,26 +423,22 @@ test.group('Permissions in action', (group) => {
         await supertest(BASE_URL)
             .put(`/users/${user.id}`)
             .set('Authorization', 'Bearer ' + nation.staffToken)
-            .send({ fullname: 'fadde' })
+            .send({ full_name: 'fadde' })
             .expect(401)
 
-        const permissions = await PermissionType.query().where('type', Permissions.User)
+        const permissions = await PermissionType.query().where('type', Permissions.Users)
         await assignPermissions(nation.staffUser, permissions)
 
         await supertest(BASE_URL)
             .put(`/users/${user.id}`)
             .set('Authorization', 'Bearer ' + nation.staffToken)
-            .send({ fullname: 'fadde' })
-            .expect(401)
-
-        // will still not allow us to do changes even with a permission.
-        // This is because of design that we only allow nation admins with
-        // to be able to get access to users.
+            .send({ full_name: 'fadde' })
+            .expect(200)
 
         await supertest(BASE_URL)
             .put(`/users/${user.id}`)
             .set('Authorization', 'Bearer ' + nation.token)
-            .send({ fullname: 'fadde' })
+            .send({ full_name: 'nya fadde' })
             .expect(200)
     })
 
@@ -469,7 +455,7 @@ test.group('Permissions in action', (group) => {
             })
             .expect(401)
 
-        const permissions = await PermissionType.query().where('type', Permissions.Permission)
+        const permissions = await PermissionType.query().where('type', Permissions.UserPermissions)
         await assignPermissions(nation.staffUser, permissions)
 
         await supertest(BASE_URL)

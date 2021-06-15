@@ -3,10 +3,8 @@ import path from 'path'
 import { DateTime } from 'luxon'
 import supertest from 'supertest'
 import Location from 'App/Models/Location'
-import PermissionType from 'App/Models/PermissionType'
 import Event from 'App/Models/Event'
 import { BASE_URL, HOSTNAME } from 'App/Utils/Constants'
-import { Permissions } from 'App/Utils/Permissions'
 import {
     TestNationContract,
     createTestNation,
@@ -14,7 +12,6 @@ import {
     createTestEvent,
     createTestCategory,
     toRelativePath,
-    assignPermissions,
 } from 'App/Utils/Test'
 
 test.group('Events fetch', async (group) => {
@@ -53,7 +50,6 @@ test.group('Events fetch', async (group) => {
 
 test.group('Events create', async (group) => {
     let nation: TestNationContract
-    let permissions: Array<PermissionType>
     let eventData = {
         name: 'testEvent',
         short_description: 'Lunchevent',
@@ -76,10 +72,6 @@ test.group('Events create', async (group) => {
 
     group.before(async () => {
         nation = await createTestNation()
-
-        permissions = await PermissionType.query().where('type', Permissions.User)
-
-        await assignPermissions(nation.adminUser, permissions)
     })
 
     test('ensure that creating an event requires a valid token', async () => {
@@ -183,16 +175,11 @@ test.group('Events create', async (group) => {
 
 test.group('Events update', async (group) => {
     let nation: TestNationContract
-    let permissions: Array<PermissionType>
     let location: Location
 
     group.before(async () => {
         nation = await createTestNation()
         location = await createTestLocation(nation.oid)
-
-        permissions = await PermissionType.query().where('type', Permissions.User)
-
-        await assignPermissions(nation.adminUser, permissions)
     })
 
     test('ensure that updating an event requires a valid token', async () => {
@@ -475,14 +462,9 @@ test.group('Events update', async (group) => {
 
 test.group('Event delete', async (group) => {
     let nation: TestNationContract
-    let permissions: Array<PermissionType>
 
     group.before(async () => {
         nation = await createTestNation()
-
-        permissions = await PermissionType.query().where('type', Permissions.User)
-
-        await assignPermissions(nation.adminUser, permissions)
     })
 
     test('ensure that deletion of an event requires a valid token', async () => {
@@ -556,16 +538,11 @@ test.group('Event delete', async (group) => {
 test.group('Event upload', (group) => {
     const coverImagePath = path.join(__dirname, 'data/cover.png')
     let nation: TestNationContract
-    let permissions: Array<PermissionType>
     let event: Event
 
     group.before(async () => {
         nation = await createTestNation()
         event = await createTestEvent(nation.oid)
-
-        permissions = await PermissionType.query().where('type', Permissions.User)
-
-        await assignPermissions(nation.adminUser, permissions)
     })
 
     test('ensure that uploading images requires a valid token', async (assert) => {
@@ -646,14 +623,9 @@ test.group('Event upload', (group) => {
 
 test.group('Event fetching', (group) => {
     let nation: TestNationContract
-    let permissions: Array<PermissionType>
 
     group.before(async () => {
         nation = await createTestNation()
-
-        permissions = await PermissionType.query().where('type', Permissions.User)
-
-        await assignPermissions(nation.adminUser, permissions)
     })
 
     test('ensure that an event does not return a category field when not set to any', async (assert) => {

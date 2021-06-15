@@ -1,4 +1,9 @@
 /**
+ *
+ * This validator is used in the {@link PermissionMiddleware | Permissions
+ * middleware} to check for when adding and removing permissions, the supplied
+ * request data is correct.
+ *
  * @catgory Validator
  * @module PermissionValidator
  */

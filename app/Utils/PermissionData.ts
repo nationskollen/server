@@ -6,4 +6,5 @@ export default interface PermissionData {
     user: User
     permission: Permission | null
     permissionType: PermissionType | null
+    options: string[] | null
 }

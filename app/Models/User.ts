@@ -13,7 +13,7 @@
  */
 import { DateTime } from 'luxon'
 import Hash from '@ioc:Adonis/Core/Hash'
-import { toBoolean, toAbsolutePath, toISO } from 'App/Utils/Serialize'
+import { toBoolean, toAbsolutePath } from 'App/Utils/Serialize'
 import { BaseModel, column, beforeSave, hasMany, HasMany } from '@ioc:Adonis/Lucid/Orm'
 import Permission from 'App/Models/Permission'
 
@@ -25,7 +25,7 @@ export default class User extends BaseModel {
     public id: number
 
     @column()
-    public fullname: string
+    public fullName: string
 
     /**
      * The email for the user
@@ -62,7 +62,6 @@ export default class User extends BaseModel {
      */
     @column.dateTime({
         autoCreate: true,
-        serialize: toISO,
     })
     public createdAt: DateTime
 
@@ -72,7 +71,6 @@ export default class User extends BaseModel {
     @column.dateTime({
         autoCreate: true,
         autoUpdate: true,
-        serialize: toISO,
     })
     public updatedAt: DateTime
 
@@ -83,10 +81,10 @@ export default class User extends BaseModel {
     public permissions: HasMany<typeof Permission>
 
     /**
-     * Cover image for the user to be displayed
+     * Avatar image for the user to be displayed
      */
     @column({ serialize: toAbsolutePath })
-    public coverImgSrc: string
+    public avatarImgSrc: string
 
     /**
      * Method that hashes passwords for a user

@@ -44,7 +44,7 @@ export default class MenuItemsController {
      */
     public async create({ bouncer, request }: HttpContextContract) {
         const menu = getMenu(request)
-        await bouncer.authorize('permissionRights', Permissions.MenuItem, menu.nationId)
+        await bouncer.authorize('permissions', Permissions.MenuItem, menu.nationId)
 
         const data = await getValidatedData(request, MenuItemCreateValidator)
         const newMenu = await menu.related('items').create(data)
@@ -56,7 +56,7 @@ export default class MenuItemsController {
      * update a menu item
      */
     public async update({ bouncer, request }: HttpContextContract) {
-        await bouncer.authorize('permissionRights', Permissions.MenuItem, getMenu(request).nationId)
+        await bouncer.authorize('permissions', Permissions.MenuItem, getMenu(request).nationId)
 
         const data = await getValidatedData(request, MenuItemUpdateValidator)
         const menuItem = getMenuItem(request)
@@ -71,7 +71,7 @@ export default class MenuItemsController {
      * delete a menu item
      */
     public async delete({ bouncer, request }: HttpContextContract) {
-        await bouncer.authorize('permissionRights', Permissions.MenuItem, getMenu(request).nationId)
+        await bouncer.authorize('permissions', Permissions.MenuItem, getMenu(request).nationId)
 
         await getMenuItem(request).delete()
     }
@@ -80,7 +80,7 @@ export default class MenuItemsController {
      * upload a file to a menu item
      */
     public async upload({ bouncer, request }: HttpContextContract) {
-        await bouncer.authorize('permissionRights', Permissions.MenuItem, getMenu(request).nationId)
+        await bouncer.authorize('permissions', Permissions.MenuItem, getMenu(request).nationId)
 
         const menuItem = getMenuItem(request)
 

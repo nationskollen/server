@@ -39,7 +39,7 @@ export default class OpeningHoursController {
      */
     public async create({ bouncer, request }: HttpContextContract) {
         const location = getLocation(request)
-        await bouncer.authorize('permissionRights', Permissions.OpeningHours, location.nationId)
+        await bouncer.authorize('permissions', Permissions.OpeningHours, location.nationId)
 
         const data = await getValidatedData(request, OpeningHourCreateValidator)
 
@@ -62,7 +62,7 @@ export default class OpeningHoursController {
      */
     public async update({ bouncer, request }: HttpContextContract) {
         await bouncer.authorize(
-            'permissionRights',
+            'permissions',
             Permissions.OpeningHours,
             getLocation(request).nationId
         )
@@ -81,7 +81,7 @@ export default class OpeningHoursController {
      */
     public async delete({ bouncer, request }: HttpContextContract) {
         await bouncer.authorize(
-            'permissionRights',
+            'permissions',
             Permissions.OpeningHours,
             getLocation(request).nationId
         )

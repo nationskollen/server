@@ -28,7 +28,7 @@ export default class ContactsController {
      */
     public async create({ bouncer, request }: HttpContextContract) {
         const nation = getNation(request)
-        await bouncer.authorize('permissionRights', Permissions.Contact, nation.oid)
+        await bouncer.authorize('permissions', Permissions.Contact, nation.oid)
 
         const data = await getValidatedData(request, ContactCreateValidator)
 
@@ -44,7 +44,7 @@ export default class ContactsController {
      */
     public async update({ bouncer, request }: HttpContextContract) {
         const contact = getContact(request)
-        await bouncer.authorize('permissionRights', Permissions.Contact, contact.nationId)
+        await bouncer.authorize('permissions', Permissions.Contact, contact.nationId)
 
         const changes = await getValidatedData(request, ContactUpdateValidator)
 
@@ -59,7 +59,7 @@ export default class ContactsController {
      */
     public async delete({ bouncer, request }: HttpContextContract) {
         const contact = getContact(request)
-        await bouncer.authorize('permissionRights', Permissions.Contact, contact.nationId)
+        await bouncer.authorize('permissions', Permissions.Contact, contact.nationId)
 
         await contact.delete()
     }

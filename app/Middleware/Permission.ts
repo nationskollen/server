@@ -1,3 +1,22 @@
+/**
+ * Permission middleware handles valid request made to the server and informs the
+ * requester if something is invalid.
+ *
+ * In this middleware, we make sure that the requested permission action is not
+ * operated onto an already existing nation admin.
+ *
+ * Depending on what was invalid, an exception will be thrown.
+ * Exceptions in this middleware are:
+ *
+ * - `UserNotPartOfNationException`
+ * - `UserAlreadyNationAdminException`
+ * - `UserAlreadyHasPermissionExceptionxception`
+ * - `UserNoSuchPermissionTypeException`
+ *
+ * @category Middleware
+ * @module PermissionMiddleware
+ *
+ */
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
 import { getValidatedData } from 'App/Utils/Request'
@@ -7,11 +26,10 @@ import Permission from 'App/Models/Permission'
 import PermissionType from 'App/Models/PermissionType'
 
 import NotAdminException from 'App/Exceptions/NotAdminExecption'
-import BadRequestException from 'App/Exceptions/BadRequestException'
 import UserNotPartOfNationException from 'App/Exceptions/UserNotPartOfNationException'
 import UserAlreadyNationAdminException from 'App/Exceptions/UserAlreadyNationAdminException'
 import UserAlreadyHasPermissionException from 'App/Exceptions/UserAlreadyHasPermissionException'
-import UserPermissionAlreadyRemovedException from 'App/Exceptions/UserPermissionAlreadyRemovedException'
+import UserNoSuchPermissionTypeException from 'App/Exceptions/UserNoSuchPermissionTypeException'
 
 export default class PermissionMiddleware {
     public async handle(
@@ -23,10 +41,6 @@ export default class PermissionMiddleware {
         // requested action can be performed.
         if (!auth?.user?.nationAdmin) {
             throw new NotAdminException()
-        }
-
-        if (!request) {
-            throw new BadRequestException('Missing data in request')
         }
 
         // Extract the data in the request message
@@ -57,14 +71,15 @@ export default class PermissionMiddleware {
         }
 
         if (!permission && options.includes('delete')) {
-            throw new UserPermissionAlreadyRemovedException()
+            throw new UserNoSuchPermissionTypeException()
         }
 
         // extract the permission type model
         const permissionType = await PermissionType.findBy('id', data.permission_type_id)
 
         // Store the values in an object in the request contract
-        request.permissionData = { user, permission, permissionType }
+        request.permissionData = { user, permission, permissionType, options }
+
         await next()
     }
 }

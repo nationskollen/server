@@ -1,44 +1,37 @@
 import test from 'japa'
 import User from 'App/Models/User'
-import PermissionType from 'App/Models/PermissionType'
 import path from 'path'
 import supertest from 'supertest'
 import { BASE_URL, HOSTNAME } from 'App/Utils/Constants'
-import { Permissions } from 'App/Utils/Permissions'
+import { NationFactory } from 'Database/factories/index'
 import {
     TestNationContract,
     createTestNation,
     createTestUser,
+    createStaffUser,
     toRelativePath,
-    assignPermissions,
 } from 'App/Utils/Test'
 
 test.group('User(s) fetch', (group) => {
     let nation: TestNationContract
-    let permissions: Array<PermissionType>
-    const usersToCreate: number = 3
 
     group.before(async () => {
         nation = await createTestNation()
-
-        for (let i = 0; i < usersToCreate; i++) {
-            await createTestUser(nation.oid, false)
-        }
-
-        permissions = await PermissionType.query().where('type', Permissions.User)
-
-        await assignPermissions(nation.adminUser, permissions)
     })
 
     test('ensure we can fetch users', async (assert) => {
+        const tmpNation = await NationFactory.create()
+        const user = await createStaffUser(tmpNation.oid, true)
+        await createTestUser(tmpNation.oid, false)
+
         const { text } = await supertest(BASE_URL)
-            .get(`/nations/${nation.oid}/users`)
-            .set('Authorization', 'Bearer ' + nation.token)
+            .get(`/nations/${tmpNation.oid}/users`)
+            .set('Authorization', 'Bearer ' + user.token)
             .expect(200)
 
         const data = JSON.parse(text)
         assert.isNotNull(data)
-        assert.equal(data.data.length, 5)
+        assert.equal(data.data.length, 2)
     })
 
     test('ensure we can paginate users', async (assert) => {
@@ -61,7 +54,7 @@ test.group('User(s) fetch', (group) => {
             .expect(200)
 
         const data = JSON.parse(text)
-        assert.equal(data.fullname, user.fullname)
+        assert.equal(data.full_name, user.fullName)
         assert.equal(data.email, user.email)
         assert.equal(data.nation_admin, user.nationAdmin)
     })
@@ -76,13 +69,18 @@ test.group('User(s) fetch', (group) => {
             .expect(401)
     })
 
-    test('ensure we cannot fetch a another admin user ', async () => {
+    test('ensure we can fetch an admin user ', async () => {
         const user = await createTestUser(nation.oid, true)
 
         await supertest(BASE_URL)
             .get(`/users/${user.id}`)
+            .set('Authorization', 'Bearer ' + nation.staffToken)
+            .expect(200)
+
+        await supertest(BASE_URL)
+            .get(`/users/${user.id}`)
             .set('Authorization', 'Bearer ' + nation.token)
-            .expect(401)
+            .expect(200)
     })
 
     test('ensure that fetching a non-existant user fails', async () => {
@@ -95,22 +93,17 @@ test.group('User(s) fetch', (group) => {
     })
 })
 
-test.group('News create', async (group) => {
+test.group('User(s) create', async (group) => {
     let nation: TestNationContract
-    let permissions: Array<PermissionType>
     const userData = {
-        fullname: 'UserTest!!!',
+        full_name: 'UserTest!!!',
         email: 'test@user.se',
         password: 'Loremipsum',
-        nationAdmin: false,
+        nation_admin: false,
     }
 
     group.before(async () => {
         nation = await createTestNation()
-
-        permissions = await PermissionType.query().where('type', Permissions.User)
-
-        await assignPermissions(nation.adminUser, permissions)
     })
 
     test('ensure that creating a user requires a valid token', async () => {
@@ -137,9 +130,9 @@ test.group('News create', async (group) => {
             .expect(200)
 
         const data = JSON.parse(text)
-        assert.equal(data.fullname, userData.fullname)
+        assert.equal(data.full_name, userData.full_name)
         assert.equal(data.email, userData.email)
-        assert.equal(data.nation_admin, userData.nationAdmin)
+        assert.equal(data.nation_admin, userData.nation_admin)
         assert.isFalse(data.nation_admin)
     })
 
@@ -167,7 +160,7 @@ test.group('News create', async (group) => {
             .post(`/nations/${nation.oid}/users`)
             .set('Authorization', 'Bearer ' + nation.token)
             .send({
-                fullname: 'hello',
+                full_name: 'hello',
                 email: 'hello',
                 password: '123412341234',
                 nationAdmin: '1234',
@@ -178,25 +171,19 @@ test.group('News create', async (group) => {
 
 test.group('User(s) update', async (group) => {
     let nation: TestNationContract
-    let permissions: Array<PermissionType>
     let user: User
     let adminUser: User
     const userData = {
-        fullname: 'UserTest!!!',
-        email: 'test@user.se',
+        full_name: 'UserTest!!!',
+        email: 'asdfasdfasdflkjkljklj@user.se',
         password: 'Loremipsum',
-        nationAdmin: false,
+        nation_admin: false,
     }
 
     group.before(async () => {
         nation = await createTestNation()
         user = await createTestUser(nation.oid, false)
         adminUser = await createTestUser(nation.oid, true)
-
-        permissions = await PermissionType.query().where('type', Permissions.User)
-
-        await assignPermissions(nation.adminUser, permissions)
-        await assignPermissions(adminUser, permissions)
     })
 
     test('ensure that updating a user requires a valid token', async () => {
@@ -248,31 +235,26 @@ test.group('User(s) update', async (group) => {
         await supertest(BASE_URL)
             .put(`/users/${adminUser.id}`)
             .set('Authorization', 'Bearer ' + nation.token)
-            .send(userData)
+            .send({ full_name: 'asdf' })
             .expect(401)
     })
 })
 
 test.group('User(s) upload', (group) => {
-    const coverImagePath = path.join(__dirname, 'data/cover.png')
+    const avatarImagePath = path.join(__dirname, 'data/cover.png')
     let nation: TestNationContract
-    let permissions: Array<PermissionType>
     let user: User
 
     group.before(async () => {
         nation = await createTestNation()
         user = await createTestUser(nation.oid, false)
-
-        permissions = await PermissionType.query().where('type', Permissions.User)
-
-        await assignPermissions(nation.adminUser, permissions)
     })
 
     test('ensure that uploading images requires a valid token', async (assert) => {
         const { text } = await supertest(BASE_URL)
             .post(`/users/${user.id}/upload`)
             .set('Authorization', 'Bearer ' + 'invalidToken')
-            .attach('cover', coverImagePath)
+            .attach('avatar', avatarImagePath)
             .expect(401)
 
         const data = JSON.parse(text)
@@ -284,47 +266,47 @@ test.group('User(s) upload', (group) => {
         await supertest(BASE_URL)
             .post(`/users/${user.id}/upload`)
             .set('Authorization', 'Bearer ' + nation.staffToken)
-            .attach('cover', coverImagePath)
+            .attach('avatar', avatarImagePath)
             .expect(401)
     })
 
-    test('ensure that admins can upload cover images', async (assert) => {
+    test('ensure that admins can upload avatar images', async (assert) => {
         const { text } = await supertest(BASE_URL)
             .post(`/users/${user.id}/upload`)
             .set('Authorization', 'Bearer ' + nation.token)
-            .attach('cover', coverImagePath)
+            .attach('avatar', avatarImagePath)
             .expect(200)
 
         const data = JSON.parse(text)
 
-        assert.isNotNull(data.cover_img_src)
+        assert.isNotNull(data.avatar_image_src)
 
         // Ensure that the uploaded images can be accessed via the specified URL
-        await supertest(HOSTNAME).get(toRelativePath(data.cover_img_src)).expect(200)
+        await supertest(HOSTNAME).get(toRelativePath(data.avatar_img_src)).expect(200)
     })
 
     test('ensure that old uploads are removed', async (assert) => {
         const { text } = await supertest(BASE_URL)
             .post(`/users/${user.id}/upload`)
             .set('Authorization', 'Bearer ' + nation.token)
-            .attach('cover', coverImagePath)
+            .attach('avatar', avatarImagePath)
             .expect(200)
 
         const data = JSON.parse(text)
 
-        assert.isNotNull(data.cover_img_src)
+        assert.isNotNull(data.avatar_image_src)
 
-        await supertest(HOSTNAME).get(toRelativePath(data.cover_img_src)).expect(200)
+        await supertest(HOSTNAME).get(toRelativePath(data.avatar_img_src)).expect(200)
 
         // Upload new images
         await supertest(BASE_URL)
             .post(`/users/${user.id}/upload`)
             .set('Authorization', 'Bearer ' + nation.token)
-            .attach('cover', coverImagePath)
+            .attach('avatar', avatarImagePath)
             .expect(200)
 
         // Ensure that the previously uploaded images have been removed
-        await supertest(HOSTNAME).get(toRelativePath(data.cover_img_src)).expect(404)
+        await supertest(HOSTNAME).get(toRelativePath(data.avatar_img_src)).expect(404)
     })
 
     test('ensure that uploading an image requires an attachment', async () => {
@@ -339,21 +321,16 @@ test.group('User(s) upload', (group) => {
         await supertest(BASE_URL)
             .post(`/users/99999/upload`)
             .set('Authorization', 'Bearer ' + nation.token)
-            .attach('cover', coverImagePath)
+            .attach('avatar', avatarImagePath)
             .expect(404)
     })
 })
 
 test.group('User(s) Deletion', (group) => {
     let nation: TestNationContract
-    let permissions: Array<PermissionType>
 
     group.before(async () => {
         nation = await createTestNation()
-
-        permissions = await PermissionType.query().where('type', Permissions.User)
-
-        await assignPermissions(nation.adminUser, permissions)
     })
 
     test('ensure that deleting user requires a valid token', async (assert) => {

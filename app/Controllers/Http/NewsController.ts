@@ -73,7 +73,7 @@ export default class NewsController extends FilteringOptions {
     public async create({ bouncer, request }: HttpContextContract) {
         const nation = getNation(request)
 
-        await bouncer.authorize('permissionRights', Permissions.News, nation.oid)
+        await bouncer.authorize('permissions', Permissions.News, nation.oid)
 
         const data = await getValidatedData(request, NewsCreateValidator)
         const newsObject = await nation.related('news').create(data)
@@ -90,7 +90,7 @@ export default class NewsController extends FilteringOptions {
     public async update({ bouncer, request }: HttpContextContract) {
         const news = getNews(request)
 
-        await bouncer.authorize('permissionRights', Permissions.News, news.nationId)
+        await bouncer.authorize('permissions', Permissions.News, news.nationId)
 
         const changes = await getValidatedData(request, NewsUpdateValidator)
 
@@ -106,7 +106,7 @@ export default class NewsController extends FilteringOptions {
     public async delete({ bouncer, request }: HttpContextContract) {
         const news = getNews(request)
 
-        await bouncer.authorize('permissionRights', Permissions.News, news.nationId)
+        await bouncer.authorize('permissions', Permissions.News, news.nationId)
 
         await news.delete()
     }
@@ -117,7 +117,7 @@ export default class NewsController extends FilteringOptions {
     public async upload({ bouncer, request }: HttpContextContract) {
         const news = getNews(request)
 
-        await bouncer.authorize('permissionRights', Permissions.News, news.nationId)
+        await bouncer.authorize('permissions', Permissions.News, news.nationId)
 
         const { cover } = await getValidatedData(request, NewsUploadValidator)
         const coverName = await attemptFileUpload(cover)

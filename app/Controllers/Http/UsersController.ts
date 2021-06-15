@@ -35,7 +35,7 @@ export default class UsersController {
     public async create({ bouncer, request }: HttpContextContract) {
         const nation = getNation(request)
 
-        await bouncer.authorize('permissionRights', Permissions.User, nation.oid)
+        await bouncer.authorize('permissions', Permissions.Users, nation.oid)
 
         const data = await getValidatedData(request, UserCreateValidator)
         const user = await nation.related('staff').create(data)
@@ -49,7 +49,7 @@ export default class UsersController {
     public async update({ bouncer, request }: HttpContextContract) {
         const user = getUser(request)
 
-        await bouncer.authorize('permissionRights', Permissions.User, user.nationId)
+        await bouncer.authorize('permissions', Permissions.Users, user.nationId)
 
         const changes = await getValidatedData(request, UserUpdateValidator)
 
@@ -64,7 +64,7 @@ export default class UsersController {
      */
     public async delete({ bouncer, request }: HttpContextContract) {
         const user = getUser(request)
-        await bouncer.authorize('permissionRights', Permissions.User, user.nationId)
+        await bouncer.authorize('permissions', Permissions.Users, user.nationId)
 
         await user.delete()
     }
@@ -75,14 +75,14 @@ export default class UsersController {
     public async upload({ bouncer, request }: HttpContextContract) {
         const user = getUser(request)
 
-        await bouncer.authorize('permissionRights', Permissions.User, user.nationId)
+        await bouncer.authorize('permissions', Permissions.Users, user.nationId)
 
-        const { cover } = await getValidatedData(request, UserUploadValidator)
-        const coverName = await attemptFileUpload(cover)
+        const { avatar } = await getValidatedData(request, UserUploadValidator)
+        const avatarName = await attemptFileUpload(avatar)
 
-        if (coverName) {
-            attemptFileRemoval(user.coverImgSrc)
-            user.coverImgSrc = coverName
+        if (avatarName) {
+            attemptFileRemoval(user.avatarImgSrc)
+            user.avatarImgSrc = avatarName
         }
 
         // Update cover image

@@ -11,10 +11,10 @@ export enum Permissions {
     Individuals = 'Individuals',
     Nation = 'Nation',
     News = 'News',
-    User = 'User',
+    Users = 'Users',
     OpeningHours = 'OpeningHours',
-    Location = 'Location',
+    Locations = 'Locations',
     Contact = 'Contact',
     Activity = 'Activity',
-    Permission = 'Permission',
+    UserPermissions = 'UserPermissions',
 }

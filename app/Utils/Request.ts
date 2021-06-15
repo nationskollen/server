@@ -15,6 +15,8 @@ import Event from 'App/Models/Event'
 import Nation from 'App/Models/Nation'
 import Contact from 'App/Models/Contact'
 import MenuItem from 'App/Models/MenuItem'
+// import PermissionType from 'App/Models/PermissionType'
+// import Permission from 'App/Models/Permission'
 import Location from 'App/Models/Location'
 import Individual from 'App/Models/Individual'
 import OpeningHour from 'App/Models/OpeningHour'
@@ -166,7 +168,29 @@ export function getPermissionData(request: RequestContract): PermissionData {
         throw new PermissionDataNotFoundException()
     }
 
-    return permissionData
+    const { user, permissionType, permission, options } = permissionData
+
+    if (!permissionType) {
+        throw new PermissionDataNotFoundException()
+    }
+
+    if (!user) {
+        throw new UserNotFoundException()
+    }
+
+    // Here we are checking for when we are removing a permission.
+    // Reason for why we are checking `permission` because the add permission
+    // operation leaves that field undefined.
+    if (options?.includes('delete') && !permission) {
+        throw new PermissionDataNotFoundException()
+    }
+
+    return {
+        user,
+        permission,
+        permissionType,
+        options,
+    }
 }
 
 export async function getValidatedData<T extends ParsedTypedSchema<TypedSchema>>(

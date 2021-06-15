@@ -45,10 +45,10 @@ export default class MenusController {
      * Create a menu
      */
     public async create({ bouncer, request }: HttpContextContract) {
-        await bouncer.authorize('permissionRights', Permissions.Menus, request.location?.nationId)
+        const location = getLocation(request)
+        await bouncer.authorize('permissions', Permissions.Menus, location.nationId)
 
         const data = await getValidatedData(request, MenuCreateController)
-        const location = getLocation(request)
 
         // We need to explicitly set the nationId before saving it,
         // hence the following approach
@@ -67,7 +67,7 @@ export default class MenusController {
     public async update({ bouncer, request }: HttpContextContract) {
         const menu = getMenu(request)
 
-        await bouncer.authorize('permissionRights', Permissions.Menus, menu.nationId)
+        await bouncer.authorize('permissions', Permissions.Menus, menu.nationId)
 
         const data = await getValidatedData(request, MenuUpdateValidator)
 
@@ -82,7 +82,7 @@ export default class MenusController {
      */
     public async delete({ bouncer, request }: HttpContextContract) {
         const menu = getMenu(request)
-        await bouncer.authorize('permissionRights', Permissions.Menus, menu.nationId)
+        await bouncer.authorize('permissions', Permissions.Menus, menu.nationId)
 
         await menu.delete()
     }
@@ -92,7 +92,7 @@ export default class MenusController {
      */
     public async upload({ bouncer, request }: HttpContextContract) {
         const menu = getMenu(request)
-        await bouncer.authorize('permissionRights', Permissions.Menus, menu.nationId)
+        await bouncer.authorize('permissions', Permissions.Menus, menu.nationId)
 
         const { icon, cover } = await getValidatedData(request, MenuUploadValidator)
         const iconName = await attemptFileUpload(icon, true)

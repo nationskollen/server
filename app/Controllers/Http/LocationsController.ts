@@ -40,7 +40,7 @@ export default class LocationsController {
      */
     public async create({ bouncer, request }: HttpContextContract) {
         const nation = getNation(request)
-        await bouncer.authorize('permissionRights', Permissions.Location, nation.oid)
+        await bouncer.authorize('permissions', Permissions.Locations, nation.oid)
 
         const data = await getValidatedData(request, LocationCreateValidator)
         const location = await nation.related('locations').create(data)
@@ -57,7 +57,7 @@ export default class LocationsController {
      */
     public async update({ bouncer, request }: HttpContextContract) {
         const location = getLocation(request)
-        await bouncer.authorize('permissionRights', Permissions.Location, location.nationId)
+        await bouncer.authorize('permissions', Permissions.Locations, location.nationId)
 
         const changes = await getValidatedData(request, LocationUpdateValidator)
 
@@ -77,7 +77,7 @@ export default class LocationsController {
      */
     public async delete({ bouncer, request }: HttpContextContract) {
         const location = getLocation(request)
-        await bouncer.authorize('permissionRights', Permissions.Location, location.nationId)
+        await bouncer.authorize('permissions', Permissions.Locations, location.nationId)
 
         if (location.isDefault) {
             await Location.setNotDefault(location.nationId)
@@ -97,7 +97,7 @@ export default class LocationsController {
      */
     public async activity({ bouncer, request }: HttpContextContract) {
         const location = getLocation(request)
-        await bouncer.authorize('permissionRights', Permissions.Activity, location.nationId)
+        await bouncer.authorize('permissions', Permissions.Activity, location.nationId)
 
         const { change } = await getValidatedData(request, ActivityValidator)
 
@@ -119,7 +119,7 @@ export default class LocationsController {
      */
     public async open({ bouncer, request }: HttpContextContract) {
         const location = getLocation(request)
-        await bouncer.authorize('permissionRights', Permissions.Location, location.nationId)
+        await bouncer.authorize('permissions', Permissions.Locations, location.nationId)
 
         await location.setOpen()
 
@@ -131,7 +131,7 @@ export default class LocationsController {
      */
     public async close({ bouncer, request }: HttpContextContract) {
         const location = getLocation(request)
-        await bouncer.authorize('permissionRights', Permissions.Location, location.nationId)
+        await bouncer.authorize('permissions', Permissions.Locations, location.nationId)
 
         await location.setClosed()
 
@@ -143,7 +143,7 @@ export default class LocationsController {
      */
     public async upload({ bouncer, request }: HttpContextContract) {
         const location = getLocation(request)
-        await bouncer.authorize('permissionRights', Permissions.Location, location.nationId)
+        await bouncer.authorize('permissions', Permissions.Locations, location.nationId)
 
         const { cover } = await getValidatedData(request, LocationUploadValidator)
         const filename = await attemptFileUpload(cover)

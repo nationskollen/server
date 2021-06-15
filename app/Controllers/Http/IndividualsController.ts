@@ -42,7 +42,7 @@ export default class IndividualsController {
      */
     public async create({ bouncer, request }: HttpContextContract) {
         const nation = getNation(request)
-        await bouncer.authorize('permissionRights', Permissions.Individuals, nation.oid)
+        await bouncer.authorize('permissions', Permissions.Individuals, nation.oid)
 
         const data = await getValidatedData(request, IndividualCreateValidator)
 
@@ -56,7 +56,7 @@ export default class IndividualsController {
      */
     public async update({ bouncer, request }: HttpContextContract) {
         const individual = getIndividual(request)
-        await bouncer.authorize('permissionRights', Permissions.Individuals, individual.nationId)
+        await bouncer.authorize('permissions', Permissions.Individuals, individual.nationId)
 
         const changes = await getValidatedData(request, IndividualUpdateValidator)
 
@@ -71,7 +71,7 @@ export default class IndividualsController {
      */
     public async delete({ bouncer, request }: HttpContextContract) {
         const individual = getIndividual(request)
-        await bouncer.authorize('permissionRights', Permissions.Individuals, individual.nationId)
+        await bouncer.authorize('permissions', Permissions.Individuals, individual.nationId)
 
         await individual.delete()
     }
@@ -81,7 +81,7 @@ export default class IndividualsController {
      */
     public async upload({ bouncer, request }: HttpContextContract) {
         const individual = getIndividual(request)
-        await bouncer.authorize('permissionRights', Permissions.Individuals, individual.nationId)
+        await bouncer.authorize('permissions', Permissions.Individuals, individual.nationId)
 
         const { profile } = await getValidatedData(request, IndividualUploadValidator)
         const profileName = await attemptFileUpload(profile)

@@ -7,6 +7,7 @@
 
 import Bouncer from '@ioc:Adonis/Addons/Bouncer'
 import User from 'App/Models/User'
+import Permission from 'App/Models/Permission'
 import PermissionType from 'App/Models/PermissionType'
 
 /*
@@ -34,10 +35,14 @@ import PermissionType from 'App/Models/PermissionType'
 export const { actions } = Bouncer
     // Defined action can be used at any controller that exists in the system
     .define(
-        'permissionRights',
+        'permissions',
         async (user: User | undefined, permission: string, oid: number | undefined) => {
             if (!user) {
                 return Bouncer.deny('Permission denied, user undefined', 401)
+            }
+
+            if (!oid) {
+                return Bouncer.deny('Permission denied, nation id undefined', 401)
             }
 
             // Make sure if a nationAdmin is performing the update, it is performed in the same nation
@@ -49,7 +54,7 @@ export const { actions } = Bouncer
                 return Bouncer.deny('Permission denied, user does not belong to nation id', 401)
             }
 
-            // Extract the permissionType
+            // Extract the permission
             const type = await PermissionType.findBy('type', permission)
             if (!type) {
                 return Bouncer.deny(
@@ -58,16 +63,16 @@ export const { actions } = Bouncer
                 )
             }
 
-            // Load in the user permissions so that they are iterable
-            await user.load('permissions')
-            for (const permission of user.permissions) {
-                if (type.id == permission.permissionTypeId) {
-                    return true
-                }
+            const query = await Permission.query()
+                .where('user_id', user.id)
+                .where('permission_type_id', type.id)
+                .first()
+
+            if (!query) {
+                return Bouncer.deny('Permission denied, Insufficient permission rights', 401)
             }
 
-            // If all fails, return false and the bouncer will throw an exception
-            return Bouncer.deny('Permission denied, not enought permission rights', 401)
+            return true
         }
     )
 

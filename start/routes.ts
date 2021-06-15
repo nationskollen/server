@@ -36,7 +36,10 @@ Route.group(() => {
     Route.post('/users/logout', 'AuthController.logout').middleware(['auth'])
     Route.get('/nations/:id/users', 'UsersController.index').middleware(['auth', 'nation'])
 
-    Route.get('/users/:uid', 'UsersController.single').middleware(['auth', 'user:permissions'])
+    Route.get('/users/:uid', 'UsersController.single').middleware([
+        'auth',
+        'user:permissions:allowed',
+    ])
     Route.post('/nations/:id/users', 'UsersController.create').middleware(['auth', 'nation'])
     Route.put('/users/:uid', 'UsersController.update').middleware(['auth', 'user'])
     Route.post('/users/:uid/upload', 'UsersController.upload').middleware(['auth', 'user'])
@@ -45,7 +48,7 @@ Route.group(() => {
     // ----------------------------------------------------------
     // Permission(s)
     // ----------------------------------------------------------
-    Route.get('/permissions', 'PermissionsController.index')
+    Route.get('/permissions/types', 'PermissionsController.index').middleware(['auth'])
     Route.post('/permissions', 'PermissionsController.add').middleware(['auth', 'permission'])
 
     Route.delete('/permissions', 'PermissionsController.remove').middleware([

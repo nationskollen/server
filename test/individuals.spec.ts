@@ -1,16 +1,9 @@
 import test from 'japa'
 import path from 'path'
 import supertest from 'supertest'
-import PermissionType from 'App/Models/PermissionType'
 import Individual from 'App/Models/Individual'
 import { BASE_URL } from 'App/Utils/Constants'
-import { Permissions } from 'App/Utils/Permissions'
-import {
-    TestNationContract,
-    createTestNation,
-    createTestIndividual,
-    assignPermissions,
-} from 'App/Utils/Test'
+import { TestNationContract, createTestNation, createTestIndividual } from 'App/Utils/Test'
 
 test.group('Individuals fetch', async (group) => {
     let nation: TestNationContract
@@ -57,7 +50,6 @@ test.group('Individuals fetch', async (group) => {
 
 test.group('Individuals create', async (group) => {
     let nation: TestNationContract
-    let permissions: Array<PermissionType>
     const individualData = {
         name: 'test',
         description: 'long description',
@@ -66,10 +58,6 @@ test.group('Individuals create', async (group) => {
 
     group.before(async () => {
         nation = await createTestNation()
-
-        permissions = await PermissionType.query().where('type', Permissions.User)
-
-        await assignPermissions(nation.adminUser, permissions)
     })
 
     test('ensure that creating an individual requires a valid token', async () => {
@@ -127,7 +115,6 @@ test.group('Individuals create', async (group) => {
 test.group('Individuals update', async (group) => {
     let nation: TestNationContract
     let individual: Individual
-    let permissions: Array<PermissionType>
     const newIndividualData = {
         name: 'newtest',
         description: 'long veryu description',
@@ -137,9 +124,6 @@ test.group('Individuals update', async (group) => {
     group.before(async () => {
         nation = await createTestNation()
         individual = await createTestIndividual(nation.oid)
-        permissions = await PermissionType.query().where('type', Permissions.User)
-
-        await assignPermissions(nation.adminUser, permissions)
     })
 
     test('ensure that updating an individual requires a valid token', async () => {
@@ -186,13 +170,9 @@ test.group('Individuals update', async (group) => {
 
 test.group('Individual delete', async (group) => {
     let nation: TestNationContract
-    let permissions: Array<PermissionType>
 
     group.before(async () => {
         nation = await createTestNation()
-        permissions = await PermissionType.query().where('type', Permissions.User)
-
-        await assignPermissions(nation.adminUser, permissions)
     })
 
     test('ensure that deleting an individual requires a valid token', async () => {
@@ -261,14 +241,10 @@ test.group('Individual delete', async (group) => {
 
 test.group('Individual upload', (group) => {
     let nation: TestNationContract
-    let permissions: Array<PermissionType>
     const coverImagePath = path.join(__dirname, 'data/cover.png')
 
     group.before(async () => {
         nation = await createTestNation()
-        permissions = await PermissionType.query().where('type', Permissions.User)
-
-        await assignPermissions(nation.adminUser, permissions)
     })
 
     test('ensure that uploading an individual cover requires a valid token', async () => {

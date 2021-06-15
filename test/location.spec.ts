@@ -1,16 +1,13 @@
 import test from 'japa'
 import path from 'path'
 import supertest from 'supertest'
-import PermissionType from 'App/Models/PermissionType'
 import Location from 'App/Models/Location'
 import { BASE_URL, HOSTNAME } from 'App/Utils/Constants'
-import { Permissions } from 'App/Utils/Permissions'
 import {
     TestNationContract,
     createTestNation,
     createTestLocation,
     toRelativePath,
-    assignPermissions,
 } from 'App/Utils/Test'
 
 test.group('Locations fetch', async () => {
@@ -28,7 +25,6 @@ test.group('Locations fetch', async () => {
 
 test.group('Locations create', async (group) => {
     let nation: TestNationContract
-    let permissions: Array<PermissionType>
     let locationData = {
         name: 'testPlats',
         description: 'Lunchplats',
@@ -39,10 +35,6 @@ test.group('Locations create', async (group) => {
 
     group.before(async () => {
         nation = await createTestNation()
-
-        permissions = await PermissionType.query().where('type', Permissions.Location)
-
-        await assignPermissions(nation.adminUser, permissions)
     })
 
     test('ensure that creating a location requires a valid token', async () => {
@@ -134,14 +126,9 @@ test.group('Locations create', async (group) => {
 
 test.group('Locations update', async (group) => {
     let nation: TestNationContract
-    let permissions: Array<PermissionType>
 
     group.before(async () => {
         nation = await createTestNation()
-
-        permissions = await PermissionType.query().where('type', Permissions.Location)
-
-        await assignPermissions(nation.adminUser, permissions)
     })
 
     test('ensure that updating a location requires a valid token', async () => {
@@ -430,14 +417,9 @@ test.group('Locations update', async (group) => {
 
 test.group('Location delete', async (group) => {
     let nation: TestNationContract
-    let permissions: Array<PermissionType>
 
     group.before(async () => {
         nation = await createTestNation()
-
-        permissions = await PermissionType.query().where('type', Permissions.Location)
-
-        await assignPermissions(nation.adminUser, permissions)
     })
 
     test('ensure that deletion of a location requires a valid token', async () => {
@@ -511,14 +493,10 @@ test.group('Location delete', async (group) => {
 test.group('Location upload', (group) => {
     let nation: TestNationContract
     let location: Location
-    let permissions: Array<PermissionType>
 
     group.before(async () => {
         nation = await createTestNation()
         location = await createTestLocation(nation.oid)
-        permissions = await PermissionType.query().where('type', Permissions.Location)
-
-        await assignPermissions(nation.adminUser, permissions)
     })
 
     test('ensure that uploading an image requires an attachment', async () => {
@@ -534,14 +512,10 @@ test.group('Location upload', (group) => {
     const coverImagePath = path.join(__dirname, 'data/cover.png')
     let nation: TestNationContract
     let location: Location
-    let permissions: Array<PermissionType>
 
     group.before(async () => {
         nation = await createTestNation()
         location = await createTestLocation(nation.oid)
-        permissions = await PermissionType.query().where('type', Permissions.Location)
-
-        await assignPermissions(nation.adminUser, permissions)
     })
 
     test('ensure that uploading images requires a valid token', async (assert) => {

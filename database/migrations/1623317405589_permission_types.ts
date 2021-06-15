@@ -7,7 +7,7 @@ export default class PermissionTypes extends BaseSchema {
     public async up() {
         this.schema.createTable(this.tableName, (table) => {
             table.increments('id')
-            table.string('type')
+            table.string('type').notNullable()
             table.timestamps(true)
         })
     }

@@ -15,6 +15,7 @@ import {
     LocationFactory,
     IndividualFactory,
     ContactFactory,
+    PermissionsTypeFactory,
     OpeningHourFactory,
     OpeningHourExceptionFactory,
 } from 'Database/factories/index'
@@ -91,17 +92,11 @@ export async function createTestNation(): Promise<TestNationContract> {
 }
 
 /**
- * Function that creates a test nation to use in testing
+ * Function that creates a test user to use in testing
  */
-export async function createTestUser(oid: number, admin: boolean) {
-    const data = {
-        fullname: 'test',
-        email: 'test@test.se',
-        password: 'test123',
-        nationAdmin: admin,
-        nation_id: oid,
-    }
-    return await UserFactory.merge(data).create()
+export async function createTestUser(nationId: number, nationAdmin: boolean) {
+    const password = 'randomuserpassword'
+    return await UserFactory.merge({ password, nationId, nationAdmin }).create()
 }
 
 /**
@@ -131,9 +126,7 @@ export async function createTestCategory() {
 }
 
 export async function createTestPermissionType() {
-    return PermissionType.create({
-        type: 'testPermission',
-    })
+    return PermissionsTypeFactory.create()
 }
 
 export async function createTestNews(oid: number) {

@@ -8,10 +8,10 @@ export default class UsersSchema extends BaseSchema {
         this.schema.createTable(this.tableName, (table) => {
             table.increments('id').primary()
             table.integer('nation_id').defaultTo(-1)
-            table.string('cover_img_src')
+            table.string('avatar_img_src')
             table.boolean('nation_admin').defaultTo(false)
-            table.string('fullname', 128).notNullable()
-            table.string('email', 255).notNullable()
+            table.string('full_name', 128).notNullable()
+            table.string('email', 255).notNullable().unique()
             table.string('password', 180).notNullable()
             table.string('remember_me_token').nullable()
             table.timestamps(true)

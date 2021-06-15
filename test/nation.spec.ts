@@ -67,7 +67,7 @@ test.group('Nation fetch', () => {
 
         const permissions = await PermissionType.query()
             .where('type', Permissions.Nation)
-            .where('type', Permissions.Location)
+            .where('type', Permissions.Locations)
 
         await assignPermissions(testNation.adminUser, permissions)
 
@@ -91,14 +91,9 @@ test.group('Nation fetch', () => {
 
 test.group('Nation update', (group) => {
     let nation: TestNationContract
-    let permissions: Array<PermissionType>
 
     group.before(async () => {
         nation = await createTestNation()
-
-        permissions = await PermissionType.query().where('type', Permissions.Nation)
-
-        await assignPermissions(nation.adminUser, permissions)
     })
 
     test('ensure that updating a nation requires a valid token', async (assert) => {
@@ -182,14 +177,9 @@ test.group('Nation upload', (group) => {
     const iconImagePath = path.join(__dirname, 'data/icon.png')
     const iconImagePath2 = path.join(__dirname, 'data/cover.png')
     let nation: TestNationContract
-    let permissions: Array<PermissionType>
 
     group.before(async () => {
         nation = await createTestNation()
-
-        permissions = await PermissionType.query().where('type', Permissions.User)
-
-        await assignPermissions(nation.adminUser, permissions)
     })
 
     test('ensure that uploading images requires a valid token', async (assert) => {

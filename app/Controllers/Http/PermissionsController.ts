@@ -1,13 +1,10 @@
 /**
- * The PermissionTypesController contains all the methods that are available to
+ * The PermissionsController contains all the methods that are available to
  * perform on {@link PermissionType | PermissionType- } and {@link Permission |
  * Permissions models} in the system.
  *
- * For now, its only a hook for fetching the available categories in the system
- *
- *
  * @category Controller
- * @module Permissions
+ * @module PermissionsController
  */
 import PermissionType from 'App/Models/PermissionType'
 import { Permissions } from 'App/Utils/Permissions'
@@ -32,13 +29,13 @@ export default class PermissionsController {
      */
     public async add({ bouncer, request }: HttpContextContract) {
         const { user, permissionType } = getPermissionData(request)
-        await bouncer.authorize('permissionRights', Permissions.Permission, user.nationId)
+        await bouncer.authorize('permissions', Permissions.UserPermissions, user.nationId)
 
         await user.related('permissions').create({
             permissionTypeId: permissionType?.id,
         })
 
-        await user.preload('permissions')
+        await user.load('permissions')
 
         return user.toJSON()
     }
@@ -48,7 +45,7 @@ export default class PermissionsController {
      */
     public async remove({ bouncer, request }: HttpContextContract) {
         const { user, permission } = getPermissionData(request)
-        await bouncer.authorize('permissionRights', Permissions.Permission, user.nationId)
+        await bouncer.authorize('permissions', Permissions.UserPermissions, user.nationId)
 
         await permission?.delete()
     }
