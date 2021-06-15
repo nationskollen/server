@@ -40,8 +40,6 @@ export const { actions } = Bouncer
                 return Bouncer.deny('Permission denied, user undefined', 401)
             }
 
-            // console.log(oid)
-
             // Make sure if a nationAdmin is performing the update, it is performed in the same nation
             if (user.nationAdmin && user.nationId == oid) {
                 return true

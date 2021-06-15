@@ -7,7 +7,7 @@
 export enum Permissions {
     Events = 'Events',
     Menus = 'Menus',
-    MenuItem = 'MenuItems',
+    MenuItem = 'MenuItem',
     Individuals = 'Individuals',
     Nation = 'Nation',
     News = 'News',
