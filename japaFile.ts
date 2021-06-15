@@ -61,6 +61,12 @@ function getTestFilesPattern() {
 // Configure test runner
 configure({
     files: getTestFilesPattern(),
-    before: [clearAssets, rollbackMigrations, runMigrations, startHttpServer, runPermissionCategoriesSeeding],
+    before: [
+        clearAssets,
+        rollbackMigrations,
+        runMigrations,
+        startHttpServer,
+        runPermissionCategoriesSeeding,
+    ],
     after: [rollbackMigrations, runMigrations, runSeeding, clearAssets],
 })
