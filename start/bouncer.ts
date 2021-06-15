@@ -37,8 +37,10 @@ export const { actions } = Bouncer
         'permissionRights',
         async (user: User | undefined, permission: string, oid: number | undefined) => {
             if (!user) {
-                return Bouncer.deny('Permission denied', 401)
+                return Bouncer.deny('Permission denied, user undefined', 401)
             }
+
+            // console.log(oid)
 
             // Make sure if a nationAdmin is performing the update, it is performed in the same nation
             if (user.nationAdmin && user.nationId == oid) {
@@ -46,13 +48,16 @@ export const { actions } = Bouncer
             }
 
             if (user.nationId != oid) {
-                return Bouncer.deny('Permission denied', 401)
+                return Bouncer.deny('Permission denied, user does not belong to nation id', 401)
             }
 
             // Extract the permissionType
             const type = await PermissionType.findBy('type', permission)
             if (!type) {
-                return Bouncer.deny('Permission denied', 401)
+                return Bouncer.deny(
+                    'Permission denied, specified permission type is undefined',
+                    401
+                )
             }
 
             // Load in the user permissions so that they are iterable
@@ -64,7 +69,7 @@ export const { actions } = Bouncer
             }
 
             // If all fails, return false and the bouncer will throw an exception
-            return Bouncer.deny('Permission denied', 401)
+            return Bouncer.deny('Permission denied, not enought permission rights', 401)
         }
     )
 

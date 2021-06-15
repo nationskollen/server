@@ -38,10 +38,10 @@ export default class OpeningHoursController {
      * create opening hour for a location
      */
     public async create({ bouncer, request }: HttpContextContract) {
-        await bouncer.authorize('permissionRights', Permissions.OpeningHours)
+        const location = getLocation(request)
+        await bouncer.authorize('permissionRights', Permissions.OpeningHours, location.nationId)
 
         const data = await getValidatedData(request, OpeningHourCreateValidator)
-        const location = getLocation(request)
 
         const relation =
             data.type === OpeningHourTypes.Default ? 'openingHours' : 'openingHourExceptions'
@@ -61,7 +61,11 @@ export default class OpeningHoursController {
      * Update opening hour in a location
      */
     public async update({ bouncer, request }: HttpContextContract) {
-        await bouncer.authorize('permissionRights', Permissions.OpeningHours)
+        await bouncer.authorize(
+            'permissionRights',
+            Permissions.OpeningHours,
+            getLocation(request).nationId
+        )
 
         const changes = await getValidatedData(request, OpeningHourUpdateValidator)
         const openingHour = getOpeningHour(request)
@@ -76,7 +80,11 @@ export default class OpeningHoursController {
      * Delete opening hour
      */
     public async delete({ bouncer, request }: HttpContextContract) {
-        await bouncer.authorize('permissionRights', Permissions.OpeningHours)
+        await bouncer.authorize(
+            'permissionRights',
+            Permissions.OpeningHours,
+            getLocation(request).nationId
+        )
 
         await getOpeningHour(request).delete()
     }

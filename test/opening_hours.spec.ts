@@ -3,13 +3,16 @@ import supertest from 'supertest'
 import Location from 'App/Models/Location'
 import { BASE_URL } from 'App/Utils/Constants'
 import OpeningHour from 'App/Models/OpeningHour'
+import PermissionType from 'App/Models/PermissionType'
 import { Days, OpeningHourTypes } from 'App/Utils/Time'
+import { Permissions } from 'App/Utils/Permissions'
 import {
     TestNationContract,
     createTestNation,
     createTestLocation,
     createTestOpeningHour,
     createTestExceptionOpeningHour,
+    assignPermissions,
 } from 'App/Utils/Test'
 
 test.group('Opening hours fetch', async (group) => {
@@ -93,10 +96,15 @@ test.group('Opening hours create', async (group) => {
 
     let nation: TestNationContract
     let location: Location
+    let permissions: Array<PermissionType>
 
     group.before(async () => {
         nation = await createTestNation()
         location = await createTestLocation(nation.oid)
+
+        permissions = await PermissionType.query().where('type', Permissions.OpeningHours)
+
+        await assignPermissions(nation.adminUser, permissions)
     })
 
     test('ensure that creating opening hours requires a valid token', async () => {
@@ -237,11 +245,16 @@ test.group('Opening hours create', async (group) => {
 
 test.group('Opening hours update', async (group) => {
     let nation: TestNationContract
+    let permissions: Array<PermissionType>
     let location: Location
 
     group.before(async () => {
         nation = await createTestNation()
         location = await createTestLocation(nation.oid)
+
+        permissions = await PermissionType.query().where('type', Permissions.OpeningHours)
+
+        await assignPermissions(nation.adminUser, permissions)
     })
 
     test('ensure that updating opening hours requires a valid token', async () => {
@@ -458,11 +471,16 @@ test.group('Opening hours update', async (group) => {
 
 test.group('Opening hours delete', async (group) => {
     let nation: TestNationContract
+    let permissions: Array<PermissionType>
     let location: Location
 
     group.before(async () => {
         nation = await createTestNation()
         location = await createTestLocation(nation.oid)
+
+        permissions = await PermissionType.query().where('type', Permissions.OpeningHours)
+
+        await assignPermissions(nation.adminUser, permissions)
     })
 
     test('ensure that deleting opening hours requires a valid token', async () => {

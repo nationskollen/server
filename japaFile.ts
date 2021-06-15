@@ -46,7 +46,7 @@ function getTestFilesPattern() {
     // lot of tests and running them takes time. If you want to test something
     // quick, you can uncomment the following line and specify the test file.
     // Remember to comment out this and then run all the tests.
-    // return ['test/activity.spec.ts']
+    // return ['test/permissions.spec.ts']
 }
 
 // Configure test runner

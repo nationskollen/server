@@ -41,9 +41,9 @@ export default class IndividualsController {
      * create a single individual
      */
     public async create({ bouncer, request }: HttpContextContract) {
-        await bouncer.authorize('permissionRights', Permissions.Individuals)
-
         const nation = getNation(request)
+        await bouncer.authorize('permissionRights', Permissions.Individuals, nation.oid)
+
         const data = await getValidatedData(request, IndividualCreateValidator)
 
         const individual = await nation.related('individuals').create(data)
@@ -55,9 +55,9 @@ export default class IndividualsController {
      * update a individual from system
      */
     public async update({ bouncer, request }: HttpContextContract) {
-        await bouncer.authorize('permissionRights', Permissions.Individuals)
-
         const individual = getIndividual(request)
+        await bouncer.authorize('permissionRights', Permissions.Individuals, individual.nationId)
+
         const changes = await getValidatedData(request, IndividualUpdateValidator)
 
         individual.merge(changes)
@@ -70,9 +70,9 @@ export default class IndividualsController {
      * delete a single individual from system
      */
     public async delete({ bouncer, request }: HttpContextContract) {
-        await bouncer.authorize('permissionRights', Permissions.Individuals)
-
         const individual = getIndividual(request)
+        await bouncer.authorize('permissionRights', Permissions.Individuals, individual.nationId)
+
         await individual.delete()
     }
 
@@ -80,9 +80,9 @@ export default class IndividualsController {
      * upload a file to a individual from system
      */
     public async upload({ bouncer, request }: HttpContextContract) {
-        await bouncer.authorize('permissionRights', Permissions.Individuals)
-
         const individual = getIndividual(request)
+        await bouncer.authorize('permissionRights', Permissions.Individuals, individual.nationId)
+
         const { profile } = await getValidatedData(request, IndividualUploadValidator)
         const profileName = await attemptFileUpload(profile)
 

@@ -38,7 +38,7 @@ Route.group(() => {
 
     Route.get('/users/:uid', 'UsersController.single').middleware(['auth', 'user:permissions'])
     Route.post('/nations/:id/users', 'UsersController.create').middleware(['auth', 'nation'])
-    Route.put('/users/:uid', 'UsersController.update').middleware(['auth', 'user', 'scope:admin'])
+    Route.put('/users/:uid', 'UsersController.update').middleware(['auth', 'user'])
     Route.post('/users/:uid/upload', 'UsersController.upload').middleware(['auth', 'user'])
     Route.delete('/users/:uid', 'UsersController.delete').middleware(['auth', 'user'])
 
