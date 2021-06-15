@@ -15,6 +15,15 @@ async function runMigrations() {
     })
 }
 
+async function runPermissionCategoriesSeeding() {
+    await execa.node('ace', ['db:seed', '--files', './database/seeders/PermissionType.ts'], {
+        stdio: 'inherit',
+    })
+    await execa.node('ace', ['db:seed', '--files', './database/seeders/Category.ts'], {
+        stdio: 'inherit',
+    })
+}
+
 async function runSeeding() {
     await execa.node('ace', ['db:seed'], {
         stdio: 'inherit',
@@ -52,6 +61,6 @@ function getTestFilesPattern() {
 // Configure test runner
 configure({
     files: getTestFilesPattern(),
-    before: [clearAssets, rollbackMigrations, runMigrations, startHttpServer, runSeeding],
+    before: [clearAssets, rollbackMigrations, runMigrations, startHttpServer, runPermissionCategoriesSeeding],
     after: [rollbackMigrations, runMigrations, runSeeding, clearAssets],
 })
