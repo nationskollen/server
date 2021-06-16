@@ -25,7 +25,7 @@ import User from 'App/Models/User'
 import Permission from 'App/Models/Permission'
 import PermissionType from 'App/Models/PermissionType'
 
-import NotAdminException from 'App/Exceptions/NotAdminExecption'
+import NotFoundException from 'App/Exceptions/NotFoundException'
 import UserNotPartOfNationException from 'App/Exceptions/UserNotPartOfNationException'
 import UserAlreadyNationAdminException from 'App/Exceptions/UserAlreadyNationAdminException'
 import UserAlreadyHasPermissionException from 'App/Exceptions/UserAlreadyHasPermissionException'
@@ -39,8 +39,8 @@ export default class PermissionMiddleware {
     ) {
         // Make sure that the authorized user is a nation admin so that the
         // requested action can be performed.
-        if (!auth?.user?.nationAdmin) {
-            throw new NotAdminException()
+        if (!auth?.user) {
+            throw new NotFoundException('No authorized user.')
         }
 
         // Extract the data in the request message

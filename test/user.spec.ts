@@ -1,8 +1,10 @@
 import test from 'japa'
 import User from 'App/Models/User'
+import PermissionType from 'App/Models/PermissionType'
 import path from 'path'
 import supertest from 'supertest'
 import { BASE_URL, HOSTNAME } from 'App/Utils/Constants'
+import { Permissions } from 'App/Utils/Permissions'
 import { NationFactory } from 'Database/factories/index'
 import {
     TestNationContract,
@@ -10,6 +12,7 @@ import {
     createTestUser,
     createStaffUser,
     toRelativePath,
+    assignPermissions,
 } from 'App/Utils/Test'
 
 test.group('User(s) fetch', (group) => {
@@ -146,6 +149,32 @@ test.group('User(s) create', async (group) => {
             .expect(401)
     })
 
+    test('ensure that creating a user in a nation with the same email as a user in another nation is not possible', async () => {
+        const nation2 = await createTestNation()
+
+        await supertest(BASE_URL)
+            .post(`/nations/${nation2.oid}/users`)
+            .set('Authorization', 'Bearer ' + nation2.token)
+            .send({
+                full_name: 'nation2 fadde',
+                email: 'nation2testingemail@newmail.se',
+                password: 'asdfasdfasdf',
+                nation_admin: true,
+            })
+            .expect(200)
+
+        await supertest(BASE_URL)
+            .post(`/nations/${nation.oid}/users`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send({
+                full_name: 'nation2 fadde',
+                email: 'nation2testingemail@newmail.se',
+                password: 'asdfasdfasdf',
+                nation_admin: true,
+            })
+            .expect(500)
+    })
+
     test('ensure that validation for creating user(s) works', async () => {
         // Password length less than 8 for example
         await supertest(BASE_URL)
@@ -166,6 +195,35 @@ test.group('User(s) create', async (group) => {
                 nationAdmin: '1234',
             })
             .expect(422)
+    })
+
+    test('ensure a staff user with permission >>User<< can create users', async () => {
+        const tmpUser = await createStaffUser(nation.oid, false)
+
+        await supertest(BASE_URL)
+            .post(`/nations/${nation.oid}/users`)
+            .set('Authorization', 'Bearer ' + tmpUser.token)
+            .send({
+                full_name: 'fadde',
+                email: 'testPermissionCreateUser@mail.se',
+                password: 'asdfasdf',
+                nation_admin: false,
+            })
+            .expect(401)
+
+        const permissions = await PermissionType.query().where('type', Permissions.Users)
+        await assignPermissions(tmpUser.user, permissions)
+
+        await supertest(BASE_URL)
+            .post(`/nations/${nation.oid}/users`)
+            .set('Authorization', 'Bearer ' + tmpUser.token)
+            .send({
+                full_name: 'fadde',
+                email: 'testPermissionCreateUser@mail.se',
+                password: 'asdfasdf',
+                nation_admin: false,
+            })
+            .expect(200)
     })
 })
 
@@ -285,6 +343,23 @@ test.group('User(s) upload', (group) => {
         await supertest(HOSTNAME).get(toRelativePath(data.avatar_img_src)).expect(200)
     })
 
+    test('ensure that a user can upload avatar images to itself', async (assert) => {
+        const tmpUser = await createStaffUser(nation.oid, false)
+
+        const { text } = await supertest(BASE_URL)
+            .post(`/users/${tmpUser.user.id}/upload`)
+            .set('Authorization', 'Bearer ' + tmpUser.token)
+            .attach('avatar', avatarImagePath)
+            .expect(200)
+
+        const data = JSON.parse(text)
+
+        assert.isNotNull(data.avatar_image_src)
+
+        // Ensure that the uploaded images can be accessed via the specified URL
+        await supertest(HOSTNAME).get(toRelativePath(data.avatar_img_src)).expect(200)
+    })
+
     test('ensure that old uploads are removed', async (assert) => {
         const { text } = await supertest(BASE_URL)
             .post(`/users/${user.id}/upload`)
@@ -384,5 +459,23 @@ test.group('User(s) Deletion', (group) => {
             .delete(`/users/${user.id}`)
             .set('Authorization', 'Bearer ' + nation2.token)
             .expect(401)
+    })
+
+    test('ensure a staff user with permission >>User<< can delete users', async () => {
+        const tmpUser = await createStaffUser(nation.oid, false)
+        const user = await createTestUser(nation.oid, false)
+
+        await supertest(BASE_URL)
+            .delete(`/users/${user.id}`)
+            .set('Authorization', 'Bearer ' + tmpUser.token)
+            .expect(401)
+
+        const permissions = await PermissionType.query().where('type', Permissions.Users)
+        await assignPermissions(tmpUser.user, permissions)
+
+        await supertest(BASE_URL)
+            .delete(`/users/${user.id}`)
+            .set('Authorization', 'Bearer ' + tmpUser.token)
+            .expect(200)
     })
 })

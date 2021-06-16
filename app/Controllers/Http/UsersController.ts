@@ -72,10 +72,12 @@ export default class UsersController {
     /**
      * Method to upload an image to a user in the system
      */
-    public async upload({ bouncer, request }: HttpContextContract) {
+    public async upload({ auth, bouncer, request }: HttpContextContract) {
         const user = getUser(request)
 
-        await bouncer.authorize('permissions', Permissions.Users, user.nationId)
+        if (auth?.user?.id != user.id) {
+            await bouncer.authorize('permissions', Permissions.Users, user.nationId)
+        }
 
         const { avatar } = await getValidatedData(request, UserUploadValidator)
         const avatarName = await attemptFileUpload(avatar)
