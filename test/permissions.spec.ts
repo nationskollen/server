@@ -220,7 +220,7 @@ test.group('Permissions add', async (group) => {
         assert.equal(permissionTypes[2].id, data.permissions[2].permission_type_id)
     })
 
-    test('ensure we cannot add existing permission(s) from a user', async () => {
+    test('ensure we cannot add existing permission(s) to a user', async () => {
         const permission = await createTestPermissionType()
 
         await supertest(BASE_URL)

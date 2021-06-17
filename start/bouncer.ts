@@ -45,11 +45,6 @@ export const { actions } = Bouncer
                 return Bouncer.deny('Permission denied, nation id undefined', 401)
             }
 
-            // Make sure if a nationAdmin is performing the update, it is performed in the same nation
-            if (user.nationAdmin && user.nationId == oid) {
-                return true
-            }
-
             if (user.nationId != oid) {
                 return Bouncer.deny('Permission denied, user does not belong to nation id', 401)
             }
@@ -61,6 +56,11 @@ export const { actions } = Bouncer
                     'Permission denied, specified permission type is undefined',
                     401
                 )
+            }
+
+            // Make sure if a nation admin is performing the update, it is performed in the same nation
+            if (user.nationAdmin) {
+                return true
             }
 
             const query = await Permission.query()

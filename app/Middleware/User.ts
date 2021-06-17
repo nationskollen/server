@@ -20,7 +20,6 @@ import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import UserNotFoundException from 'App/Exceptions/UserNotFoundException'
 import UserNotPartOfNationException from 'App/Exceptions/UserNotPartOfNationException'
 import UserAlreadyNationAdminException from 'App/Exceptions/UserAlreadyNationAdminException'
-// import UserNotAdminException from 'App/Exceptions/UserNotAdminException'
 
 export default class UserMiddleware {
     public async handle(
