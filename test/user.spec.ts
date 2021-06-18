@@ -3,7 +3,7 @@ import User from 'App/Models/User'
 import PermissionType from 'App/Models/PermissionType'
 import path from 'path'
 import supertest from 'supertest'
-import * as faker from 'faker';
+import * as faker from 'faker'
 import { BASE_URL, HOSTNAME } from 'App/Utils/Constants'
 import { Permissions } from 'App/Utils/Permissions'
 import { NationFactory } from 'Database/factories/index'
@@ -101,7 +101,7 @@ test.group('User(s) create', async (group) => {
     let nation: TestNationContract
     const userData = {
         full_name: faker.name.firstName(),
-        email:  faker.internet.email(),
+        email: faker.internet.email(),
         password: faker.internet.password(),
         nation_admin: false,
     }
@@ -170,7 +170,7 @@ test.group('User(s) create', async (group) => {
             .set('Authorization', 'Bearer ' + nation.token)
             .send({
                 full_name: 'nation2 fadde',
-                email: data, 
+                email: data,
                 password: 'asdfasdfasdf',
                 nation_admin: true,
             })
