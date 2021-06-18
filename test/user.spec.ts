@@ -3,6 +3,7 @@ import User from 'App/Models/User'
 import PermissionType from 'App/Models/PermissionType'
 import path from 'path'
 import supertest from 'supertest'
+import * as faker from 'faker';
 import { BASE_URL, HOSTNAME } from 'App/Utils/Constants'
 import { Permissions } from 'App/Utils/Permissions'
 import { NationFactory } from 'Database/factories/index'
@@ -99,9 +100,9 @@ test.group('User(s) fetch', (group) => {
 test.group('User(s) create', async (group) => {
     let nation: TestNationContract
     const userData = {
-        full_name: 'UserTest!!!',
-        email: 'test@user.se',
-        password: 'Loremipsum',
+        full_name: faker.name.firstName(),
+        email:  faker.internet.email(),
+        password: faker.internet.password(),
         nation_admin: false,
     }
 
@@ -151,13 +152,14 @@ test.group('User(s) create', async (group) => {
 
     test('ensure that creating a user in a nation with the same email as a user in another nation is not possible', async () => {
         const nation2 = await createTestNation()
+        const data = faker.internet.email()
 
         await supertest(BASE_URL)
             .post(`/nations/${nation2.oid}/users`)
             .set('Authorization', 'Bearer ' + nation2.token)
             .send({
                 full_name: 'nation2 fadde',
-                email: 'nation2testingemail@newmail.se',
+                email: data,
                 password: 'asdfasdfasdf',
                 nation_admin: true,
             })
@@ -168,7 +170,7 @@ test.group('User(s) create', async (group) => {
             .set('Authorization', 'Bearer ' + nation.token)
             .send({
                 full_name: 'nation2 fadde',
-                email: 'nation2testingemail@newmail.se',
+                email: data, 
                 password: 'asdfasdfasdf',
                 nation_admin: true,
             })
