@@ -60,7 +60,6 @@ test.group('User(s) fetch', (group) => {
         const data = JSON.parse(text)
         assert.equal(data.full_name, user.fullName)
         assert.equal(data.email, user.email)
-        assert.equal(data.nation_admin, user.nationAdmin)
     })
 
     test('ensure we cannot fetch a user from a different nation', async () => {
@@ -103,7 +102,6 @@ test.group('User(s) create', async (group) => {
         full_name: faker.name.firstName(),
         email: faker.internet.email(),
         password: faker.internet.password(),
-        nation_admin: false,
     }
 
     group.before(async () => {
@@ -136,8 +134,6 @@ test.group('User(s) create', async (group) => {
         const data = JSON.parse(text)
         assert.equal(data.full_name, userData.full_name)
         assert.equal(data.email, userData.email)
-        assert.equal(data.nation_admin, userData.nation_admin)
-        assert.isFalse(data.nation_admin)
     })
 
     test('ensure that an admin cannot create user(s) for the incorrect nation', async () => {
@@ -161,7 +157,6 @@ test.group('User(s) create', async (group) => {
                 full_name: 'nation2 fadde',
                 email: data,
                 password: 'asdfasdfasdf',
-                nation_admin: true,
             })
             .expect(200)
 
@@ -172,7 +167,6 @@ test.group('User(s) create', async (group) => {
                 full_name: 'nation2 fadde',
                 email: data,
                 password: 'asdfasdfasdf',
-                nation_admin: true,
             })
             .expect(500)
     })
@@ -209,7 +203,6 @@ test.group('User(s) create', async (group) => {
                 full_name: 'fadde',
                 email: 'testPermissionCreateUser@mail.se',
                 password: 'asdfasdf',
-                nation_admin: false,
             })
             .expect(401)
 
@@ -223,7 +216,6 @@ test.group('User(s) create', async (group) => {
                 full_name: 'fadde',
                 email: 'testPermissionCreateUser@mail.se',
                 password: 'asdfasdf',
-                nation_admin: false,
             })
             .expect(200)
     })
@@ -234,10 +226,9 @@ test.group('User(s) update', async (group) => {
     let user: User
     let adminUser: User
     const userData = {
-        full_name: 'UserTest!!!',
-        email: 'asdfasdfasdflkjkljklj@user.se',
-        password: 'Loremipsum',
-        nation_admin: false,
+        full_name: faker.name.firstName(),
+        email: faker.internet.email(),
+        password: faker.internet.password(),
     }
 
     group.before(async () => {

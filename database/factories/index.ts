@@ -179,7 +179,6 @@ export const UserFactory = Factory.define(User, ({ faker }) => {
         email: faker.internet.email(),
         fullName: faker.name.firstName(),
         password: faker.internet.password(),
-        nationAdmin: false,
     }
 })
     .state('admin', (user) => (user.nationAdmin = true))

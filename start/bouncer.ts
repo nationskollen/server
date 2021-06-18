@@ -75,6 +75,67 @@ export const { actions } = Bouncer
             return true
         }
     )
+    .define(
+        'allowedToAddPermissions',
+        async (authorizedUser: User | undefined, permissionType: PermissionType | null) => {
+            if (!authorizedUser) {
+                return Bouncer.deny('Permission denied, authorized user undefined', 401)
+            }
+
+            // Extract the permission
+            if (!permissionType) {
+                return Bouncer.deny(
+                    'Permission denied, specified permission type is undefined',
+                    401
+                )
+            }
+
+            // Make sure if a nation admin is performing the update, it is performed in the same nation
+            if (authorizedUser.nationAdmin) {
+                return true
+            }
+
+            const query = await Permission.query()
+                .where('user_id', authorizedUser.id)
+                .where('permission_type_id', permissionType.id)
+                .first()
+
+            if (!query) {
+                return Bouncer.deny('Permission denied, Insufficient permission rights', 401)
+            }
+
+            return true
+        }
+    )
+    .define(
+        'allowedToRemovePermissions',
+        async (authorizedUser: User | undefined, permission: Permission | null) => {
+            if (!authorizedUser) {
+                return Bouncer.deny('Permission denied, authorized user undefined', 401)
+            }
+
+            // Extract the permission
+            if (!permission) {
+                return Bouncer.deny('Permission denied, specified permission is undefined', 401)
+            }
+
+            // Make sure if a nation admin is performing the update, it is performed in the same nation
+            if (authorizedUser.nationAdmin) {
+                return true
+            }
+
+            const query = await Permission.query()
+                .where('user_id', authorizedUser.id)
+                .where('permission_type_id', permission.permissionTypeId)
+                .first()
+
+            if (!query) {
+                return Bouncer.deny('Permission denied, Insufficient permission rights', 401)
+            }
+
+            return true
+        }
+    )
 
 /*
 |--------------------------------------------------------------------------

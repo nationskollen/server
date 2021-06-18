@@ -16,7 +16,6 @@ export default class UserCreateValidator {
             rules.minLength(MIN_LENGTH_PASSWORD),
             rules.maxLength(MAX_LENGTH_PASSWORD),
         ]),
-        nation_admin: schema.boolean(),
     })
 
     public messages = {}
