@@ -168,7 +168,7 @@ test.group('User(s) create', async (group) => {
                 email: data,
                 password: 'asdfasdfasdf',
             })
-            .expect(500)
+            .expect(422)
     })
 
     test('ensure that validation for creating user(s) works', async () => {

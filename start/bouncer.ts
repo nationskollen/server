@@ -63,6 +63,8 @@ export const { actions } = Bouncer
                 return true
             }
 
+            // We query for the permission in order to check if the user
+            // performing the action has sufficient permissions.
             const query = await Permission.query()
                 .where('user_id', user.id)
                 .where('permission_type_id', type.id)
@@ -76,8 +78,12 @@ export const { actions } = Bouncer
         }
     )
     .define(
-        'allowedToAddPermissions',
-        async (authorizedUser: User | undefined, permissionType: PermissionType | null) => {
+        'allowedToWithinPermissions',
+        async (
+            authorizedUser: User | undefined,
+            permissionType: PermissionType | null,
+            permission: Permission | null
+        ) => {
             if (!authorizedUser) {
                 return Bouncer.deny('Permission denied, authorized user undefined', 401)
             }
@@ -90,14 +96,25 @@ export const { actions } = Bouncer
                 )
             }
 
-            // Make sure if a nation admin is performing the update, it is performed in the same nation
+            // Make sure if a nation admin is performing the action
             if (authorizedUser.nationAdmin) {
                 return true
             }
 
+            // Since we want to use same defined policy, we have to check
+            // wether we input the permission type or the permission directly
+            let type: number = -1
+            if (permissionType) {
+                type = permissionType.id
+            } else if (permission) {
+                type = permission.permissionTypeId
+            }
+
+            // We query for the permission in order to check if the user
+            // performing the action has sufficient permissions.
             const query = await Permission.query()
                 .where('user_id', authorizedUser.id)
-                .where('permission_type_id', permissionType.id)
+                .where('permission_type_id', type)
                 .first()
 
             if (!query) {
@@ -107,36 +124,6 @@ export const { actions } = Bouncer
             return true
         }
     )
-    .define(
-        'allowedToRemovePermissions',
-        async (authorizedUser: User | undefined, permission: Permission | null) => {
-            if (!authorizedUser) {
-                return Bouncer.deny('Permission denied, authorized user undefined', 401)
-            }
-
-            // Extract the permission
-            if (!permission) {
-                return Bouncer.deny('Permission denied, specified permission is undefined', 401)
-            }
-
-            // Make sure if a nation admin is performing the update, it is performed in the same nation
-            if (authorizedUser.nationAdmin) {
-                return true
-            }
-
-            const query = await Permission.query()
-                .where('user_id', authorizedUser.id)
-                .where('permission_type_id', permission.permissionTypeId)
-                .first()
-
-            if (!query) {
-                return Bouncer.deny('Permission denied, Insufficient permission rights', 401)
-            }
-
-            return true
-        }
-    )
-
 /*
 |--------------------------------------------------------------------------
 | Bouncer Policies
