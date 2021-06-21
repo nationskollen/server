@@ -532,7 +532,37 @@ test.group('User(s) Deletion', (group) => {
             .expect(404)
     })
 
-    test('ensure that admins can delete an admin', async () => {
+    test('ensure that admins can delete themselves', async () => {
+        const user = await createStaffUser(nation.oid, true)
+
+        await supertest(BASE_URL)
+            .delete(`/users/${user.user.id}`)
+            .set('Authorization', 'Bearer ' + user.token)
+            .expect(401)
+
+        await supertest(BASE_URL)
+            .get(`/users/${user.user.id}`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .expect(200)
+    })
+
+    test('ensure that staff users can delete themselves with appropriate permission', async () => {
+        const tmpStaff = await createStaffUser(nation.oid, false)
+        const permissiontypes = await PermissionType.query().where('type', Permissions.Users)
+        await assignPermissions(tmpStaff.user, permissiontypes)
+
+        await supertest(BASE_URL)
+            .delete(`/users/${tmpStaff.user.id}`)
+            .set('Authorization', 'Bearer ' + tmpStaff.token)
+            .expect(401)
+
+        await supertest(BASE_URL)
+            .get(`/users/${tmpStaff.user.id}`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .expect(200)
+    })
+
+    test('ensure that admins cannot delete an admin user', async () => {
         const user = await createTestUser(nation.oid, true)
 
         await supertest(BASE_URL)

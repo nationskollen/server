@@ -64,6 +64,8 @@ export default class UsersController {
      */
     public async delete({ bouncer, request }: HttpContextContract) {
         const user = getUser(request)
+
+        await bouncer.authorize('notSelf', user.id)
         await bouncer.authorize('permissions', Permissions.Users, user.nationId)
 
         await user.delete()

@@ -111,6 +111,24 @@ export const { actions } = Bouncer
             return true
         }
     )
+    .define('notSelf', async (authorizedUser: User | undefined, requestedUserId: number) => {
+        if (!authorizedUser) {
+            return Bouncer.deny('Permission denied, authorized user undefined', 401)
+        }
+
+        if (!requestedUserId) {
+            return Bouncer.deny('Permission denied, requested user id undefined', 401)
+        }
+
+        if (authorizedUser.id == requestedUserId) {
+            return Bouncer.deny(
+                'Permission denied, not allowed to delete currently authorized user',
+                401
+            )
+        }
+
+        return true
+    })
 /*
 |--------------------------------------------------------------------------
 | Bouncer Policies
