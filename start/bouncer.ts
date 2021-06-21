@@ -88,15 +88,7 @@ export const { actions } = Bouncer
                 return Bouncer.deny('Permission denied, authorized user undefined', 401)
             }
 
-            // Extract the permission
-            if (!permissionType) {
-                return Bouncer.deny(
-                    'Permission denied, specified permission type is undefined',
-                    401
-                )
-            }
-
-            // Make sure if a nation admin is performing the action
+            // Make sure if a nation admin is performing the action.
             if (authorizedUser.nationAdmin) {
                 return true
             }
@@ -108,10 +100,15 @@ export const { actions } = Bouncer
                 type = permissionType.id
             } else if (permission) {
                 type = permission.permissionTypeId
+            } else {
+                return Bouncer.deny(
+                    'Permission denied, specified permission type is undefined',
+                    401
+                )
             }
 
-            // We query for the permission in order to check if the user
-            // performing the action has sufficient permissions.
+            // We query for the permission in authorized user in order to check
+            // if the user performing the action has sufficient permissions.
             const query = await Permission.query()
                 .where('user_id', authorizedUser.id)
                 .where('permission_type_id', type)
