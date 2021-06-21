@@ -82,7 +82,6 @@ export const { actions } = Bouncer
         async (
             authorizedUser: User | undefined,
             permissionType: PermissionType | null,
-            permission: Permission | null
         ) => {
             if (!authorizedUser) {
                 return Bouncer.deny('Permission denied, authorized user undefined', 401)
@@ -93,14 +92,8 @@ export const { actions } = Bouncer
                 return true
             }
 
-            // Since we want to use same defined policy, we have to check
-            // wether we input the permission type or the permission directly
-            let type: number = -1
-            if (permissionType) {
-                type = permissionType.id
-            } else if (permission) {
-                type = permission.permissionTypeId
-            } else {
+            // Check so that the provided type is defined
+            if (!permissionType) {
                 return Bouncer.deny(
                     'Permission denied, specified permission type is undefined',
                     401
@@ -111,7 +104,7 @@ export const { actions } = Bouncer
             // if the user performing the action has sufficient permissions.
             const query = await Permission.query()
                 .where('user_id', authorizedUser.id)
-                .where('permission_type_id', type)
+                .where('permission_type_id', permissionType.id)
                 .first()
 
             if (!query) {

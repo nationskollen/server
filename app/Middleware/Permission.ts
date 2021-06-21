@@ -75,6 +75,10 @@ export default class PermissionMiddleware {
         }
 
         // extract the permission type model
+        // No need to really check wether the type exists or not, since earlier
+        // we check that if the user has a permission model corresponding to a
+        // permission type. Which in itself should make sure that the
+        // permission type exists
         const permissionType = await PermissionType.findBy('id', data.permission_type_id)
 
         // Store the values in an object in the request contract

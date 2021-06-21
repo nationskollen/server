@@ -30,7 +30,7 @@ export default class PermissionsController {
     public async add({ bouncer, request }: HttpContextContract) {
         const { user, permissionType } = getPermissionData(request)
 
-        await bouncer.authorize('allowedToWithinPermissions', permissionType, null)
+        await bouncer.authorize('allowedToWithinPermissions', permissionType)
         await bouncer.authorize('permissions', Permissions.UserPermissions, user.nationId)
 
         await user.related('permissions').create({
@@ -46,9 +46,9 @@ export default class PermissionsController {
      * remove user(s) permission access right
      */
     public async remove({ bouncer, request }: HttpContextContract) {
-        const { user, permission } = getPermissionData(request)
+        const { user, permission, permissionType } = getPermissionData(request)
 
-        await bouncer.authorize('allowedToWithinPermissions', null, permission)
+        await bouncer.authorize('allowedToWithinPermissions', permissionType)
         await bouncer.authorize('permissions', Permissions.UserPermissions, user.nationId)
 
         await permission?.delete()
