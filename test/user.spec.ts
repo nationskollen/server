@@ -532,7 +532,7 @@ test.group('User(s) Deletion', (group) => {
             .expect(404)
     })
 
-    test('ensure that admins can delete themselves', async () => {
+    test('ensure that admins can not delete themselves', async () => {
         const user = await createStaffUser(nation.oid, true)
 
         await supertest(BASE_URL)
