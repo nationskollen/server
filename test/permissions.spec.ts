@@ -86,7 +86,7 @@ test.group('Permissions add', async (group) => {
             .expect(401)
     })
 
-    test('ensure that adding a permission requires an admin token', async () => {
+    test('ensure that adding a permission to a user requires an authorized user with permission for it', async () => {
         const permission = await createTestPermissionType()
 
         await supertest(BASE_URL)
@@ -146,10 +146,10 @@ test.group('Permissions add', async (group) => {
             .expect(401)
     })
 
-    test('ensure we cannot add a user non-existant permissions', async () => {
+    test('ensure we cannot add a user non-existing permission(s)', async () => {
         await supertest(BASE_URL)
             .post(`/permissions`)
-            .set('Authorization', 'Bearer ' + nation.staffToken)
+            .set('Authorization', 'Bearer ' + nation.token)
             .send({
                 user_id: user.id,
                 permission_type_id: 99999999999,
@@ -158,29 +158,56 @@ test.group('Permissions add', async (group) => {
     })
 
     test('ensure adding a permission to a another user as a staff user with the correct permissions', async () => {
-        const permission = await createTestPermissionType()
-        const permissions = await PermissionType.query().where('type', Permissions.UserPermissions)
-        const permissions2 = await PermissionType.query().where('type', permission.type)
+        const permissiontype = await createTestPermissionType()
+        const permissiontypes = await PermissionType.query().where(
+            'type',
+            Permissions.UserPermissions
+        )
+        const permissiontypes2 = await PermissionType.query().where('type', permissiontype.type)
 
-        await assignPermissions(nation.staffUser, permissions)
-        await assignPermissions(nation.staffUser, permissions2)
+        await assignPermissions(nation.staffUser, permissiontypes)
+        await assignPermissions(nation.staffUser, permissiontypes2)
 
         await supertest(BASE_URL)
             .post(`/permissions`)
             .set('Authorization', 'Bearer ' + nation.staffToken)
             .send({
                 user_id: user.id,
-                permission_type_id: permission.id,
+                permission_type_id: permissiontype.id,
             })
             .expect(200)
+    })
+
+    test('ensure adding a permission to a another user as a staff user with the missing permissions is not viable', async () => {
+        const permissiontype = await createTestPermissionType()
+        const permissiontypes = await PermissionType.query().where(
+            'type',
+            Permissions.UserPermissions
+        )
+
+        await assignPermissions(nation.staffUser, permissiontypes)
+
+        await supertest(BASE_URL)
+            .post(`/permissions`)
+            .set('Authorization', 'Bearer ' + nation.staffToken)
+            .send({
+                user_id: user.id,
+                permission_type_id: permissiontype.id,
+            })
+            .expect(401)
     })
 
     test('ensure adding a permission to a another user as a staff in another nation is not possible', async () => {
         const permission = await createTestPermissionType()
         const tmpNation = await createTestNation()
         const otherUser = await createTestUser(tmpNation.oid, false)
-        const permissions = await PermissionType.query().where('type', Permissions.UserPermissions)
-        await assignPermissions(nation.staffUser, permissions)
+        const permissiontypes = await PermissionType.query().where(
+            'type',
+            Permissions.UserPermissions
+        )
+        const permissiontypes2 = await PermissionType.query().where('type', permission.type)
+        await assignPermissions(nation.staffUser, permissiontypes)
+        await assignPermissions(nation.staffUser, permissiontypes2)
 
         await supertest(BASE_URL)
             .post(`/permissions`)
@@ -319,6 +346,19 @@ test.group('Permissions remove', async (group) => {
             .expect(422)
     })
 
+    test('ensure we cannot remove permission from a non-existant user as staff', async () => {
+        const permission = await createTestPermissionType()
+
+        await supertest(BASE_URL)
+            .delete(`/permissions`)
+            .set('Authorization', 'Bearer ' + nation.staffToken)
+            .send({
+                user_id: 99999999999,
+                permission_type_id: permission.id,
+            })
+            .expect(422)
+    })
+
     test('ensure we can remove permission from a user as a staff user with correct permissions', async () => {
         const permission = await createTestPermissionType()
 
@@ -351,8 +391,13 @@ test.group('Permissions remove', async (group) => {
         const permission = await createTestPermissionType()
         const tmpNation = await createTestNation()
         const tmpUser = await createTestUser(tmpNation.oid, false)
-        const permissions = await PermissionType.query().where('type', Permissions.UserPermissions)
-        await assignPermissions(nation.staffUser, permissions)
+        const permissiontypes = await PermissionType.query().where(
+            'type',
+            Permissions.UserPermissions
+        )
+        const permissiontypes2 = await PermissionType.query().where('type', permission.type)
+        await assignPermissions(nation.staffUser, permissiontypes)
+        await assignPermissions(nation.staffUser, permissiontypes2)
 
         await supertest(BASE_URL)
             .delete(`/permissions`)
@@ -381,8 +426,13 @@ test.group('Permissions remove', async (group) => {
     test('ensure we cannot remove permission from an admin user as a staff, event with permission rights', async () => {
         const permission = await createTestPermissionType()
         const tmpUser = await createTestUser(nation.oid, true)
-        const permissions = await PermissionType.query().where('type', Permissions.UserPermissions)
-        await assignPermissions(nation.staffUser, permissions)
+        const permissiontypes = await PermissionType.query().where(
+            'type',
+            Permissions.UserPermissions
+        )
+        const permissiontypes2 = await PermissionType.query().where('type', permission.type)
+        await assignPermissions(nation.staffUser, permissiontypes)
+        await assignPermissions(nation.staffUser, permissiontypes2)
 
         await supertest(BASE_URL)
             .delete(`/permissions`)

@@ -49,13 +49,13 @@ async function startHttpServer() {
 }
 
 function getTestFilesPattern() {
-    // return ['test/**/*.spec.ts']
+    return ['test/**/*.spec.ts']
 
     // Below is for running a single test file. This is because we now have a
     // lot of tests and running them takes time. If you want to test something
     // quick, you can uncomment the following line and specify the test file.
     // Remember to comment out this and then run all the tests.
-    return ['test/permissions.spec.ts']
+    // return ['test/user.spec.ts']
 }
 
 // Configure test runner

@@ -94,13 +94,22 @@ test.group('User(s) fetch', (group) => {
             .set('Authorization', 'Bearer ' + nation.token)
             .expect(404)
     })
+
+    test('ensure that fetching while not authenticated fails', async () => {
+        const nation = await createTestNation()
+
+        await supertest(BASE_URL)
+            .get(`/nations/${nation.oid}/users`)
+            .set('Authorization', 'Bearer ' + 'invalid token')
+            .expect(401)
+    })
 })
 
 test.group('User(s) create', async (group) => {
     let nation: TestNationContract
     const userData = {
         full_name: faker.name.firstName(),
-        email: faker.internet.email(),
+        email: faker.unique(faker.internet.email),
         password: faker.internet.password(),
     }
 
@@ -116,7 +125,7 @@ test.group('User(s) create', async (group) => {
             .expect(401)
     })
 
-    test('ensure that creating a user requires an admin token', async () => {
+    test('ensure that creating a user requires valid permissions', async () => {
         await supertest(BASE_URL)
             .post(`/nations/${nation.oid}/users`)
             .set('Authorization', 'Bearer ' + nation.staffToken)
@@ -148,14 +157,14 @@ test.group('User(s) create', async (group) => {
 
     test('ensure that creating a user in a nation with the same email as a user in another nation is not possible', async () => {
         const nation2 = await createTestNation()
-        const data = faker.internet.email()
+        const email = faker.unique(faker.internet.email)
 
         await supertest(BASE_URL)
             .post(`/nations/${nation2.oid}/users`)
             .set('Authorization', 'Bearer ' + nation2.token)
             .send({
                 full_name: 'nation2 fadde',
-                email: data,
+                email: email,
                 password: 'asdfasdfasdf',
             })
             .expect(200)
@@ -165,7 +174,7 @@ test.group('User(s) create', async (group) => {
             .set('Authorization', 'Bearer ' + nation.token)
             .send({
                 full_name: 'nation2 fadde',
-                email: data,
+                email: email,
                 password: 'asdfasdfasdf',
             })
             .expect(422)
@@ -223,21 +232,21 @@ test.group('User(s) create', async (group) => {
 
 test.group('User(s) update', async (group) => {
     let nation: TestNationContract
-    let user: User
     let adminUser: User
     const userData = {
         full_name: faker.name.firstName(),
-        email: faker.internet.email(),
+        email: faker.unique(faker.internet.email),
         password: faker.internet.password(),
     }
 
     group.before(async () => {
         nation = await createTestNation()
-        user = await createTestUser(nation.oid, false)
         adminUser = await createTestUser(nation.oid, true)
     })
 
     test('ensure that updating a user requires a valid token', async () => {
+        const user = await createTestUser(nation.oid, false)
+
         await supertest(BASE_URL)
             .put(`/users/${user.id}`)
             .set('Authorization', 'Bearer ' + 'invalidToken')
@@ -245,7 +254,9 @@ test.group('User(s) update', async (group) => {
             .expect(401)
     })
 
-    test('ensure that updating a user requires an admin token', async () => {
+    test('ensure that updating a user requires valid permissions', async () => {
+        const user = await createTestUser(nation.oid, false)
+
         await supertest(BASE_URL)
             .put(`/users/${user.id}`)
             .set('Authorization', 'Bearer ' + nation.staffToken)
@@ -254,6 +265,8 @@ test.group('User(s) update', async (group) => {
     })
 
     test('ensure that admins can update a user', async (assert) => {
+        const user = await createTestUser(nation.oid, false)
+
         const { text } = await supertest(BASE_URL)
             .put(`/users/${user.id}`)
             .set('Authorization', 'Bearer ' + nation.token)
@@ -264,7 +277,62 @@ test.group('User(s) update', async (group) => {
         assert.notDeepEqual(data, user)
     })
 
+    test('ensure that staff can update a user with correct permissions', async (assert) => {
+        const user = await createTestUser(nation.oid, false)
+        const tmpStaff = await createStaffUser(nation.oid, false)
+
+        await supertest(BASE_URL)
+            .put(`/users/${user.id}`)
+            .set('Authorization', 'Bearer ' + tmpStaff.token)
+            .send(userData)
+            .expect(401)
+
+        const permissiontypes = await PermissionType.query().where('type', Permissions.Users)
+        await assignPermissions(tmpStaff.user, permissiontypes)
+
+        const { text } = await supertest(BASE_URL)
+            .put(`/users/${user.id}`)
+            .set('Authorization', 'Bearer ' + tmpStaff.token)
+            .send({
+                ...userData,
+                email: faker.unique(faker.internet.email),
+            })
+            .expect(200)
+
+        const data = JSON.parse(text)
+        assert.notDeepEqual(data, user)
+    })
+
+    test('ensure that staff cannot update a user with incorrect/missing permissions', async () => {
+        const user = await createTestUser(nation.oid, false)
+
+        await supertest(BASE_URL)
+            .put(`/users/${user.id}`)
+            .set('Authorization', 'Bearer ' + nation.staffToken)
+            .send({
+                ...userData,
+                email: faker.unique(faker.internet.email),
+            })
+            .expect(401)
+    })
+
+    test('ensure that updating a user with an email that already exists fails', async () => {
+        const user = await createTestUser(nation.oid, false)
+        const tmpStaff = await createStaffUser(nation.oid, false)
+        const permissiontypes = await PermissionType.query().where('type', Permissions.Users)
+        await assignPermissions(tmpStaff.user, permissiontypes)
+
+        await supertest(BASE_URL)
+            .put(`/users/${user.id}`)
+            .set('Authorization', 'Bearer ' + tmpStaff.token)
+            .send({
+                email: userData.email,
+            })
+            .expect(422)
+    })
+
     test('ensure that an admin cannot update user for the incorrect nation', async () => {
+        const user = await createTestUser(nation.oid, false)
         const nation2 = await createTestNation()
 
         await supertest(BASE_URL)
@@ -313,7 +381,7 @@ test.group('User(s) upload', (group) => {
         assert.isNotEmpty(data.errors)
     })
 
-    test('ensure that uploading to a user with a non-admin token fails', async () => {
+    test('ensure that uploading to a user with no permissions fails', async () => {
         await supertest(BASE_URL)
             .post(`/users/${user.id}/upload`)
             .set('Authorization', 'Bearer ' + nation.staffToken)
@@ -342,6 +410,33 @@ test.group('User(s) upload', (group) => {
         const { text } = await supertest(BASE_URL)
             .post(`/users/${tmpUser.user.id}/upload`)
             .set('Authorization', 'Bearer ' + tmpUser.token)
+            .attach('avatar', avatarImagePath)
+            .expect(200)
+
+        const data = JSON.parse(text)
+
+        assert.isNotNull(data.avatar_image_src)
+
+        // Ensure that the uploaded images can be accessed via the specified URL
+        await supertest(HOSTNAME).get(toRelativePath(data.avatar_img_src)).expect(200)
+    })
+
+    test('ensure that staff with permission can upload avatar images users', async (assert) => {
+        const tmpUser = await createStaffUser(nation.oid, false)
+        const tmpStaff = await createStaffUser(nation.oid, false)
+
+        await supertest(BASE_URL)
+            .post(`/users/${tmpUser.user.id}/upload`)
+            .set('Authorization', 'Bearer ' + tmpStaff.token)
+            .attach('avatar', avatarImagePath)
+            .expect(401)
+
+        const permissiontypes = await PermissionType.query().where('type', Permissions.Users)
+        await assignPermissions(tmpStaff.user, permissiontypes)
+
+        const { text } = await supertest(BASE_URL)
+            .post(`/users/${tmpUser.user.id}/upload`)
+            .set('Authorization', 'Bearer ' + tmpStaff.token)
             .attach('avatar', avatarImagePath)
             .expect(200)
 
@@ -414,7 +509,7 @@ test.group('User(s) Deletion', (group) => {
         assert.isNotEmpty(data.errors)
     })
 
-    test('ensure that deleting user with a non-admin token fails', async () => {
+    test('ensure that deleting user with no permission fails', async () => {
         const user = await createTestUser(nation.oid, false)
 
         await supertest(BASE_URL)
@@ -435,6 +530,27 @@ test.group('User(s) Deletion', (group) => {
             .get(`/users/${user.id}`)
             .set('Authorization', 'Bearer ' + nation.token)
             .expect(404)
+    })
+
+    test('ensure that admins can delete an admin', async () => {
+        const user = await createTestUser(nation.oid, true)
+
+        await supertest(BASE_URL)
+            .delete(`/users/${user.id}`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .expect(401)
+    })
+
+    test('ensure that staff with sufficient permissions can delete an admin', async () => {
+        const user = await createTestUser(nation.oid, true)
+        const tmpStaff = await createStaffUser(nation.oid, false)
+        const permissiontypes = await PermissionType.query().where('type', Permissions.Users)
+        await assignPermissions(tmpStaff.user, permissiontypes)
+
+        await supertest(BASE_URL)
+            .delete(`/users/${user.id}`)
+            .set('Authorization', 'Bearer ' + tmpStaff.token)
+            .expect(401)
     })
 
     test('ensure that deleting non-existant user(s) fails', async () => {
