@@ -78,7 +78,7 @@ export const { actions } = Bouncer
         }
     )
     .define(
-        'allowedToWithinPermissions',
+        'hasPermission',
         async (authorizedUser: User | undefined, permissionType: PermissionType | null) => {
             if (!authorizedUser) {
                 return Bouncer.deny('Permission denied, authorized user undefined', 401)
