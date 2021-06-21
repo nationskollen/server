@@ -546,7 +546,7 @@ test.group('User(s) Deletion', (group) => {
             .expect(200)
     })
 
-    test('ensure that staff users can delete themselves with appropriate permission', async () => {
+    test('ensure that staff users with the appropriate permissions can not delete themselves', async () => {
         const tmpStaff = await createStaffUser(nation.oid, false)
         const permissiontypes = await PermissionType.query().where('type', Permissions.Users)
         await assignPermissions(tmpStaff.user, permissiontypes)
