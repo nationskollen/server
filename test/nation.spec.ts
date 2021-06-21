@@ -2,10 +2,17 @@ import test from 'japa'
 import path from 'path'
 import supertest from 'supertest'
 import Nation from 'App/Models/Nation'
+import PermissionType from 'App/Models/PermissionType'
 import { createStaffUser, createTestLocation } from 'App/Utils/Test'
+import { Permissions } from 'App/Utils/Permissions'
 import { BASE_URL, HOSTNAME } from 'App/Utils/Constants'
 import { NationFactory } from 'Database/factories/index'
-import { TestNationContract, createTestNation, toRelativePath } from 'App/Utils/Test'
+import {
+    TestNationContract,
+    createTestNation,
+    toRelativePath,
+    assignPermissions,
+} from 'App/Utils/Test'
 
 const INVALID_NATION_OID = 99999
 
@@ -48,10 +55,7 @@ test.group('Nation fetch', () => {
     test('ensure a nation does not have a default location if not set to any', async (assert) => {
         const testNation = await createTestNation()
 
-        const { text } = await supertest(BASE_URL)
-            .get(`/nations/${testNation.oid}`)
-            .set('Authorization', 'Bearer ' + testNation.token)
-            .expect(200)
+        const { text } = await supertest(BASE_URL).get(`/nations/${testNation.oid}`).expect(200)
 
         const data = JSON.parse(text)
         assert.isFalse(data.hasOwnProperty('default_location'))
@@ -60,6 +64,12 @@ test.group('Nation fetch', () => {
     test('ensure a nation that has a default location also preloads the opening hours for the location', async (assert) => {
         const testNation = await createTestNation()
         const location = await createTestLocation(testNation.oid)
+
+        const permissions = await PermissionType.query()
+            .where('type', Permissions.Nation)
+            .where('type', Permissions.Locations)
+
+        await assignPermissions(testNation.adminUser, permissions)
 
         await supertest(BASE_URL)
             .put(`/nations/${testNation.oid}/locations/${location.id}`)

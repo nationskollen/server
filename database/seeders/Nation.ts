@@ -134,16 +134,19 @@ export default class NationSeeder extends BaseSeeder {
 
         await UserFactory.merge([
             {
+                fullName: 'admin adminsson',
                 email: 'admin@vdala.se',
                 password: 'vdalaadmin',
                 nationId: nations[0].oid,
             },
             {
+                fullName: 'admin adminsson',
                 email: 'admin@stocken.se',
                 password: 'stockenadmin',
                 nationId: nations[1].oid,
             },
             {
+                fullName: 'admin adminsson',
                 email: 'admin@norrlands.se',
                 password: 'norrlandsadmin',
                 nationId: nations[2].oid,
@@ -151,6 +154,26 @@ export default class NationSeeder extends BaseSeeder {
         ])
             .apply('admin')
             .createMany(3)
+        await UserFactory.merge([
+            {
+                fullName: 'staff staffsson',
+                email: 'staff@vdala.se',
+                password: 'vdalastaff',
+                nationId: nations[0].oid,
+            },
+            {
+                fullName: 'staff staffsson',
+                email: 'staff@stocken.se',
+                password: 'stockenstaff',
+                nationId: nations[1].oid,
+            },
+            {
+                fullName: 'staff staffsson',
+                email: 'staff@norrlands.se',
+                password: 'norrlandsstaff',
+                nationId: nations[2].oid,
+            },
+        ]).createMany(3)
 
         const locations = await LocationFactory.with('openingHours', 7, (builder) => {
             builder.merge([

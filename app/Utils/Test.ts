@@ -15,6 +15,7 @@ import {
     LocationFactory,
     IndividualFactory,
     ContactFactory,
+    PermissionsTypeFactory,
     OpeningHourFactory,
     OpeningHourExceptionFactory,
 } from 'Database/factories/index'
@@ -22,12 +23,16 @@ import {
 import { DateTime } from 'luxon'
 import supertest from 'supertest'
 import Category from 'App/Models/Category'
+import User from 'App/Models/User'
+import PermissionType from 'App/Models/PermissionType'
 import { BASE_URL } from 'App/Utils/Constants'
 
 /**
  * @interface TestNationContract
  */
 export interface TestNationContract {
+    staffUser: User
+    adminUser: User
     oid: number
     token: string
     staffToken: string
@@ -59,21 +64,39 @@ export async function createStaffUser(nationId: number, nationAdmin: boolean) {
     }
 }
 
+export async function assignPermissions(user: User, permissionTypes: Array<PermissionType>) {
+    await user.related('permissions').createMany(
+        permissionTypes.map((permissionType) => ({
+            permissionTypeId: permissionType.id,
+        }))
+    )
+}
+
 /**
  * Function that creates a test nation to use in testing
  */
 export async function createTestNation(): Promise<TestNationContract> {
     const nation = await NationFactory.create()
     const admin = await createStaffUser(nation.oid, true)
-    const adminOther = await createStaffUser(nation.oid + 1, true)
     const staff = await createStaffUser(nation.oid, false)
+    const adminOther = await createStaffUser(nation.oid + 1, true)
 
     return {
+        staffUser: staff.user,
+        adminUser: admin.user,
         oid: nation.oid,
         token: admin.token,
         staffToken: staff.token,
         adminOtherToken: adminOther.token,
     }
+}
+
+/**
+ * Function that creates a test user to use in testing
+ */
+export async function createTestUser(nationId: number, nationAdmin: boolean) {
+    const password = 'randomuserpassword'
+    return await UserFactory.merge({ password, nationId, nationAdmin }).create()
 }
 
 /**
@@ -100,6 +123,10 @@ export async function createTestCategory() {
     return Category.create({
         name: 'testCategory',
     })
+}
+
+export async function createTestPermissionType() {
+    return PermissionsTypeFactory.create()
 }
 
 export async function createTestNews(oid: number) {

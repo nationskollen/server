@@ -8,6 +8,7 @@
  * @module IndividualsController
  */
 import Individual from 'App/Models/Individual'
+import { Permissions } from 'App/Utils/Permissions'
 import { getIndividual, getNation, getValidatedData } from 'App/Utils/Request'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { attemptFileUpload, attemptFileRemoval } from 'App/Utils/Upload'
@@ -39,8 +40,10 @@ export default class IndividualsController {
     /**
      * create a single individual
      */
-    public async create({ request }: HttpContextContract) {
+    public async create({ bouncer, request }: HttpContextContract) {
         const nation = getNation(request)
+        await bouncer.authorize('permissions', Permissions.Individuals, nation.oid)
+
         const data = await getValidatedData(request, IndividualCreateValidator)
 
         const individual = await nation.related('individuals').create(data)
@@ -51,8 +54,10 @@ export default class IndividualsController {
     /**
      * update a individual from system
      */
-    public async update({ request }: HttpContextContract) {
+    public async update({ bouncer, request }: HttpContextContract) {
         const individual = getIndividual(request)
+        await bouncer.authorize('permissions', Permissions.Individuals, individual.nationId)
+
         const changes = await getValidatedData(request, IndividualUpdateValidator)
 
         individual.merge(changes)
@@ -64,16 +69,20 @@ export default class IndividualsController {
     /**
      * delete a single individual from system
      */
-    public async delete({ request }: HttpContextContract) {
+    public async delete({ bouncer, request }: HttpContextContract) {
         const individual = getIndividual(request)
+        await bouncer.authorize('permissions', Permissions.Individuals, individual.nationId)
+
         await individual.delete()
     }
 
     /**
      * upload a file to a individual from system
      */
-    public async upload({ request }: HttpContextContract) {
+    public async upload({ bouncer, request }: HttpContextContract) {
         const individual = getIndividual(request)
+        await bouncer.authorize('permissions', Permissions.Individuals, individual.nationId)
+
         const { profile } = await getValidatedData(request, IndividualUploadValidator)
         const profileName = await attemptFileUpload(profile)
 

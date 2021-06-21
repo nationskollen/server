@@ -14,3 +14,6 @@ export const BASE_URL = `${HOSTNAME}/api/v1`
 
 export const UPLOAD_QUALITY_VALUE = 45
 export const MINIMUM_PAGE = 1
+
+export const MIN_LENGTH_PASSWORD = 8
+export const MAX_LENGTH_PASSWORD = 256

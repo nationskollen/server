@@ -8,6 +8,7 @@
 import { getNation, getEvent, getValidatedData } from 'App/Utils/Request'
 import Event from 'App/Models/Event'
 import { getPageNumber } from 'App/Utils/Paginate'
+import { Permissions } from 'App/Utils/Permissions'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { attemptFileUpload, attemptFileRemoval } from 'App/Utils/Upload'
 import PaginationValidator from 'App/Validators/PaginationValidator'
@@ -95,8 +96,11 @@ export default class EventsController extends FilteringOptions {
     /**
      * Method to create a single event in the system
      */
-    public async create({ request }: HttpContextContract) {
+    public async create({ bouncer, request }: HttpContextContract) {
         const nation = getNation(request)
+
+        await bouncer.authorize('permissions', Permissions.Events, nation.oid)
+
         const data = await getValidatedData(request, EventCreateValidator)
         const event = await nation.related('events').create(data)
 
@@ -114,8 +118,11 @@ export default class EventsController extends FilteringOptions {
     /**
      * Method to update a single event in the system
      */
-    public async update({ request }: HttpContextContract) {
+    public async update({ bouncer, request }: HttpContextContract) {
         const event = getEvent(request)
+
+        await bouncer.authorize('permissions', Permissions.Events, event.nationId)
+
         const changes = await getValidatedData(request, EventUpdateValidator)
 
         // Apply the changes that was requested and save
@@ -132,16 +139,21 @@ export default class EventsController extends FilteringOptions {
     /**
      * Method to delete a single event in the system
      */
-    public async delete({ request }: HttpContextContract) {
+    public async delete({ bouncer, request }: HttpContextContract) {
         const event = getEvent(request)
+        await bouncer.authorize('permissions', Permissions.Events, event.nationId)
+
         await event.delete()
     }
 
     /**
      * Method to upload an image to an event in the system
      */
-    public async upload({ request }: HttpContextContract) {
+    public async upload({ bouncer, request }: HttpContextContract) {
         const event = getEvent(request)
+
+        await bouncer.authorize('permissions', Permissions.Events, event.nationId)
+
         const { icon, cover } = await getValidatedData(request, EventUploadValidator)
         const iconName = await attemptFileUpload(icon, true)
         const coverName = await attemptFileUpload(cover)

@@ -15,6 +15,15 @@ async function runMigrations() {
     })
 }
 
+async function runPermissionCategoriesSeeding() {
+    await execa.node('ace', ['db:seed', '--files', './database/seeders/PermissionType.ts'], {
+        stdio: 'inherit',
+    })
+    await execa.node('ace', ['db:seed', '--files', './database/seeders/Category.ts'], {
+        stdio: 'inherit',
+    })
+}
+
 async function runSeeding() {
     await execa.node('ace', ['db:seed'], {
         stdio: 'inherit',
@@ -41,11 +50,23 @@ async function startHttpServer() {
 
 function getTestFilesPattern() {
     return ['test/**/*.spec.ts']
+
+    // Below is for running a single test file. This is because we now have a
+    // lot of tests and running them takes time. If you want to test something
+    // quick, you can uncomment the following line and specify the test file.
+    // Remember to comment out this and then run all the tests.
+    // return ['test/user.spec.ts']
 }
 
 // Configure test runner
 configure({
     files: getTestFilesPattern(),
-    before: [clearAssets, rollbackMigrations, runMigrations, startHttpServer],
+    before: [
+        clearAssets,
+        rollbackMigrations,
+        runMigrations,
+        startHttpServer,
+        runPermissionCategoriesSeeding,
+    ],
     after: [rollbackMigrations, runMigrations, runSeeding, clearAssets],
 })

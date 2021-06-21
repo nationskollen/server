@@ -9,6 +9,7 @@
  */
 import OpeningHour from 'App/Models/OpeningHour'
 import { OpeningHourTypes } from 'App/Utils/Time'
+import { Permissions } from 'App/Utils/Permissions'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import InternalErrorException from 'App/Exceptions/InternalErrorException'
 import { getLocation, getOpeningHour, getValidatedData } from 'App/Utils/Request'
@@ -36,9 +37,11 @@ export default class OpeningHoursController {
     /**
      * create opening hour for a location
      */
-    public async create({ request }: HttpContextContract) {
-        const data = await getValidatedData(request, OpeningHourCreateValidator)
+    public async create({ bouncer, request }: HttpContextContract) {
         const location = getLocation(request)
+        await bouncer.authorize('permissions', Permissions.OpeningHours, location.nationId)
+
+        const data = await getValidatedData(request, OpeningHourCreateValidator)
 
         const relation =
             data.type === OpeningHourTypes.Default ? 'openingHours' : 'openingHourExceptions'
@@ -57,7 +60,13 @@ export default class OpeningHoursController {
     /**
      * Update opening hour in a location
      */
-    public async update({ request }: HttpContextContract) {
+    public async update({ bouncer, request }: HttpContextContract) {
+        await bouncer.authorize(
+            'permissions',
+            Permissions.OpeningHours,
+            getLocation(request).nationId
+        )
+
         const changes = await getValidatedData(request, OpeningHourUpdateValidator)
         const openingHour = getOpeningHour(request)
 
@@ -70,7 +79,13 @@ export default class OpeningHoursController {
     /**
      * Delete opening hour
      */
-    public async delete({ request }: HttpContextContract) {
+    public async delete({ bouncer, request }: HttpContextContract) {
+        await bouncer.authorize(
+            'permissions',
+            Permissions.OpeningHours,
+            getLocation(request).nationId
+        )
+
         await getOpeningHour(request).delete()
     }
 }

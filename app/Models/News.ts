@@ -46,7 +46,7 @@ export default class News extends OrderableModel {
     public longDescription: string
 
     /**
-     * Cover image for the event to be displayed
+     * Cover image for the news to be displayed
      */
     @column({ serialize: toAbsolutePath })
     public coverImgSrc: string

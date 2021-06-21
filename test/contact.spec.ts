@@ -1,8 +1,15 @@
 import test from 'japa'
 import Contact from 'app/Models/Contact'
 import supertest from 'supertest'
+import PermissionType from 'App/Models/PermissionType'
 import { BASE_URL } from 'App/Utils/Constants'
-import { TestNationContract, createTestContact, createTestNation } from 'App/Utils/Test'
+import { Permissions } from 'App/Utils/Permissions'
+import {
+    TestNationContract,
+    createTestContact,
+    createTestNation,
+    assignPermissions,
+} from 'App/Utils/Test'
 
 test.group('Contact fetch', async (group) => {
     let nation: TestNationContract
@@ -30,11 +37,16 @@ test.group('Contact fetch', async (group) => {
 
 test.group('Contact update', async (group) => {
     let nation: TestNationContract
+    let permissions: Array<PermissionType>
     let contact: Contact
 
     group.before(async () => {
         nation = await createTestNation()
         contact = await createTestContact(nation.oid)
+
+        permissions = await PermissionType.query().where('type', Permissions.Contact)
+
+        await assignPermissions(nation.adminUser, permissions)
     })
 
     test('ensure that updating a contact is viable', async (assert) => {
@@ -96,6 +108,7 @@ test.group('Contact update', async (group) => {
 
 test.group('Contact create', async (group) => {
     let nation: TestNationContract
+    let permissions: Array<PermissionType>
     const contactData = {
         email: 'fadde@faddson.se',
         telephone: '0700000000',
@@ -104,6 +117,10 @@ test.group('Contact create', async (group) => {
 
     group.before(async () => {
         nation = await createTestNation()
+
+        permissions = await PermissionType.query().where('type', Permissions.Contact)
+
+        await assignPermissions(nation.adminUser, permissions)
     })
 
     test('ensure that creating contact information requires a valid token', async () => {
@@ -195,9 +212,19 @@ test.group('Contact create', async (group) => {
     })
 })
 
-test.group('Contact delete', async () => {
+test.group('Contact delete', async (group) => {
+    let nation: TestNationContract
+    let permissions: Array<PermissionType>
+
+    group.before(async () => {
+        nation = await createTestNation()
+
+        permissions = await PermissionType.query().where('type', Permissions.Contact)
+
+        await assignPermissions(nation.adminUser, permissions)
+    })
+
     test('ensure that deleting a contact requires a valid token', async () => {
-        const nation = await createTestNation()
         const contact = await createTestContact(nation.oid)
 
         await supertest(BASE_URL)
@@ -207,7 +234,6 @@ test.group('Contact delete', async () => {
     })
 
     test('ensure that deleting a contact requires an admin token', async () => {
-        const nation = await createTestNation()
         const contact = await createTestContact(nation.oid)
 
         await supertest(BASE_URL)
@@ -217,7 +243,6 @@ test.group('Contact delete', async () => {
     })
 
     test('ensure that deleting a contact requires is viable', async () => {
-        const nation = await createTestNation()
         const contact = await createTestContact(nation.oid)
 
         await supertest(BASE_URL)
@@ -227,7 +252,6 @@ test.group('Contact delete', async () => {
     })
 
     test('ensure that deleting a contact requires an existing contact', async () => {
-        const nation = await createTestNation()
         await supertest(BASE_URL)
             .delete(`/nations/${nation.oid}/contact/99999999`)
             .set('Authorization', 'Bearer ' + nation.token)
@@ -235,7 +259,6 @@ test.group('Contact delete', async () => {
     })
 
     test('ensure that deleting a contact requires an existing nation', async () => {
-        const nation = await createTestNation()
         const contact = await createTestContact(nation.oid)
 
         await supertest(BASE_URL)
@@ -245,20 +268,21 @@ test.group('Contact delete', async () => {
     })
 
     test('ensure that deleting a contact truly removes it by trying to fetch it', async () => {
-        const nation = await createTestNation()
         const contact = await createTestContact(nation.oid)
+
         await supertest(BASE_URL)
             .delete(`/nations/${nation.oid}/contact/${contact.id}`)
             .set('Authorization', 'Bearer ' + nation.token)
             .expect(200)
 
-        await supertest(BASE_URL).get(`/nations/${nation.oid}/contact`).expect(204)
+        await supertest(BASE_URL).get(`/nations/${nation.oid}/contact`).expect(200)
     })
 
     test('ensure that deleting a contact is only viable to given admins of the same nation', async () => {
-        const nation = await createTestNation()
         const nation2 = await createTestNation()
         const contact = await createTestContact(nation.oid)
+
+        await assignPermissions(nation2.adminUser, permissions)
 
         await supertest(BASE_URL)
             .delete(`/nations/${nation.oid}/contact/${contact.id}`)

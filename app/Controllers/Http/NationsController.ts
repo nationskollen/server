@@ -8,6 +8,7 @@
  * @module NationsController
  */
 import Nation from 'App/Models/Nation'
+import { Permissions } from 'App/Utils/Permissions'
 import { getNation, getValidatedData } from 'App/Utils/Request'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { ICON_PREFIX, attemptFileUpload, attemptFileRemoval } from 'App/Utils/Upload'
@@ -34,10 +35,12 @@ export default class NationsController {
     /**
      * update a nation from system
      */
-    public async update({ request }: HttpContextContract) {
-        const changes = await getValidatedData(request, NationUpdateValidator)
+    public async update({ bouncer, request }: HttpContextContract) {
         const nation = getNation(request)
 
+        await bouncer.authorize('permissions', Permissions.Nation, nation.oid)
+
+        const changes = await getValidatedData(request, NationUpdateValidator)
         nation.merge(changes)
         await nation.save()
 
@@ -47,8 +50,11 @@ export default class NationsController {
     /**
      * upload a file to a nation from system
      */
-    public async upload({ request }: HttpContextContract) {
+    public async upload({ bouncer, request }: HttpContextContract) {
         const nation = getNation(request)
+
+        await bouncer.authorize('permissions', Permissions.Nation, nation.oid)
+
         const { cover, icon } = await getValidatedData(request, NationUploadValidator)
         const iconName = await attemptFileUpload(icon, true)
         const coverName = await attemptFileUpload(cover)

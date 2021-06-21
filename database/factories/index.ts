@@ -5,6 +5,7 @@ import News from 'App/Models/News'
 import Event from 'App/Models/Event'
 import Nation from 'App/Models/Nation'
 import MenuItem from 'App/Models/MenuItem'
+import PermissionType from 'App/Models/PermissionType'
 import Location from 'App/Models/Location'
 import Contact from 'App/Models/Contact'
 import PushToken from 'App/Models/PushToken'
@@ -59,6 +60,12 @@ export const MenuItemFactory = Factory.define(MenuItem, ({ faker }) => {
         price: parseFloat(faker.commerce.price()),
         hidden: false,
         coverImgSrc: getRandomImage(faker),
+    }
+}).build()
+
+export const PermissionsTypeFactory = Factory.define(PermissionType, ({ faker }) => {
+    return {
+        type: faker.name.jobType(),
     }
 }).build()
 
@@ -170,8 +177,8 @@ export const NationFactory = Factory.define(Nation, async ({ faker }) => {
 export const UserFactory = Factory.define(User, ({ faker }) => {
     return {
         email: faker.internet.email(),
+        fullName: faker.name.firstName(),
         password: faker.internet.password(),
-        nationAdmin: false,
     }
 })
     .state('admin', (user) => (user.nationAdmin = true))

@@ -15,10 +15,7 @@ test.group('Locations fetch', async () => {
         const nation = await createTestNation()
         const location = await createTestLocation(nation.oid)
 
-        const { text } = await supertest(BASE_URL)
-            .get(`/locations/${location.id}`)
-            .set('Authorization', 'Bearer ' + nation.token)
-            .expect(200)
+        const { text } = await supertest(BASE_URL).get(`/locations/${location.id}`).expect(200)
 
         const data = JSON.parse(text)
 

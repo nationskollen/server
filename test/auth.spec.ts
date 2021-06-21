@@ -66,6 +66,7 @@ test.group('Auth', () => {
         const email = 'test@test.com'
 
         const user = await User.create({
+            fullName: 'testsson',
             email,
             password: '12345678',
         })
@@ -74,10 +75,9 @@ test.group('Auth', () => {
     })
 
     test('ensure user password gets hashed during save', async (assert) => {
-        const user = await User.create({
-            email: 'test@test.com',
-            password: '12345678',
-        })
+        const user = await UserFactory.merge({
+            password: 'secret',
+        }).create()
 
         assert.notEqual('secret', user.password)
     })

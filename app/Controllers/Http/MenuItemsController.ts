@@ -9,6 +9,7 @@
  */
 import MenuItem from 'App/Models/MenuItem'
 import { getPageNumber } from 'App/Utils/Paginate'
+import { Permissions } from 'App/Utils/Permissions'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import PaginationValidator from 'App/Validators/PaginationValidator'
 import { attemptFileUpload, attemptFileRemoval } from 'App/Utils/Upload'
@@ -41,9 +42,11 @@ export default class MenuItemsController {
     /**
      * create a menu item
      */
-    public async create({ request }: HttpContextContract) {
-        const data = await getValidatedData(request, MenuItemCreateValidator)
+    public async create({ bouncer, request }: HttpContextContract) {
         const menu = getMenu(request)
+        await bouncer.authorize('permissions', Permissions.MenuItem, menu.nationId)
+
+        const data = await getValidatedData(request, MenuItemCreateValidator)
         const newMenu = await menu.related('items').create(data)
 
         return newMenu.toJSON()
@@ -52,7 +55,9 @@ export default class MenuItemsController {
     /**
      * update a menu item
      */
-    public async update({ request }: HttpContextContract) {
+    public async update({ bouncer, request }: HttpContextContract) {
+        await bouncer.authorize('permissions', Permissions.MenuItem, getMenu(request).nationId)
+
         const data = await getValidatedData(request, MenuItemUpdateValidator)
         const menuItem = getMenuItem(request)
 
@@ -65,15 +70,20 @@ export default class MenuItemsController {
     /**
      * delete a menu item
      */
-    public async delete({ request }: HttpContextContract) {
+    public async delete({ bouncer, request }: HttpContextContract) {
+        await bouncer.authorize('permissions', Permissions.MenuItem, getMenu(request).nationId)
+
         await getMenuItem(request).delete()
     }
 
     /**
      * upload a file to a menu item
      */
-    public async upload({ request }: HttpContextContract) {
+    public async upload({ bouncer, request }: HttpContextContract) {
+        await bouncer.authorize('permissions', Permissions.MenuItem, getMenu(request).nationId)
+
         const menuItem = getMenuItem(request)
+
         const { cover } = await getValidatedData(request, MenuItemUploadValidator)
         const filename = await attemptFileUpload(cover)
 

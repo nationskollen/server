@@ -8,6 +8,7 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { getNews, getNation, getValidatedData } from 'App/Utils/Request'
 import { attemptFileUpload, attemptFileRemoval } from 'App/Utils/Upload'
+import { Permissions } from 'App/Utils/Permissions'
 import NewsCreateValidator from 'App/Validators/News/CreateValidator'
 import NewsUpdateValidator from 'App/Validators/News/UpdateValidator'
 import NewsFilterValidator from 'App/Validators/News/FilterValidator'
@@ -69,8 +70,11 @@ export default class NewsController extends FilteringOptions {
     /**
      * Create a news model for a nation specified in the route
      */
-    public async create({ request }: HttpContextContract) {
+    public async create({ bouncer, request }: HttpContextContract) {
         const nation = getNation(request)
+
+        await bouncer.authorize('permissions', Permissions.News, nation.oid)
+
         const data = await getValidatedData(request, NewsCreateValidator)
         const newsObject = await nation.related('news').create(data)
 
@@ -83,29 +87,38 @@ export default class NewsController extends FilteringOptions {
     /**
      * Update a news model in a nation
      */
-    public async update({ request }: HttpContextContract) {
-        const newsObject = getNews(request)
+    public async update({ bouncer, request }: HttpContextContract) {
+        const news = getNews(request)
+
+        await bouncer.authorize('permissions', Permissions.News, news.nationId)
+
         const changes = await getValidatedData(request, NewsUpdateValidator)
 
-        newsObject.merge(changes)
-        await newsObject.save()
+        news.merge(changes)
+        await news.save()
 
-        return newsObject.toJSON()
+        return news.toJSON()
     }
 
     /**
-     * Delete a contacts model in a nation
+     * Delete a news model in a nation
      */
-    public async delete({ request }: HttpContextContract) {
+    public async delete({ bouncer, request }: HttpContextContract) {
         const news = getNews(request)
+
+        await bouncer.authorize('permissions', Permissions.News, news.nationId)
+
         await news.delete()
     }
 
     /**
      * Method to upload an image to news in the system
      */
-    public async upload({ request }: HttpContextContract) {
+    public async upload({ bouncer, request }: HttpContextContract) {
         const news = getNews(request)
+
+        await bouncer.authorize('permissions', Permissions.News, news.nationId)
+
         const { cover } = await getValidatedData(request, NewsUploadValidator)
         const coverName = await attemptFileUpload(cover)
 

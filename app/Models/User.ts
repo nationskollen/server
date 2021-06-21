@@ -13,8 +13,9 @@
  */
 import { DateTime } from 'luxon'
 import Hash from '@ioc:Adonis/Core/Hash'
-import { toBoolean } from 'App/Utils/Serialize'
-import { column, beforeSave, BaseModel } from '@ioc:Adonis/Lucid/Orm'
+import { toBoolean, toAbsolutePath } from 'App/Utils/Serialize'
+import { BaseModel, column, beforeSave, hasMany, HasMany } from '@ioc:Adonis/Lucid/Orm'
+import Permission from 'App/Models/Permission'
 
 export default class User extends BaseModel {
     /**
@@ -22,6 +23,9 @@ export default class User extends BaseModel {
      */
     @column({ isPrimary: true })
     public id: number
+
+    @column()
+    public fullName: string
 
     /**
      * The email for the user
@@ -44,7 +48,7 @@ export default class User extends BaseModel {
     /**
      * If the user is a nation admin
      */
-    @column({ serializeAs: null, consume: toBoolean })
+    @column({ consume: toBoolean })
     public nationAdmin: boolean
 
     /**
@@ -56,14 +60,31 @@ export default class User extends BaseModel {
     /**
      * The date the user was created on
      */
-    @column.dateTime({ autoCreate: true })
+    @column.dateTime({
+        autoCreate: true,
+    })
     public createdAt: DateTime
 
     /**
      * The date the user was updated on
      */
-    @column.dateTime({ autoCreate: true, autoUpdate: true })
+    @column.dateTime({
+        autoCreate: true,
+        autoUpdate: true,
+    })
     public updatedAt: DateTime
+
+    /**
+     * The different permissions a user has in the system
+     */
+    @hasMany(() => Permission)
+    public permissions: HasMany<typeof Permission>
+
+    /**
+     * Avatar image for the user to be displayed
+     */
+    @column({ serialize: toAbsolutePath })
+    public avatarImgSrc: string
 
     /**
      * Method that hashes passwords for a user

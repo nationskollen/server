@@ -9,6 +9,7 @@
  * @module Request
  */
 import News from 'App/Models/News'
+import User from 'App/Models/User'
 import Menu from 'App/Models/Menu'
 import Event from 'App/Models/Event'
 import Nation from 'App/Models/Nation'
@@ -21,6 +22,7 @@ import Subscription from 'App/Models/Subscription'
 import Notification from 'App/Models/Notification'
 import { RequestContract } from '@ioc:Adonis/Core/Request'
 import BadRequestException from 'App/Exceptions/BadRequestException'
+import UserNotFoundException from 'App/Exceptions/UserNotFoundException'
 import MenuNotFoundException from 'App/Exceptions/MenuNotFoundException'
 import NewsNotFoundException from 'App/Exceptions/NewsNotFoundException'
 import EventNotFoundException from 'App/Exceptions/EventNotFoundException'
@@ -32,7 +34,20 @@ import MenuItemNotFoundException from 'App/Exceptions/MenuItemNotFoundException'
 import OpeningHourNotFoundException from 'App/Exceptions/OpeningHourNotFoundException'
 import SubscriptionNotFoundException from 'App/Exceptions/SubscriptionNotFoundException'
 import NotificationNotFoundException from 'App/Exceptions/NotificationNotFoundException'
+import PermissionDataNotFoundException from 'App/Exceptions/PermissionDataNotFoundException'
 import { RequestValidatorNode, ParsedTypedSchema, TypedSchema } from '@ioc:Adonis/Core/Validator'
+
+import PermissionData from 'App/Utils/PermissionData'
+
+export function getUser(request: RequestContract): User {
+    const { user } = request
+
+    if (!user) {
+        throw new UserNotFoundException()
+    }
+
+    return user
+}
 
 export function getLocation(request: RequestContract): Location {
     const { location } = request
@@ -142,6 +157,38 @@ export function getNotification(request: RequestContract): Notification {
     }
 
     return notification
+}
+
+export function getPermissionData(request: RequestContract): PermissionData {
+    const { permissionData } = request
+
+    if (!permissionData) {
+        throw new PermissionDataNotFoundException()
+    }
+
+    const { user, permissionType, permission, options } = permissionData
+
+    if (!permissionType) {
+        throw new PermissionDataNotFoundException()
+    }
+
+    if (!user) {
+        throw new UserNotFoundException()
+    }
+
+    // Here we are checking for when we are removing a permission.
+    // Reason for why we are checking `permission` because the add permission
+    // operation leaves that field undefined.
+    if (options?.includes('delete') && !permission) {
+        throw new PermissionDataNotFoundException()
+    }
+
+    return {
+        user,
+        permission,
+        permissionType,
+        options,
+    }
 }
 
 export async function getValidatedData<T extends ParsedTypedSchema<TypedSchema>>(

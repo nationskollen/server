@@ -13,7 +13,7 @@ import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
 export default class CategoriesController {
     /**
-     * fetch all nations from system
+     * fetch all categories from system
      */
     public async index({}: HttpContextContract) {
         const categories = await Category.query().apply((scopes) => {

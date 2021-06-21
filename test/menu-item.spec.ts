@@ -4,7 +4,9 @@ import supertest from 'supertest'
 import Menu from 'App/Models/Menu'
 import MenuItem from 'App/Models/MenuItem'
 import Location from 'App/Models/Location'
+import PermissionType from 'App/Models/PermissionType'
 import { BASE_URL, HOSTNAME } from 'App/Utils/Constants'
+import { Permissions } from 'App/Utils/Permissions'
 import {
     createTestMenu,
     createTestNation,
@@ -12,6 +14,7 @@ import {
     createTestMenuItem,
     TestNationContract,
     toRelativePath,
+    assignPermissions,
 } from 'App/Utils/Test'
 
 test.group('Menu item fetch', async (group) => {
@@ -112,11 +115,16 @@ test.group('Menu item create', async (group) => {
     let nation: TestNationContract
     let location: Location
     let menu: Menu
+    let permissions: Array<PermissionType>
 
     group.before(async () => {
         nation = await createTestNation()
         location = await createTestLocation(nation.oid)
         menu = await createTestMenu(nation.oid, location.id)
+
+        permissions = await PermissionType.query().where('type', Permissions.MenuItem)
+
+        await assignPermissions(nation.adminUser, permissions)
     })
 
     test('ensure that creating menus requires a valid token', async () => {
@@ -182,11 +190,16 @@ test.group('Menu item update', async (group) => {
     let nation: TestNationContract
     let location: Location
     let menu: Menu
+    let permissions: Array<PermissionType>
 
     group.before(async () => {
         nation = await createTestNation()
         location = await createTestLocation(nation.oid)
         menu = await createTestMenu(nation.oid, location.id)
+
+        permissions = await PermissionType.query().where('type', Permissions.MenuItem)
+
+        await assignPermissions(nation.adminUser, permissions)
     })
 
     test('ensure that updating menu items requires a valid token', async () => {
@@ -284,11 +297,16 @@ test.group('Menu item delete', async (group) => {
     let nation: TestNationContract
     let location: Location
     let menu: Menu
+    let permissions: Array<PermissionType>
 
     group.before(async () => {
         nation = await createTestNation()
         location = await createTestLocation(nation.oid)
         menu = await createTestMenu(nation.oid, location.id)
+
+        permissions = await PermissionType.query().where('type', Permissions.MenuItem)
+
+        await assignPermissions(nation.adminUser, permissions)
     })
 
     test('ensure that deleting menu items requires a valid token', async () => {
@@ -345,12 +363,17 @@ test.group('Menu item upload', (group) => {
     let location: Location
     let menu: Menu
     let menuItem: MenuItem
+    let permissions: Array<PermissionType>
 
     group.before(async () => {
         nation = await createTestNation()
         location = await createTestLocation(nation.oid)
         menu = await createTestMenu(nation.oid, location.id)
         menuItem = await createTestMenuItem(menu.id)
+
+        permissions = await PermissionType.query().where('type', Permissions.MenuItem)
+
+        await assignPermissions(nation.adminUser, permissions)
     })
     test('ensure that uploading images requires a valid token', async (assert) => {
         const { text } = await supertest(BASE_URL)

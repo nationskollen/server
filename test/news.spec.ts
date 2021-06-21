@@ -1,13 +1,16 @@
 import test from 'japa'
 import News from 'App/Models/News'
+import PermissionType from 'App/Models/PermissionType'
 import path from 'path'
 import supertest from 'supertest'
 import { BASE_URL, HOSTNAME } from 'App/Utils/Constants'
+import { Permissions } from 'App/Utils/Permissions'
 import {
     TestNationContract,
     createTestNation,
     createTestNews,
     toRelativePath,
+    assignPermissions,
 } from 'App/Utils/Test'
 
 test.group('News fetch', () => {
@@ -67,6 +70,7 @@ test.group('News fetch', () => {
 
 test.group('News create', async (group) => {
     let nation: TestNationContract
+    let permissions: Array<PermissionType>
     const newsData = {
         title: 'NEWSS!!!',
         short_description: 'NotEvent',
@@ -75,6 +79,10 @@ test.group('News create', async (group) => {
 
     group.before(async () => {
         nation = await createTestNation()
+
+        permissions = await PermissionType.query().where('type', Permissions.News)
+
+        await assignPermissions(nation.adminUser, permissions)
     })
 
     test('ensure that creating news requires a valid token', async () => {
@@ -139,6 +147,7 @@ test.group('News create', async (group) => {
 
 test.group('News update', async (group) => {
     let nation: TestNationContract
+    let permissions: Array<PermissionType>
     let news: News
     const newsData = {
         title: 'NEWSS!!!',
@@ -149,6 +158,10 @@ test.group('News update', async (group) => {
     group.before(async () => {
         nation = await createTestNation()
         news = await createTestNews(nation.oid)
+
+        permissions = await PermissionType.query().where('type', Permissions.News)
+
+        await assignPermissions(nation.adminUser, permissions)
     })
 
     test('ensure that updating news requires a valid token', async () => {
@@ -204,11 +217,16 @@ test.group('News update', async (group) => {
 test.group('News upload', (group) => {
     const coverImagePath = path.join(__dirname, 'data/cover.png')
     let nation: TestNationContract
+    let permissions: Array<PermissionType>
     let news: News
 
     group.before(async () => {
         nation = await createTestNation()
         news = await createTestNews(nation.oid)
+
+        permissions = await PermissionType.query().where('type', Permissions.News)
+
+        await assignPermissions(nation.adminUser, permissions)
     })
 
     test('ensure that uploading images requires a valid token', async (assert) => {
@@ -289,9 +307,14 @@ test.group('News upload', (group) => {
 
 test.group('News Deletion', (group) => {
     let nation: TestNationContract
+    let permissions: Array<PermissionType>
 
     group.before(async () => {
         nation = await createTestNation()
+
+        permissions = await PermissionType.query().where('type', Permissions.News)
+
+        await assignPermissions(nation.adminUser, permissions)
     })
 
     test('ensure that deleting news requires a valid token', async (assert) => {

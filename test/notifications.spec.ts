@@ -5,12 +5,20 @@ import { BASE_URL } from 'App/Utils/Constants'
 import { Topics } from 'App/Utils/Subscriptions'
 import Subscription from 'App/Models/Subscription'
 import Notification from 'App/Models/Notification'
+import PermissionType from 'App/Models/PermissionType'
 import SubscriptionTopic from 'App/Models/SubscriptionTopic'
-import { TestNationContract, createTestNation, createTestEvent } from 'App/Utils/Test'
+import { Permissions } from 'App/Utils/Permissions'
+import {
+    TestNationContract,
+    createTestNation,
+    createTestEvent,
+    assignPermissions,
+} from 'App/Utils/Test'
 import { NationFactory, PushTokenFactory, SubscriptionTopicFactory } from 'Database/factories/index'
 
 test.group('Notification fetch', (group) => {
     let nation: TestNationContract
+    let permissions: Array<PermissionType>
     const eventData = {
         name: 'notificationEvent',
         short_description: 'NotEvent',
@@ -36,6 +44,10 @@ test.group('Notification fetch', (group) => {
 
         // Make sure to create a topic so that notifications can be created
         await SubscriptionTopic.create({ name: Topics.Events })
+
+        permissions = await PermissionType.query().where('type', Permissions.Events)
+
+        await assignPermissions(nation.adminUser, permissions)
     })
 
     test('ensure creating an event, we can fetch the notification', async (assert) => {

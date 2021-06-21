@@ -6,6 +6,7 @@
  * @module ContactsController
  */
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import { Permissions } from 'App/Utils/Permissions'
 import { getContact, getNation, getValidatedData } from 'App/Utils/Request'
 import ContactCreateValidator from 'App/Validators/Contacts/CreateValidator'
 import ContactUpdateValidator from 'App/Validators/Contacts/UpdateValidator'
@@ -25,8 +26,10 @@ export default class ContactsController {
     /**
      * Create a contacts model for a nation specified in the route
      */
-    public async create({ request }: HttpContextContract) {
+    public async create({ bouncer, request }: HttpContextContract) {
         const nation = getNation(request)
+        await bouncer.authorize('permissions', Permissions.Contact, nation.oid)
+
         const data = await getValidatedData(request, ContactCreateValidator)
 
         const contactInformation = await nation
@@ -39,8 +42,10 @@ export default class ContactsController {
     /**
      * Update a contacts model in a nation
      */
-    public async update({ request }: HttpContextContract) {
+    public async update({ bouncer, request }: HttpContextContract) {
         const contact = getContact(request)
+        await bouncer.authorize('permissions', Permissions.Contact, contact.nationId)
+
         const changes = await getValidatedData(request, ContactUpdateValidator)
 
         contact.merge(changes)
@@ -52,8 +57,10 @@ export default class ContactsController {
     /**
      * Delete a contacts model in a nation
      */
-    public async delete({ request }: HttpContextContract) {
+    public async delete({ bouncer, request }: HttpContextContract) {
         const contact = getContact(request)
+        await bouncer.authorize('permissions', Permissions.Contact, contact.nationId)
+
         await contact.delete()
     }
 }
