@@ -1,3 +1,10 @@
+/**
+ * The UsersController contains the different methods that gives the ability
+ * to operate upon {@link User | User} models.
+ *
+ * @category Controller
+ * @module EventsController
+ */
 import User from 'App/Models/User'
 import { getPageNumber } from 'App/Utils/Paginate'
 import { Permissions } from 'App/Utils/Permissions'
@@ -8,8 +15,17 @@ import PaginationValidator from 'App/Validators/PaginationValidator'
 import UserCreateValidator from 'App/Validators/Users/CreateValidator'
 import UserUpdateValidator from 'App/Validators/Users/UpdateValidator'
 import UserUploadValidator from 'App/Validators/Users/UploadValidator'
+import UserNotAuthorizedException from 'App/Exceptions/UserNotAuthorizedException'
 
 export default class UsersController {
+    public async self({ auth }: HttpContextContract) {
+        if (!auth.user) {
+            throw new UserNotAuthorizedException()
+        }
+
+        return User.query().preload('permissions').where('id', auth.user.id).first()
+    }
+
     /**
      * fetch users for a nation in the system
      */

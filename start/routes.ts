@@ -30,6 +30,11 @@ Route.group(() => {
     })
 
     // ----------------------------------------------------------
+    //     self routes - authorized user
+    // ----------------------------------------------------------
+    Route.get('/auth/me', 'UsersController.self').middleware(['auth'])
+
+    // ----------------------------------------------------------
     // Authentication / User
     // ----------------------------------------------------------
     Route.post('/users/login', 'AuthController.login')
