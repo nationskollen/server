@@ -23,7 +23,8 @@ export default class UsersController {
             throw new UserNotAuthorizedException()
         }
 
-        return User.query().preload('permissions').where('id', auth.user.id).first()
+        await auth.user.load('permissions')
+        return auth.user.toJSON()
     }
 
     /**
