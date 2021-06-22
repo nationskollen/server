@@ -38,6 +38,45 @@ test.group('User(s) fetch', (group) => {
         assert.equal(data.data.length, 2)
     })
 
+    test('ensure we can fetch ourselves as authorized staff', async (assert) => {
+        const tmpNation = await NationFactory.create()
+        const user = await createStaffUser(tmpNation.oid, false)
+
+        const { text } = await supertest(BASE_URL)
+            .get(`/auth/me`)
+            .set('Authorization', 'Bearer ' + user.token)
+            .expect(200)
+
+        const data = JSON.parse(text)
+        assert.isNotNull(data)
+        assert.equal(data.full_name, user.user.fullName)
+        assert.equal(data.email, user.user.email)
+        assert.equal(data.id, user.user.id)
+    })
+
+    test('ensure we can fetch ourselves as authorized admin', async (assert) => {
+        const tmpNation = await NationFactory.create()
+        const user = await createStaffUser(tmpNation.oid, true)
+
+        const { text } = await supertest(BASE_URL)
+            .get(`/auth/me`)
+            .set('Authorization', 'Bearer ' + user.token)
+            .expect(200)
+
+        const data = JSON.parse(text)
+        assert.isNotNull(data)
+        assert.equal(data.full_name, user.user.fullName)
+        assert.equal(data.email, user.user.email)
+        assert.equal(data.id, user.user.id)
+    })
+
+    test('ensure we cannot fetch ourselves when there is no authorized user', async () => {
+        await supertest(BASE_URL)
+            .get(`/auth/me`)
+            .set('Authorization', 'Bearer ' + 'invalid token')
+            .expect(401)
+    })
+
     test('ensure we can paginate users', async (assert) => {
         const { text } = await supertest(BASE_URL)
             .get(`/nations/${nation.oid}/users?page=1&amount=1`)
