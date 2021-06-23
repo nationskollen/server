@@ -9,12 +9,10 @@ export default class ActivityValidator {
     constructor(protected ctx: HttpContextContract) {}
 
     public schema = schema.create({
-        change: schema.number.optional([ 
-            rules.requiredIfNotExists('exact_amount')
-        ]),
-        exact_amount: schema.number.optional([ 
+        change: schema.number.optional([rules.requiredIfNotExists('exact_amount')]),
+        exact_amount: schema.number.optional([
             rules.unsigned(),
-            rules.requiredIfNotExists('change')
+            rules.requiredIfNotExists('change'),
         ]),
     })
 

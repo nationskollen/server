@@ -17,4 +17,5 @@ export enum ActivityLevels {
     High,
     VeryHigh,
     Full,
+    Disabled,
 }

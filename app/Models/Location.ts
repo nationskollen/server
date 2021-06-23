@@ -223,8 +223,16 @@ export default class Location extends BaseModel {
             return
         }
 
-        // Reset the estimation
+        // Reset the estimation and set the activityLevel to disabled, unless
+        // we are enabling the activity level again, then we must restore to
+        // the activity being low until we have set the appropriate amount of
+        // estimated people
         location.estimatedPeopleCount = 0
+        if (location.activityLevel === ActivityLevels.Disabled) {
+            location.activityLevel = ActivityLevels.Low
+        } else {
+            location.activityLevel = ActivityLevels.Disabled
+        }
 
         // Broadcast the new change to connected websocket clients
         Ws.broadcastActivity(location.nationId, location.id, location.activityLevel)

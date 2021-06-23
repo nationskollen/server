@@ -93,9 +93,8 @@ export default class LocationsController {
         exact_amount?: number
     ) {
         if (exact_amount) {
-            location.estimatedPeopleCount = Math.min(
-                Math.max(0, location.estimatedPeopleCount),
-                location.maxCapacity
+            location.estimatedPeopleCount = Math.round(
+                Math.min(Math.max(0, exact_amount), location.maxCapacity)
             )
         } else if (change) {
             // Clamp value between 0 and maxCapacity.
