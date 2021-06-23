@@ -420,7 +420,7 @@ test.group('Activity update', (group) => {
         assert.equal(data.estimated_people_count, location.maxCapacity / 2)
     })
 
-    test('ensure that upon disabling event, the activity level goes to disabled, and back to low upon enabling', async (assert) => {
+    test('ensure that upon disabling activity level, the activity level goes to disabled, and back to low upon enabling', async (assert) => {
         const location = await createTestLocation(nation.oid)
 
         let { text } = await supertest(BASE_URL)
