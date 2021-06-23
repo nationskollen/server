@@ -52,6 +52,32 @@ test.group('Activity update', (group) => {
             .expect(422)
     })
 
+    test('ensure that exact_amount is only accepting unsigned values', async () => {
+        const location = await createTestLocation(nation.oid)
+
+        await supertest(BASE_URL)
+            .put(`/locations/${location.id}/activity`)
+            .set('Authorization', 'Bearer ' + nation.staffToken)
+            .send({
+                exact_amount: -1,
+            })
+            .expect(422)
+    })
+
+    test('ensure that exact_amount is not crossing max capacity when setting an amount over the cap', async (assert) => {
+        const location = await createTestLocation(nation.oid)
+
+        const { text } = await supertest(BASE_URL)
+            .put(`/locations/${location.id}/activity`)
+            .set('Authorization', 'Bearer ' + nation.staffToken)
+            .send({
+                exact_amount: 2 * location.maxCapacity,
+            })
+            .expect(200)
+        const data = JSON.parse(text)
+        assert.equal(data.estimated_people_count, location.maxCapacity)
+    })
+
     test('ensure that staff can update activity', async (assert) => {
         const testLocation = await createTestLocation(nation.oid)
 
@@ -343,5 +369,81 @@ test.group('Activity update', (group) => {
             })
             .close()
             .expectClosed()
+    })
+
+    test('ensure that it is possible to set the estimated amount of people exactly', async (assert) => {
+        const location = await createTestLocation(nation.oid)
+
+        await supertest(BASE_URL)
+            .put(`/nations/${nation.oid}/locations/${location.id}`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send({
+                max_capacity: 500,
+            })
+            .expect(200)
+
+        await supertest(BASE_URL)
+            .put(`/locations/${location.id}/activity`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send({
+                change: 250,
+            })
+            .expect(200)
+
+        const text2 = await supertest(BASE_URL)
+            .put(`/locations/${location.id}/activity`)
+            .set('authorization', 'bearer ' + nation.token)
+            .send({
+                exact_amount: 20,
+            })
+            .expect(200)
+
+        const data2 = JSON.parse(text2.text)
+        // Defaults to false upon event creation
+        assert.equal(data2.estimated_people_count, 20)
+    })
+
+    test('ensure that it is possible to set the change AND estimated amount of people exactly at the same request, but the latter is prioritized ', async (assert) => {
+        const location = await createTestLocation(nation.oid)
+
+        const { text } = await supertest(BASE_URL)
+            .put(`/locations/${location.id}/activity`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send({
+                change: 150,
+                exact_amount: Math.round(location.maxCapacity / 2),
+            })
+            .expect(200)
+
+        const data = JSON.parse(text)
+
+        assert.equal(data.estimated_people_count, Math.round(location.maxCapacity / 2))
+    })
+
+    test('ensure that upon disabling activity level, the activity level goes to disabled, and back to low upon enabling', async (assert) => {
+        const location = await createTestLocation(nation.oid)
+
+        let { text } = await supertest(BASE_URL)
+            .put(`/nations/${nation.oid}/locations/${location.id}`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send({
+                activity_level_disabled: true,
+            })
+            .expect(200)
+
+        const data = JSON.parse(text)
+
+        assert.equal(data.activity_level, ActivityLevels.Disabled)
+
+        const text1 = await supertest(BASE_URL)
+            .put(`/nations/${nation.oid}/locations/${location.id}`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send({
+                activity_level_disabled: false,
+            })
+            .expect(200)
+
+        const data1 = JSON.parse(text1.text)
+        assert.equal(data1.activity_level, ActivityLevels.Low)
     })
 })

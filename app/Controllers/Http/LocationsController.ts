@@ -16,6 +16,7 @@ import { getNation, getLocation, getValidatedData } from 'App/Utils/Request'
 import LocationUpdateValidator from 'App/Validators/Locations/UpdateValidator'
 import LocationCreateValidator from 'App/Validators/Locations/CreateValidator'
 import LocationUploadValidator from 'App/Validators/Locations/UploadValidator'
+import ActivityLevelsDisabledException from 'App/Exceptions/ActivityLevelsDisabledException'
 
 export default class LocationsController {
     /**
@@ -86,30 +87,52 @@ export default class LocationsController {
         await location.delete()
     }
 
+    private static async updateLocationActivity(
+        location: Location,
+        change?: number,
+        exact_amount?: number
+    ) {
+        if (exact_amount) {
+            location.estimatedPeopleCount = Math.min(exact_amount, location.maxCapacity)
+        } else if (change) {
+            // Clamp value between 0 and maxCapacity.
+            // NOTE: We must make sure that the resulting value is an integer.
+            // If this value would be a non-integer, the insert query will fail
+            // when using PostgreSQL (production database).
+            location.estimatedPeopleCount = Math.round(
+                Math.min(Math.max(0, location.estimatedPeopleCount + change), location.maxCapacity)
+            )
+        }
+
+        await location.save()
+    }
+
     /**
      * change the activity at a location
      * Can be performed by running:
+     * @example
      * ```json
      *  {
-     *      "change": 30 #for example
+     *      "change": 30
      *  }
      * ```
+     * or
+     * @example
+     * ```json
+     * {
+     *      "exact_amount": 140
+     * }
+     *  ```
      */
     public async activity({ bouncer, request }: HttpContextContract) {
         const location = getLocation(request)
+        if (location.activityLevelDisabled) {
+            throw new ActivityLevelsDisabledException()
+        }
         await bouncer.authorize('permissions', Permissions.Activity, location.nationId)
 
-        const { change } = await getValidatedData(request, ActivityValidator)
-
-        // Clamp value between 0 and maxCapacity.
-        // NOTE: We must make sure that the resulting value is an integer.
-        // If this value would be a non-integer, the insert query will fail
-        // when using PostgreSQL (production database).
-        location.estimatedPeopleCount = Math.round(
-            Math.min(Math.max(0, location.estimatedPeopleCount + change), location.maxCapacity)
-        )
-
-        await location.save()
+        const { change, exact_amount } = await getValidatedData(request, ActivityValidator)
+        await LocationsController.updateLocationActivity(location, change, exact_amount)
 
         return location.toJSON()
     }
