@@ -87,10 +87,10 @@ export default class LocationsController {
         await location.delete()
     }
 
-    private static async performActivityAction(
+    private static async updateLocationActivity(
         location: Location,
-        change: number | undefined,
-        exact_amount: number | undefined
+        change?: number,
+        exact_amount?: number
     ) {
         if (exact_amount) {
             location.estimatedPeopleCount = exact_amount
@@ -120,21 +120,19 @@ export default class LocationsController {
      * @example
      * ```json
      * {
-     *  "exact_amount": 140
+     *      "exact_amount": 140
      * }
      *  ```
      */
     public async activity({ bouncer, request }: HttpContextContract) {
         const location = getLocation(request)
-        await bouncer.authorize('permissions', Permissions.Activity, location.nationId)
-
         if (location.activityLevelDisabled) {
             throw new ActivityLevelsDisabledException()
         }
+        await bouncer.authorize('permissions', Permissions.Activity, location.nationId)
 
         const { change, exact_amount } = await getValidatedData(request, ActivityValidator)
-
-        await LocationsController.performActivityAction(location, change, exact_amount)
+        await LocationsController.updateLocationActivity(location, change, exact_amount)
 
         return location.toJSON()
     }
