@@ -232,7 +232,7 @@ test.group('Locations update', async (group) => {
             .send({
                 change: 20
             })
-            .expect(401)
+            .expect(422)
     })
 
     test('ensure that admins cannot update a location name falsely', async () => {

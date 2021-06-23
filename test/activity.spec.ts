@@ -370,16 +370,20 @@ test.group('Activity update', (group) => {
         assert.equal(data2.estimated_people_count, 20)
     })
 
-    test('ensure that it is possible not to set the estimated amount of people exactly AND change at the same request', async () => {
+    test('ensure that it is possible to set the change AND estimated amount of people exactly at the same request, but the latter is prioritized ', async (assert) => {
         const location = await createTestLocation(nation.oid)
 
-        await supertest(BASE_URL)
+        const { text } = await supertest(BASE_URL)
             .put(`/locations/${location.id}/activity`)
             .set('Authorization', 'Bearer ' + nation.token)
             .send({
                 exact_amount: 20,
                 change: 150
             })
-            .expect(422)
+            .expect(200)
+        
+        const data = JSON.parse(text)
+
+        assert.equal(data.estimated_people_count, 20)
     })
 })
