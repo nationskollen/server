@@ -108,6 +108,9 @@ export default class Location extends BaseModel {
     @column()
     public activityLevel: ActivityLevels
 
+    /**
+     * flag to determine wether activity level is disabled for a location or not
+     */
     @column({ consume: toBoolean })
     public activityLevelDisabled: boolean
 
@@ -204,6 +207,26 @@ export default class Location extends BaseModel {
         location.activityLevel = newActivityLevel
 
         // Broadcast new activity to all connected websocket clients
+        Ws.broadcastActivity(location.nationId, location.id, location.activityLevel)
+    }
+
+    /**
+     * This method checks if the activity level has been disabled, if it has,
+     * then reset the estimated poeple count to zero.
+     *
+     * @param location the location that has its activity level disabled
+     */
+    @beforeUpdate()
+    public static async disablingActivityLevel(location: Location) {
+        // Check wether the `activityLevelDisabled` has changed
+        if (!location.$dirty.hasOwnProperty('activityLevelDisabled')) {
+            return
+        }
+
+        // Reset the estimation
+        location.estimatedPeopleCount = 0
+
+        // Broadcast the new change to connected websocket clients
         Ws.broadcastActivity(location.nationId, location.id, location.activityLevel)
     }
 

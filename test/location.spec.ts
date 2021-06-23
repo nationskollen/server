@@ -197,6 +197,44 @@ test.group('Locations update', async (group) => {
             .expect(422)
     })
 
+    test('ensure that when disabling activity level, it is not possible to change activity level', async (assert) => {
+        const location = await createTestLocation(nation.oid)
+
+        const text1 = await supertest(BASE_URL)
+            .put(`/nations/${nation.oid}/locations/${location.id}`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send({
+                max_capacity: 500,
+                estimated_people_count: 250
+            })
+            .expect(200)
+
+        const data1 = JSON.parse(text1.text)
+        // Defaults to false upon event creation
+        assert.isFalse(data1.activity_level_disabled)
+
+        const text2 = await supertest(BASE_URL)
+            .put(`/nations/${nation.oid}/locations/${location.id}`)
+            .set('authorization', 'bearer ' + nation.token)
+            .send({
+                activity_level_disabled: true
+            })
+            .expect(200)
+
+        const data2 = JSON.parse(text2.text)
+        // Defaults to false upon event creation
+        assert.isTrue(data2.activity_level_disabled)
+        assert.equal(data2.estimated_people_count, 0)
+
+        await supertest(BASE_URL)
+            .put(`/locations/${location.id}/activity`)
+            .set('authorization', 'bearer ' + nation.token)
+            .send({
+                change: 20
+            })
+            .expect(401)
+    })
+
     test('ensure that admins cannot update a location name falsely', async () => {
         const location = await createTestLocation(nation.oid)
 

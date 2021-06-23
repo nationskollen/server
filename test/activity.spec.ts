@@ -344,4 +344,42 @@ test.group('Activity update', (group) => {
             .close()
             .expectClosed()
     })
+
+    test('ensure that it is possible to set the estimated amount of people exactly', async (assert) => {
+        const location = await createTestLocation(nation.oid)
+
+        await supertest(BASE_URL)
+            .put(`/nations/${nation.oid}/locations/${location.id}`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send({
+                max_capacity: 500,
+                estimated_people_count: 250
+            })
+            .expect(200)
+
+        const text2 = await supertest(BASE_URL)
+            .put(`/locations/${location.id}/activity`)
+            .set('authorization', 'bearer ' + nation.token)
+            .send({
+                exact_amount: 20
+            })
+            .expect(200)
+
+        const data2 = JSON.parse(text2.text)
+        // Defaults to false upon event creation
+        assert.equal(data2.estimated_people_count, 20)
+    })
+
+    test('ensure that it is possible not to set the estimated amount of people exactly AND change at the same request', async () => {
+        const location = await createTestLocation(nation.oid)
+
+        await supertest(BASE_URL)
+            .put(`/locations/${location.id}/activity`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send({
+                exact_amount: 20,
+                change: 150
+            })
+            .expect(422)
+    })
 })
