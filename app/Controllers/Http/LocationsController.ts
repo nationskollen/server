@@ -92,7 +92,6 @@ export default class LocationsController {
         change: number | undefined,
         exact_amount: number | undefined
     ) {
-
         if (exact_amount) {
             location.estimatedPeopleCount = exact_amount
         } else if (change) {
@@ -103,7 +102,7 @@ export default class LocationsController {
             location.estimatedPeopleCount = Math.round(
                 Math.min(Math.max(0, location.estimatedPeopleCount + change), location.maxCapacity)
             )
-        } 
+        }
 
         await location.save()
     }
@@ -117,7 +116,7 @@ export default class LocationsController {
      *      "change": 30
      *  }
      * ```
-     * or 
+     * or
      * @example
      * ```json
      * {

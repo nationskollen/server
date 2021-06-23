@@ -353,7 +353,7 @@ test.group('Activity update', (group) => {
             .set('Authorization', 'Bearer ' + nation.token)
             .send({
                 max_capacity: 500,
-                estimated_people_count: 250
+                estimated_people_count: 250,
             })
             .expect(200)
 
@@ -361,7 +361,7 @@ test.group('Activity update', (group) => {
             .put(`/locations/${location.id}/activity`)
             .set('authorization', 'bearer ' + nation.token)
             .send({
-                exact_amount: 20
+                exact_amount: 20,
             })
             .expect(200)
 
@@ -378,10 +378,10 @@ test.group('Activity update', (group) => {
             .set('Authorization', 'Bearer ' + nation.token)
             .send({
                 exact_amount: 20,
-                change: 150
+                change: 150,
             })
             .expect(200)
-        
+
         const data = JSON.parse(text)
 
         assert.equal(data.estimated_people_count, 20)

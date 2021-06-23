@@ -205,7 +205,7 @@ test.group('Locations update', async (group) => {
             .set('Authorization', 'Bearer ' + nation.token)
             .send({
                 max_capacity: 500,
-                estimated_people_count: 250
+                estimated_people_count: 250,
             })
             .expect(200)
 
@@ -217,7 +217,7 @@ test.group('Locations update', async (group) => {
             .put(`/nations/${nation.oid}/locations/${location.id}`)
             .set('authorization', 'bearer ' + nation.token)
             .send({
-                activity_level_disabled: true
+                activity_level_disabled: true,
             })
             .expect(200)
 
@@ -230,7 +230,7 @@ test.group('Locations update', async (group) => {
             .put(`/locations/${location.id}/activity`)
             .set('authorization', 'bearer ' + nation.token)
             .send({
-                change: 20
+                change: 20,
             })
             .expect(422)
     })
