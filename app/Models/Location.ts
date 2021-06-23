@@ -109,7 +109,7 @@ export default class Location extends BaseModel {
     public activityLevel: ActivityLevels
 
     /**
-     * flag to determine wether activity level is disabled for a location or not
+     * Flag to determine if the activity level is disabled for the location
      */
     @column({ consume: toBoolean })
     public activityLevelDisabled: boolean
