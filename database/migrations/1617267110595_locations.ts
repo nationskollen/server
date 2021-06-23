@@ -25,6 +25,7 @@ export default class Locations extends BaseSchema {
             table.integer('max_capacity').notNullable().unsigned()
             table.integer('estimated_people_count').defaultTo(0)
             table.integer('activity_level').defaultTo(0)
+            table.boolean('activity_level_disabled').defaultTo(false).notNullable()
             table.boolean('is_open').defaultTo(false).notNullable()
             table.string('cover_img_src')
             table.timestamps(true)

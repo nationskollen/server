@@ -108,6 +108,9 @@ export default class Location extends BaseModel {
     @column()
     public activityLevel: ActivityLevels
 
+    @column({ consume: toBoolean })
+    public activityLevelDisabled: boolean
+
     /**
      * The assigned default location for nation (parent model)
      */
