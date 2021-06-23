@@ -217,7 +217,7 @@ export default class Location extends BaseModel {
      * @param location the location that has its activity level disabled
      */
     @beforeUpdate()
-    public static async disablingActivityLevel(location: Location) {
+    public static async disableActivityLevel(location: Location) {
         // Check wether the `activityLevelDisabled` has changed
         if (!location.$dirty.hasOwnProperty('activityLevelDisabled')) {
             return
