@@ -411,13 +411,13 @@ test.group('Activity update', (group) => {
             .set('Authorization', 'Bearer ' + nation.token)
             .send({
                 change: 150,
-                exact_amount: location.maxCapacity / 2,
+                exact_amount: Math.round(location.maxCapacity / 2),
             })
             .expect(200)
 
         const data = JSON.parse(text)
 
-        assert.equal(data.estimated_people_count, location.maxCapacity / 2)
+        assert.equal(data.estimated_people_count, Math.round(location.maxCapacity / 2))
     })
 
     test('ensure that upon disabling activity level, the activity level goes to disabled, and back to low upon enabling', async (assert) => {
