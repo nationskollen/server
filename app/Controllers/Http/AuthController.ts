@@ -5,9 +5,9 @@
  * @category Controller
  * @module AuthController
  */
-import { NationOwnerScopes } from 'App/Utils/Scopes'
 import LoginValidator from 'App/Validators/Users/LoginValidator'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import UserNotFoundException from 'App/Exceptions/UserNotFoundException'
 
 export default class AuthController {
     /**
@@ -17,26 +17,14 @@ export default class AuthController {
         const { email, password } = await request.validate(LoginValidator)
         const token = await auth.use('api').attempt(email, password)
 
-        let scope = NationOwnerScopes.None
-        let oid = -1
-
-        // Set scope depending on what user is
-        // If nationId is not part of a nation (-1),
-        // then return None.
-        if (auth.user && auth.user.nationId > -1) {
-            if (auth.user.nationAdmin) {
-                scope = NationOwnerScopes.Admin
-            } else {
-                scope = NationOwnerScopes.Staff
-            }
-
-            oid = auth.user.nationId
+        if (!auth.user) {
+            throw new UserNotFoundException()
         }
+        await auth.user.load('permissions')
 
         return {
             ...token.toJSON(),
-            scope,
-            oid,
+            ...auth.user.toJSON(),
         }
     }
 
