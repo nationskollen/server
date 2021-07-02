@@ -87,7 +87,7 @@ test.group('Auth', () => {
         const { oid } = await NationFactory.create()
         const data = await createStaffUser(oid, true)
 
-        assert.isTrue(data.admin)
+        assert.isTrue(data.nation_admin)
         assert.equal(oid, data.oid)
     })
 
@@ -95,7 +95,7 @@ test.group('Auth', () => {
         const { oid } = await NationFactory.create()
         const data = await createStaffUser(oid, false)
 
-        assert.isFalse(data.admin)
+        assert.isFalse(data.nation_admin)
         assert.equal(oid, data.oid)
     })
 

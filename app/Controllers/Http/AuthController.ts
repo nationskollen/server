@@ -6,8 +6,8 @@
  * @module AuthController
  */
 import LoginValidator from 'App/Validators/Users/LoginValidator'
-import Permission from 'App/Models/Permission'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import UserNotFoundException from 'App/Exceptions/UserNotFoundException'
 
 export default class AuthController {
     /**
@@ -17,25 +17,14 @@ export default class AuthController {
         const { email, password } = await request.validate(LoginValidator)
         const token = await auth.use('api').attempt(email, password)
 
-        let oid = -1
-        let admin = false
-        let permissions: Array<Permission> = []
-
-        // If nationId is not part of a nation (-1),
-        // as well load the permissions that exists for the user
-        // then return None.
-        if (auth.user && auth.user.nationId > -1) {
-            oid = auth.user.nationId
-            await auth.user.load('permissions')
-            permissions = auth.user.permissions
-            admin = auth.user.nationAdmin
+        if (!auth.user) {
+            throw new UserNotFoundException()
         }
+        await auth.user.load('permissions')
 
         return {
             ...token.toJSON(),
-            permissions,
-            admin,
-            oid,
+            ...auth.user.toJSON(),
         }
     }
 

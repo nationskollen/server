@@ -54,13 +54,13 @@ export async function createStaffUser(nationId: number, nationAdmin: boolean) {
         .send({ email: user.email, password })
         .expect(200)
 
-    const { token, permissions, oid, admin } = JSON.parse(text)
+    const { token, permissions, oid, nation_admin } = JSON.parse(text)
 
     return {
         user,
         token,
         permissions,
-        admin,
+        nation_admin,
         oid,
     }
 }
