@@ -5,8 +5,8 @@
  * @category Controller
  * @module AuthController
  */
-import { NationOwnerScopes } from 'App/Utils/Scopes'
 import LoginValidator from 'App/Validators/Users/LoginValidator'
+import Permission from 'App/Models/Permission'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
 export default class AuthController {
@@ -17,25 +17,24 @@ export default class AuthController {
         const { email, password } = await request.validate(LoginValidator)
         const token = await auth.use('api').attempt(email, password)
 
-        let scope = NationOwnerScopes.None
         let oid = -1
+        let admin = false
+        let permissions: Array<Permission> = []
 
-        // Set scope depending on what user is
         // If nationId is not part of a nation (-1),
+        // as well load the permissions that exists for the user
         // then return None.
         if (auth.user && auth.user.nationId > -1) {
-            if (auth.user.nationAdmin) {
-                scope = NationOwnerScopes.Admin
-            } else {
-                scope = NationOwnerScopes.Staff
-            }
-
             oid = auth.user.nationId
+            await auth.user.load('permissions')
+            permissions = auth.user.permissions
+            admin = auth.user.nationAdmin
         }
 
         return {
             ...token.toJSON(),
-            scope,
+            permissions,
+            admin,
             oid,
         }
     }

@@ -1,10 +1,11 @@
 import test from 'japa'
 import supertest from 'supertest'
+import PermissionType from 'App/Models/PermissionType'
+import { Permissions } from 'App/Utils/Permissions'
 import User from 'App/Models/User'
 import { BASE_URL } from 'App/Utils/Constants'
 import { NationFactory, UserFactory } from 'Database/factories/index'
-import { createStaffUser } from 'App/Utils/Test'
-import { NationOwnerScopes } from 'App/Utils/Scopes'
+import { createTestNation, createStaffUser, assignPermissions } from 'App/Utils/Test'
 
 test.group('Auth', () => {
     test('ensure user can login', async (assert) => {
@@ -25,7 +26,7 @@ test.group('Auth', () => {
 
         assert.isString(data.token)
         assert.equal('bearer', data.type)
-        assert.equal(NationOwnerScopes.None, data.scope)
+        assert.isTrue(data.hasOwnProperty('permissions'))
         assert.equal(-1, data.oid)
     })
 
@@ -82,27 +83,19 @@ test.group('Auth', () => {
         assert.notEqual('secret', user.password)
     })
 
-    test('ensure that logging in as admin returns the "admin" scope', async (assert) => {
+    test('ensure that logging in as admin successful', async (assert) => {
         const { oid } = await NationFactory.create()
         const data = await createStaffUser(oid, true)
 
-        assert.equal(NationOwnerScopes.Admin, data.scope)
+        assert.isTrue(data.admin)
         assert.equal(oid, data.oid)
     })
 
-    test('ensure that logging in as staff returns the "staff" scope', async (assert) => {
+    test('ensure that logging in as staff is successful', async (assert) => {
         const { oid } = await NationFactory.create()
         const data = await createStaffUser(oid, false)
 
-        assert.equal(NationOwnerScopes.Staff, data.scope)
-        assert.equal(oid, data.oid)
-    })
-
-    test('ensure that logging in as a user with no nation relation returns the "none" scope', async (assert) => {
-        const oid = -1
-        const data = await createStaffUser(oid, false)
-
-        assert.equal(NationOwnerScopes.None, data.scope)
+        assert.isFalse(data.admin)
         assert.equal(oid, data.oid)
     })
 
@@ -130,5 +123,33 @@ test.group('Auth', () => {
             .post('/users/logout')
             .set('Authorization', 'Bearer 000000000000000')
             .expect(401)
+    })
+
+    test('ensure that permissions are in the response when logging in', async (assert) => {
+        const nation = await createTestNation()
+        const password = 'password123'
+        const nationId = nation.oid
+        const user = await UserFactory.merge({ password, nationId }).create()
+
+        // assign some permission
+        const permissions = await PermissionType.query().where('type', Permissions.UserPermissions)
+        await assignPermissions(user, permissions)
+
+        // this is to verify with the response
+        await user.preload('permissions')
+
+        const { text } = await supertest(BASE_URL)
+            .post('/users/login')
+            .expect('Content-Type', /json/)
+            .send({
+                email: user.email,
+                password: password,
+            })
+            .expect(200)
+
+        const data = JSON.parse(text)
+
+        assert.equal(data.permissions[0].id, user.permissions[0].id)
+        assert.equal(data.permissions[0].permission_type_id, user.permissions[0].permissionTypeId)
     })
 })
