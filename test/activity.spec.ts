@@ -67,26 +67,35 @@ test.group('Activity update', (group) => {
     test('ensure that exact_amount is not crossing max capacity when setting an amount over the cap', async (assert) => {
         const location = await createTestLocation(nation.oid)
 
-        const { text } = await supertest(BASE_URL)
+        await supertest(BASE_URL)
             .put(`/locations/${location.id}/activity`)
             .set('Authorization', 'Bearer ' + nation.staffToken)
             .send({
                 exact_amount: 2 * location.maxCapacity,
             })
             .expect(200)
+
+        const { text } = await supertest(BASE_URL)
+            .get(`/locations/${location.id}`)
+            .expect(200)
+
         const data = JSON.parse(text)
         assert.equal(data.estimated_people_count, location.maxCapacity)
     })
 
-    test('ensure that staff can update activity', async (assert) => {
+    test('ensure that staff (with permission) can update activity', async (assert) => {
         const testLocation = await createTestLocation(nation.oid)
 
-        const { text } = await supertest(BASE_URL)
+        await supertest(BASE_URL)
             .put(`/locations/${testLocation.id}/activity`)
             .set('Authorization', 'Bearer ' + nation.staffToken)
             .send({
                 change: testLocation.maxCapacity,
             })
+            .expect(200)
+
+        const { text } = await supertest(BASE_URL)
+            .get(`/locations/${testLocation.id}`)
             .expect(200)
 
         const data = await JSON.parse(text)
@@ -97,10 +106,14 @@ test.group('Activity update', (group) => {
     test('ensure that admins can update activity', async (assert) => {
         const testLocation = await createTestLocation(nation.oid)
 
-        const { text } = await supertest(BASE_URL)
+        await supertest(BASE_URL)
             .put(`/locations/${testLocation.id}/activity`)
             .set('Authorization', 'Bearer ' + nation.token)
             .send({ change: testLocation.maxCapacity })
+            .expect(200)
+
+        const { text } = await supertest(BASE_URL)
+            .get(`/locations/${testLocation.id}`)
             .expect(200)
 
         const data = await JSON.parse(text)
@@ -111,10 +124,14 @@ test.group('Activity update', (group) => {
     test('ensure that people count does not go below 0', async (assert) => {
         const testLocation = await createTestLocation(nation.oid)
 
-        const { text } = await supertest(BASE_URL)
+        await supertest(BASE_URL)
             .put(`/locations/${testLocation.id}/activity`)
             .set('Authorization', 'Bearer ' + nation.token)
             .send({ change: -1 * (testLocation.maxCapacity + 10) })
+            .expect(200)
+
+        const { text } = await supertest(BASE_URL)
+            .get(`/locations/${testLocation.id}`)
             .expect(200)
 
         const data = await JSON.parse(text)
@@ -125,10 +142,14 @@ test.group('Activity update', (group) => {
     test('ensure that nation people count does not go above max capacity', async (assert) => {
         const testLocation = await createTestLocation(nation.oid)
 
-        const { text } = await supertest(BASE_URL)
+        await supertest(BASE_URL)
             .put(`/locations/${testLocation.id}/activity`)
             .set('Authorization', 'Bearer ' + nation.token)
             .send({ change: testLocation.maxCapacity + 10 })
+            .expect(200)
+
+        const { text } = await supertest(BASE_URL)
+            .get(`/locations/${testLocation.id}`)
             .expect(200)
 
         const data = await JSON.parse(text)
@@ -144,10 +165,14 @@ test.group('Activity update', (group) => {
             .set('Authorization', 'Bearer ' + nation.token)
             .expect(200)
 
-        const { text } = await supertest(BASE_URL)
+        await supertest(BASE_URL)
             .put(`/locations/${testLocation.id}/activity`)
             .set('Authorization', 'Bearer ' + nation.token)
             .send({ change: testLocation.maxCapacity })
+            .expect(200)
+
+        const { text } = await supertest(BASE_URL)
+            .get(`/locations/${testLocation.id}`)
             .expect(200)
 
         const data = await JSON.parse(text)
@@ -163,12 +188,16 @@ test.group('Activity update', (group) => {
             .set('Authorization', 'Bearer ' + nation.token)
             .expect(200)
 
-        const { text } = await supertest(BASE_URL)
+        await supertest(BASE_URL)
             .put(`/locations/${testLocation.id}/activity`)
             .set('Authorization', 'Bearer ' + nation.token)
             .send({
                 change: testLocation.maxCapacity - testLocation.maxCapacity / 2,
             })
+            .expect(200)
+
+        const { text } = await supertest(BASE_URL)
+            .get(`/locations/${testLocation.id}`)
             .expect(200)
 
         const data = await JSON.parse(text)
@@ -184,10 +213,14 @@ test.group('Activity update', (group) => {
             .set('Authorization', 'Bearer ' + nation.token)
             .expect(200)
 
-        const { text } = await supertest(BASE_URL)
+        await supertest(BASE_URL)
             .put(`/locations/${testLocation.id}/activity`)
             .set('Authorization', 'Bearer ' + nation.token)
             .send({ change: -1 * testLocation.maxCapacity })
+            .expect(200)
+
+        const { text } = await supertest(BASE_URL)
+            .get(`/locations/${testLocation.id}`)
             .expect(200)
 
         const data = await JSON.parse(text)
@@ -390,12 +423,16 @@ test.group('Activity update', (group) => {
             })
             .expect(200)
 
-        const text2 = await supertest(BASE_URL)
+        await supertest(BASE_URL)
             .put(`/locations/${location.id}/activity`)
             .set('authorization', 'bearer ' + nation.token)
             .send({
                 exact_amount: 20,
             })
+            .expect(200)
+
+        const text2 = await supertest(BASE_URL)
+            .get(`/locations/${location.id}`)
             .expect(200)
 
         const data2 = JSON.parse(text2.text)
@@ -406,13 +443,17 @@ test.group('Activity update', (group) => {
     test('ensure that it is possible to set the change AND estimated amount of people exactly at the same request, but the latter is prioritized ', async (assert) => {
         const location = await createTestLocation(nation.oid)
 
-        const { text } = await supertest(BASE_URL)
+        await supertest(BASE_URL)
             .put(`/locations/${location.id}/activity`)
             .set('Authorization', 'Bearer ' + nation.token)
             .send({
                 change: 150,
                 exact_amount: Math.round(location.maxCapacity / 2),
             })
+            .expect(200)
+
+        const { text } = await supertest(BASE_URL)
+            .get(`/locations/${location.id}`)
             .expect(200)
 
         const data = JSON.parse(text)

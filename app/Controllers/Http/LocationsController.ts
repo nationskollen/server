@@ -133,8 +133,6 @@ export default class LocationsController {
 
         const { change, exact_amount } = await getValidatedData(request, ActivityValidator)
         await LocationsController.updateLocationActivity(location, change, exact_amount)
-
-        return location.toJSON()
     }
 
     /**
