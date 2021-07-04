@@ -206,8 +206,14 @@ export default class Location extends BaseModel {
 
         location.activityLevel = newActivityLevel
 
-        // Broadcast new activity to all connected websocket clients
-        Ws.broadcastActivity(location.nationId, location.id, location.activityLevel)
+        // Broadcast new activity information to all connected websocket clients
+        Ws.broadcastActivity(
+            location.nationId,
+            location.id,
+            location.activityLevel,
+            location.estimatedPeopleCount,
+            location.maxCapacity
+        )
     }
 
     /**
@@ -235,7 +241,13 @@ export default class Location extends BaseModel {
         }
 
         // Broadcast the new change to connected websocket clients
-        Ws.broadcastActivity(location.nationId, location.id, location.activityLevel)
+        Ws.broadcastActivity(
+            location.nationId,
+            location.id,
+            location.activityLevel,
+            location.estimatedPeopleCount,
+            location.maxCapacity
+        )
     }
 
     /**

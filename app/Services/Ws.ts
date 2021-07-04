@@ -43,13 +43,21 @@ class Ws {
         })
     }
 
-    public broadcastActivity(oid: number, locationId: number, activityLevel: ActivityLevels) {
+    public broadcastActivity(
+        oid: number, 
+        locationId: number,
+        maxCapacity: number,
+        estimatedPeopleCount: number,
+        activityLevel: ActivityLevels,
+    ) {
         this.broadcast({
             type: WebSocketDataTypes.Activity,
             data: {
                 oid,
                 location_id: locationId,
                 activity_level: activityLevel,
+                estimated_people_count: estimatedPeopleCount,
+                max_capacity: maxCapacity
             },
         })
     }
