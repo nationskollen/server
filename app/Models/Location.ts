@@ -210,9 +210,8 @@ export default class Location extends BaseModel {
         Ws.broadcastActivity(
             location.nationId,
             location.id,
-            location.activityLevel,
             location.estimatedPeopleCount,
-            location.maxCapacity
+            location.activityLevel,
         )
     }
 
@@ -244,9 +243,8 @@ export default class Location extends BaseModel {
         Ws.broadcastActivity(
             location.nationId,
             location.id,
-            location.activityLevel,
             location.estimatedPeopleCount,
-            location.maxCapacity
+            location.activityLevel,
         )
     }
 

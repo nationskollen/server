@@ -242,9 +242,13 @@ test.group('Activity update', (group) => {
             .send({ change: testLocation.maxCapacity })
             .expect(200)
 
-        const { text } = await supertest(BASE_URL)
+        await supertest(BASE_URL)
             .put(`/locations/${testLocation.id}/close`)
             .set('Authorization', 'Bearer ' + nation.token)
+            .expect(200)
+
+        const { text } = await supertest(BASE_URL)
+            .get(`/locations/${testLocation.id}`)
             .expect(200)
 
         const data = await JSON.parse(text)
@@ -261,9 +265,13 @@ test.group('Activity update', (group) => {
             .set('Authorization', 'Bearer ' + nation.token)
             .expect(200)
 
-        const { text } = await supertest(BASE_URL)
+        await supertest(BASE_URL)
             .put(`/locations/${testLocation.id}/close`)
             .set('Authorization', 'Bearer ' + nation.token)
+            .expect(200)
+
+        const { text } = await supertest(BASE_URL)
+            .get(`/locations/${testLocation.id}`)
             .expect(200)
 
         const data = await JSON.parse(text)
@@ -275,9 +283,13 @@ test.group('Activity update', (group) => {
     test('ensure that opening a nation updates the activity level', async (assert) => {
         const testLocation = await createTestLocation(nation.oid)
 
-        const { text } = await supertest(BASE_URL)
+        await supertest(BASE_URL)
             .put(`/locations/${testLocation.id}/open`)
             .set('Authorization', 'Bearer ' + nation.token)
+            .expect(200)
+
+        const { text } = await supertest(BASE_URL)
+            .get(`/locations/${testLocation.id}`)
             .expect(200)
 
         const data = await JSON.parse(text)
@@ -322,12 +334,14 @@ test.group('Activity update', (group) => {
                     .put(`/locations/${testLocation.id}/open`)
                     .set('Authorization', 'Bearer ' + nation.token)
                     .expect(200)
+
             })
             .expectJson({
                 type: WebSocketDataTypes.Activity,
                 data: {
                     oid: nation.oid,
                     location_id: testLocation.id,
+                    estimated_people_count: 0,
                     activity_level: ActivityLevels.Low,
                 },
             })
@@ -342,6 +356,7 @@ test.group('Activity update', (group) => {
             .put(`/locations/${testLocation.id}/open`)
             .set('Authorization', 'Bearer ' + nation.token)
             .expect(200)
+
 
         await wstest(HOSTNAME)
             .ws('/')
@@ -358,6 +373,7 @@ test.group('Activity update', (group) => {
                 data: {
                     oid: nation.oid,
                     location_id: testLocation.id,
+                    estimated_people_count: 0,
                     activity_level: ActivityLevels.Closed,
                 },
             })
@@ -378,6 +394,7 @@ test.group('Activity update', (group) => {
             .set('Authorization', 'Bearer ' + nation.token)
             .expect(200)
 
+
         // After opening again, the estimated people count is 0 and
         // activty level is not ActivityLevels.Low
         await wstest(HOSTNAME)
@@ -391,12 +408,14 @@ test.group('Activity update', (group) => {
                     .set('Authorization', 'Bearer ' + nation.token)
                     .send({ change: testLocation.maxCapacity })
                     .expect(200)
+
             })
             .expectJson({
                 type: WebSocketDataTypes.Activity,
                 data: {
                     oid: nation.oid,
                     location_id: testLocation.id,
+                    estimated_people_count: testLocation.maxCapacity,
                     activity_level: ActivityLevels.Full,
                 },
             })

@@ -143,8 +143,6 @@ export default class LocationsController {
         await bouncer.authorize('permissions', Permissions.Locations, location.nationId)
 
         await location.setOpen()
-
-        return location.toJSON()
     }
 
     /**
@@ -155,8 +153,6 @@ export default class LocationsController {
         await bouncer.authorize('permissions', Permissions.Locations, location.nationId)
 
         await location.setClosed()
-
-        return location.toJSON()
     }
 
     /**

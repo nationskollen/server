@@ -46,7 +46,6 @@ class Ws {
     public broadcastActivity(
         oid: number, 
         locationId: number,
-        maxCapacity: number,
         estimatedPeopleCount: number,
         activityLevel: ActivityLevels,
     ) {
@@ -55,9 +54,8 @@ class Ws {
             data: {
                 oid,
                 location_id: locationId,
-                activity_level: activityLevel,
                 estimated_people_count: estimatedPeopleCount,
-                max_capacity: maxCapacity
+                activity_level: activityLevel,
             },
         })
     }
