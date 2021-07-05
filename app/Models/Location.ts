@@ -211,7 +211,7 @@ export default class Location extends BaseModel {
             location.nationId,
             location.id,
             location.estimatedPeopleCount,
-            location.activityLevel,
+            location.activityLevel
         )
     }
 
@@ -244,7 +244,7 @@ export default class Location extends BaseModel {
             location.nationId,
             location.id,
             location.estimatedPeopleCount,
-            location.activityLevel,
+            location.activityLevel
         )
     }
 

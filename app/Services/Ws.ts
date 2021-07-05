@@ -44,10 +44,10 @@ class Ws {
     }
 
     public broadcastActivity(
-        oid: number, 
+        oid: number,
         locationId: number,
         estimatedPeopleCount: number,
-        activityLevel: ActivityLevels,
+        activityLevel: ActivityLevels
     ) {
         this.broadcast({
             type: WebSocketDataTypes.Activity,
