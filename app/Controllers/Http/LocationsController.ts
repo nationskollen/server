@@ -133,8 +133,6 @@ export default class LocationsController {
 
         const { change, exact_amount } = await getValidatedData(request, ActivityValidator)
         await LocationsController.updateLocationActivity(location, change, exact_amount)
-
-        return location.toJSON()
     }
 
     /**
@@ -145,8 +143,6 @@ export default class LocationsController {
         await bouncer.authorize('permissions', Permissions.Locations, location.nationId)
 
         await location.setOpen()
-
-        return location.toJSON()
     }
 
     /**
@@ -157,8 +153,6 @@ export default class LocationsController {
         await bouncer.authorize('permissions', Permissions.Locations, location.nationId)
 
         await location.setClosed()
-
-        return location.toJSON()
     }
 
     /**
