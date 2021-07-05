@@ -464,11 +464,11 @@ test.group('Activity update', (group) => {
             })
             .expect(200)
 
-        const text2 = await supertest(BASE_URL).get(`/locations/${location.id}`).expect(200)
+        const { text } = await supertest(BASE_URL).get(`/locations/${location.id}`).expect(200)
 
-        const data2 = JSON.parse(text2.text)
+        const data = JSON.parse(text)
         // Defaults to false upon event creation
-        assert.equal(data2.estimated_people_count, 20)
+        assert.equal(data.estimated_people_count, 20)
     })
 
     test('ensure that it is possible to set the change AND estimated amount of people exactly at the same request, but the latter is prioritized ', async (assert) => {
