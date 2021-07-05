@@ -423,6 +423,48 @@ test.group('Activity update', (group) => {
             .expectClosed()
     })
 
+    test('ensure that a websocket event is broadcasted on exact amount change', async () => {
+        const testLocation = await createTestLocation(nation.oid)
+
+        await supertest(BASE_URL)
+            .put(`/locations/${testLocation.id}/close`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .expect(200)
+
+        await supertest(BASE_URL)
+            .put(`/locations/${testLocation.id}/open`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .expect(200)
+
+
+        // After opening again, the estimated people count is 0 and
+        // activty level is not ActivityLevels.Low
+        await wstest(HOSTNAME)
+            .ws('/')
+            .expectJson({ type: WebSocketDataTypes.Connected })
+            .exec(async () => {
+                // Set the current capacity to the max capacity,
+                // giving us a current activity of ActivityLevels.Full
+                await supertest(BASE_URL)
+                    .put(`/locations/${testLocation.id}/activity`)
+                    .set('Authorization', 'Bearer ' + nation.token)
+                    .send({ exact_amount: testLocation.maxCapacity - 1 })
+                    .expect(200)
+
+            })
+            .expectJson({
+                type: WebSocketDataTypes.Activity,
+                data: {
+                    oid: nation.oid,
+                    location_id: testLocation.id,
+                    estimated_people_count: testLocation.maxCapacity - 1,
+                    activity_level: ActivityLevels.Full,
+                },
+            })
+            .close()
+            .expectClosed()
+    })
+
     test('ensure that it is possible to set the estimated amount of people exactly', async (assert) => {
         const location = await createTestLocation(nation.oid)
 
