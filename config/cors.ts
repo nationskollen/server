@@ -6,6 +6,7 @@
  */
 
 import { CorsConfig } from '@ioc:Adonis/Core/Cors'
+import Env from '@ioc:Adonis/Core/Env'
 
 const corsConfig: CorsConfig = {
     /*
@@ -20,7 +21,13 @@ const corsConfig: CorsConfig = {
     | you can define a function to enable/disable it on per request basis as well.
     |
     */
-    enabled: true,
+    enabled: (request) => {
+        if (request.url().startsWith('/api/v1/subscriptions')) {
+            return false
+        }
+
+        return true
+    },
 
     // You can also use a function that return true or false.
     // enabled: (request) => request.url().startsWith('/api')
@@ -44,7 +51,26 @@ const corsConfig: CorsConfig = {
     |                     one of the above values.
     |
     */
-    origin: true,
+    origin: (requestOrigin: string) => {
+        const environment = Env.get('NODE_ENV')
+        let hostname: string
+
+        if (environment !== 'production') {
+            return true
+        }
+
+        try {
+            hostname = Env.get('ASSET_HOSTNAME')
+        } catch (e) {
+            console.log(
+                'Hostname undefined, have you forgotten to set the hostname in the `.env` file? (environment)',
+                e
+            )
+            return false
+        }
+
+        return requestOrigin === hostname
+    },
 
     /*
     |--------------------------------------------------------------------------
@@ -56,7 +82,7 @@ const corsConfig: CorsConfig = {
     |
     | Following is the list of default methods. Feel free to add more.
     */
-    methods: ['GET', 'HEAD', 'POST', 'PUT', 'DELETE'],
+    methods: ['POST', 'PUT', 'DELETE'],
 
     /*
     |--------------------------------------------------------------------------
