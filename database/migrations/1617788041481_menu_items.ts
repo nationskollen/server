@@ -15,7 +15,7 @@ export default class MenuItems extends BaseSchema {
                 .inTable(DatabaseTables.Menus)
             table.text('name').notNullable()
             table.text('description').notNullable()
-            table.decimal('price', 8, 2).notNullable().unsigned().defaultTo(0)
+            table.decimal('price', 8, 2).unsigned()
             table.string('cover_img_src')
             table.boolean('hidden').notNullable().defaultTo(false)
             table.timestamps(true)

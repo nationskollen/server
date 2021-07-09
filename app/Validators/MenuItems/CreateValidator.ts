@@ -11,7 +11,7 @@ export default class MenuItemCreateValidator {
     public schema = schema.create({
         name: schema.string(),
         description: schema.string({}, []),
-        price: schema.number([rules.unsigned()]),
+        price: schema.number.optional([rules.unsigned()]),
         hidden: schema.boolean(),
     })
 
