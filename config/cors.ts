@@ -6,7 +6,6 @@
  */
 
 import { CorsConfig } from '@ioc:Adonis/Core/Cors'
-import Logger from '@ioc:Adonis/Core/Logger'
 import Env from '@ioc:Adonis/Core/Env'
 
 const corsConfig: CorsConfig = {
@@ -64,7 +63,7 @@ const corsConfig: CorsConfig = {
         try {
             hostname = Env.get('ASSET_HOSTNAME')
         } catch (e) {
-            Logger.error('Hostname undefined, have you forgotten to set the hostname in the `.env` file? (environment)', e)
+            console.log('Hostname undefined, have you forgotten to set the hostname in the `.env` file? (environment)', e)
             return false
         }
 
