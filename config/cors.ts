@@ -6,8 +6,8 @@
  */
 
 import { CorsConfig } from '@ioc:Adonis/Core/Cors'
-import Env from '@ioc:Adonis/Core/Env'
 import Logger from '@ioc:Adonis/Core/Logger'
+import Env from '@ioc:Adonis/Core/Env'
 
 const corsConfig: CorsConfig = {
     /*
@@ -54,14 +54,18 @@ const corsConfig: CorsConfig = {
     */
     origin: (requestOrigin: string) => {
         const environment = Env.get('NODE_ENV')
-        const hostname = Env.get('ASSET_HOSTNAME')
+        let hostname: string
+
 
         if (environment !== 'production') {
             return true
         }
 
-        if (hostname) {
-            Logger.error('Hostname undefined, have you forgotten to set the hostname in the `.env` file? (environment)')
+        try {
+            hostname = Env.get('ASSET_HOSTNAME')
+        } catch (e) {
+            Logger.error('Hostname undefined, have you forgotten to set the hostname in the `.env` file? (environment)', e)
+            return false
         }
 
         return requestOrigin === hostname
