@@ -20,5 +20,5 @@ export enum Categories {
     Gasque = 90,
     Club = 100,
     Consert = 110,
-    Other = 120
+    Other = 120,
 }

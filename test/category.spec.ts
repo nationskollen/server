@@ -15,6 +15,6 @@ test.group('Categories fetch', async () => {
 
         const data = JSON.parse(text)
 
-    assert.lengthOf(data, numberOfCategoriesInTest + Object.keys(Categories).length / 2)
+        assert.lengthOf(data, numberOfCategoriesInTest + Object.keys(Categories).length / 2)
     })
 })
