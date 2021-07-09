@@ -8,6 +8,7 @@ import MenuItem from 'App/Models/MenuItem'
 import PermissionType from 'App/Models/PermissionType'
 import Location from 'App/Models/Location'
 import Contact from 'App/Models/Contact'
+import Category from 'App/Models/Category'
 import PushToken from 'App/Models/PushToken'
 import Individual from 'App/Models/Individual'
 import OpeningHour from 'App/Models/OpeningHour'
@@ -82,6 +83,12 @@ export const ContactFactory = Factory.define(Contact, ({ faker }) => {
         email: faker.internet.exampleEmail(),
         telephone: faker.phone.phoneNumber(),
         webURL: faker.internet.url(),
+    }
+}).build()
+
+export const CategoryFactory = Factory.define(Category, ({ faker }) => {
+    return {
+        uniqueId: faker.datatype.number(1000),
     }
 }).build()
 

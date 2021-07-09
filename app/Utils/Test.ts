@@ -15,6 +15,7 @@ import {
     LocationFactory,
     IndividualFactory,
     ContactFactory,
+    CategoryFactory,
     PermissionsTypeFactory,
     OpeningHourFactory,
     OpeningHourExceptionFactory,
@@ -121,9 +122,7 @@ export async function createTestEvent(oid: number, occursAt?: DateTime, category
 }
 
 export async function createTestCategory() {
-    return Category.create({
-        name: 'testCategory',
-    })
+    return CategoryFactory.create()
 }
 
 export async function createTestPermissionType() {

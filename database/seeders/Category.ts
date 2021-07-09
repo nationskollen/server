@@ -8,12 +8,14 @@ export default class CategorySeeder extends BaseSeeder {
     public async run() {
         for (const category in Categories) {
             // Make sure to only create these once, even if we rerun the seeders
-            await Category.updateOrCreate(
-                {
-                    name: category,
-                },
-                {}
-            )
+            if (!isNaN(Number(category))) {
+                await Category.updateOrCreate(
+                    {
+                        uniqueId: parseInt(category),
+                    },
+                    {}
+                )
+            }
         }
     }
 }

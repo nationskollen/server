@@ -16,7 +16,7 @@ export default class Category extends BaseModel {
      * The category
      */
     @column()
-    public name: string
+    public uniqueId: number
 
     /**
      * The date the model was created
@@ -34,6 +34,6 @@ export default class Category extends BaseModel {
      * Ordering options to query categories at ascending order
      */
     public static inOrder = scope((query) => {
-        query.orderBy('name', 'asc')
+        query.orderBy('uniqueId', 'asc')
     })
 }
