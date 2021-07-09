@@ -6,6 +6,8 @@
  */
 
 import { CorsConfig } from '@ioc:Adonis/Core/Cors'
+import Env from '@ioc:Adonis/Core/Env'
+import Logger from '@ioc:Adonis/Core/Logger'
 
 const corsConfig: CorsConfig = {
     /*
@@ -20,7 +22,13 @@ const corsConfig: CorsConfig = {
     | you can define a function to enable/disable it on per request basis as well.
     |
     */
-    enabled: true,
+    enabled: (request) => {
+        if (request.url().startsWith('/api/v1/subscriptions')) {
+            return false
+        }
+
+        return true
+    },
 
     // You can also use a function that return true or false.
     // enabled: (request) => request.url().startsWith('/api')
@@ -44,7 +52,20 @@ const corsConfig: CorsConfig = {
     |                     one of the above values.
     |
     */
-    origin: true,
+    origin: (requestOrigin: string) => {
+        const environment = Env.get('NODE_ENV')
+        const hostname = Env.get('ASSET_HOSTNAME')
+
+        if (environment !== 'production') {
+            return true
+        }
+
+        if (hostname) {
+            Logger.error('Hostname undefined, have you forgotten to set the hostname in the `.env` file? (environment)')
+        }
+
+        return requestOrigin === hostname
+    },
 
     /*
     |--------------------------------------------------------------------------
