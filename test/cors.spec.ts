@@ -6,10 +6,7 @@ import PushToken from 'App/Models/PushToken'
 import SubscriptionTopic from 'App/Models/SubscriptionTopic'
 import { PushTokenFactory, SubscriptionTopicFactory } from 'Database/factories/index'
 import Env from '@ioc:Adonis/Core/Env'
-import {
-    TestNationContract,
-    createTestNation,
-} from 'App/Utils/Test'
+import { TestNationContract, createTestNation } from 'App/Utils/Test'
 
 test.group('CORS checking', async (group) => {
     let nation: TestNationContract

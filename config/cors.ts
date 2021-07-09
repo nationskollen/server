@@ -55,7 +55,6 @@ const corsConfig: CorsConfig = {
         const environment = Env.get('NODE_ENV')
         let hostname: string
 
-
         if (environment !== 'production') {
             return true
         }
@@ -63,7 +62,10 @@ const corsConfig: CorsConfig = {
         try {
             hostname = Env.get('ASSET_HOSTNAME')
         } catch (e) {
-            console.log('Hostname undefined, have you forgotten to set the hostname in the `.env` file? (environment)', e)
+            console.log(
+                'Hostname undefined, have you forgotten to set the hostname in the `.env` file? (environment)',
+                e
+            )
             return false
         }
 

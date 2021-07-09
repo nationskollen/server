@@ -68,5 +68,6 @@ configure({
         startHttpServer,
         runPermissionCategoriesSeeding,
     ],
-    after: process.env.CI != 'yes' ? [rollbackMigrations, runMigrations, runSeeding, clearAssets] : []
+    after:
+        process.env.CI != 'yes' ? [rollbackMigrations, runMigrations, runSeeding, clearAssets] : [],
 })
