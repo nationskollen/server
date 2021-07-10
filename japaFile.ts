@@ -56,6 +56,7 @@ function getTestFilesPattern() {
     // quick, you can uncomment the following line and specify the test file.
     // Remember to comment out this and then run all the tests.
     // return ['test/events.spec.ts']
+}
 
 
 // Configure test runner
