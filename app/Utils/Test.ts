@@ -15,6 +15,7 @@ import {
     LocationFactory,
     IndividualFactory,
     ContactFactory,
+    CategoryFactory,
     PermissionsTypeFactory,
     OpeningHourFactory,
     OpeningHourExceptionFactory,
@@ -22,7 +23,6 @@ import {
 
 import { DateTime } from 'luxon'
 import supertest from 'supertest'
-import Category from 'App/Models/Category'
 import User from 'App/Models/User'
 import PermissionType from 'App/Models/PermissionType'
 import { BASE_URL } from 'App/Utils/Constants'
@@ -121,9 +121,7 @@ export async function createTestEvent(oid: number, occursAt?: DateTime, category
 }
 
 export async function createTestCategory() {
-    return Category.create({
-        name: 'testCategory',
-    })
+    return CategoryFactory.create()
 }
 
 export async function createTestPermissionType() {
