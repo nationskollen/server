@@ -24,7 +24,7 @@ test.group('User(s) fetch', (group) => {
     })
 
     test('ensure we can fetch users', async (assert) => {
-        const tmpNation = await NationFactory.create()
+        const tmpNation = await createTestNation()
         const user = await createStaffUser(tmpNation.oid, true)
         await createTestUser(tmpNation.oid, false)
 
@@ -35,7 +35,7 @@ test.group('User(s) fetch', (group) => {
 
         const data = JSON.parse(text)
         assert.isNotNull(data)
-        assert.equal(data.data.length, 2)
+        assert.equal(data.data.length, 4)
     })
 
     test('ensure we can fetch ourselves as authorized staff', async (assert) => {
