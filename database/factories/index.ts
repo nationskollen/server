@@ -88,7 +88,7 @@ export const ContactFactory = Factory.define(Contact, ({ faker }) => {
 
 export const CategoryFactory = Factory.define(Category, ({ faker }) => {
     return {
-        uniqueId: faker.datatype.number(1000),
+        uniqueId: faker.unique(faker.datatype.number, [{ min: 0, max: 1000 }]),
     }
 }).build()
 
