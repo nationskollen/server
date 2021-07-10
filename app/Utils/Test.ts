@@ -23,7 +23,6 @@ import {
 
 import { DateTime } from 'luxon'
 import supertest from 'supertest'
-import Category from 'App/Models/Category'
 import User from 'App/Models/User'
 import PermissionType from 'App/Models/PermissionType'
 import { BASE_URL } from 'App/Utils/Constants'
