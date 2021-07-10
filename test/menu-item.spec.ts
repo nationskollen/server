@@ -159,6 +159,28 @@ test.group('Menu item create', async (group) => {
         assert.deepEqual(data.menu_id, menu.id)
     })
 
+    test('ensure that price is optional when creating an item', async (assert) => {
+        const tmpMenuItem = {
+            name: 'Gofika',
+            description: 'Gott fika',
+            hidden: false,
+        }
+
+        const { text } = await supertest(BASE_URL)
+            .post(`/menus/${menu.id}/items`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .send(tmpMenuItem)
+            .expect(200)
+
+        const data = JSON.parse(text)
+
+        assert.deepEqual(data.name, tmpMenuItem.name)
+        assert.deepEqual(data.description, tmpMenuItem.description)
+        assert.isUndefined(data.price)
+        assert.deepEqual(data.hidden, tmpMenuItem.hidden)
+        assert.deepEqual(data.menu_id, menu.id)
+    })
+
     test('ensure that invalid properties are removed', async () => {
         await supertest(BASE_URL)
             .post(`/menus/${menu.id}/items`)
@@ -171,7 +193,7 @@ test.group('Menu item create', async (group) => {
             .expect(422)
     })
 
-    test('ensure that you can not create a menu item on a menu of another nation', async () => {
+    test('ensure that you cannot create a menu item on a menu of another nation', async () => {
         await supertest(BASE_URL)
             .post(`/menus/${menu.id}/items`)
             .set('Authorization', 'Bearer ' + nation.adminOtherToken)
