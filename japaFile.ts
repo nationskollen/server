@@ -58,7 +58,6 @@ function getTestFilesPattern() {
     // return ['test/events.spec.ts']
 }
 
-
 // Configure test runner
 configure({
     files: getTestFilesPattern(),
