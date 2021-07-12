@@ -196,14 +196,7 @@ export default class Location extends BaseModel {
             newActivityLevel = ActivityLevels.Low
         }
 
-        // Skip activity broadcast if the activity level is the same
-        // NOTE: This must be checked after we set the activity level
-        //       to ActivityLevels.Low if open. Otherwise, it might
-        //       return when in fact the activity level is one higher.
-        if (newActivityLevel === location.activityLevel) {
-            return
-        }
-
+        // Apply the new activity level even if its the same as before the update
         location.activityLevel = newActivityLevel
 
         // Broadcast new activity information to all connected websocket clients

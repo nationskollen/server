@@ -325,6 +325,44 @@ test.group('Activity update', (group) => {
             .close()
             .expectClosed()
     })
+    
+    test('ensure that a websocket event is broadcasted even when activity level stays the same', async () => {
+        const testLocation = await createTestLocation(nation.oid)
+
+        await supertest(BASE_URL)
+            .put(`/locations/${testLocation.id}/open`)
+            .set('Authorization', 'Bearer ' + nation.token)
+            .expect(200)
+
+        // we set the exact_amount to one, indicating that the activity would
+        // dynamically change to low.
+        // But since the location precisely opened, the activity_level would
+        // remain the same as in setting the exact_amount to one, altought
+        // testing that a ws event occurs
+        await wstest(HOSTNAME)
+            .ws('/')
+            .expectJson({ type: WebSocketDataTypes.Connected })
+            .exec(async () => {
+                // Trigger websocket event
+                await supertest(BASE_URL)
+                    .put(`/locations/${testLocation.id}/activity`)
+                    .set('Authorization', 'Bearer ' + nation.token)
+                    .send({ exact_amount: 1})
+                    .expect(200)
+                
+            })
+            .expectJson({
+                type: WebSocketDataTypes.Activity,
+                data: {
+                    oid: nation.oid,
+                    location_id: testLocation.id,
+                    estimated_people_count: 1,
+                    activity_level: ActivityLevels.Low,
+                },
+            })
+            .close()
+            .expectClosed()
+    })
 
     test('ensure that a websocket event is broadcasted on close', async () => {
         const testLocation = await createTestLocation(nation.oid)
