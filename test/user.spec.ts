@@ -35,6 +35,10 @@ test.group('User(s) fetch', (group) => {
 
         const data = JSON.parse(text)
         assert.isNotNull(data)
+
+        // The expected number is 4 in this case because we create two users in
+        // this tests, and in the method `createTestNation()` that return to
+        // variable tmpNation, we create a staff user and an admin user.
         assert.equal(data.data.length, 4)
     })
 
