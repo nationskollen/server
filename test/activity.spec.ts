@@ -325,7 +325,7 @@ test.group('Activity update', (group) => {
             .close()
             .expectClosed()
     })
-    
+
     test('ensure that a websocket event is broadcasted even when activity level stays the same', async () => {
         const testLocation = await createTestLocation(nation.oid)
 
@@ -347,9 +347,8 @@ test.group('Activity update', (group) => {
                 await supertest(BASE_URL)
                     .put(`/locations/${testLocation.id}/activity`)
                     .set('Authorization', 'Bearer ' + nation.token)
-                    .send({ exact_amount: 1})
+                    .send({ exact_amount: 1 })
                     .expect(200)
-                
             })
             .expectJson({
                 type: WebSocketDataTypes.Activity,
