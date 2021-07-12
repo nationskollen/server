@@ -59,13 +59,10 @@ const corsConfig: CorsConfig = {
             return true
         }
 
-        try {
-            hostname = Env.get('ASSET_HOSTNAME')
-        } catch (e) {
-            console.log(
-                'Hostname undefined, have you forgotten to set the hostname in the `.env` file? (environment)',
-                e
-            )
+        hostname = Env.get('ASSET_HOSTNAME')
+
+        if (!hostname) {
+            console.log('Hostname undefined, have you forgotten to set the hostname in the `.env` file? (environment)')
             return false
         }
 
