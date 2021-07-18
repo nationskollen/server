@@ -1,4 +1,3 @@
-
 # Certbot and LetsEncrypt
 
 The server that is used for nationskollen uses certificates with the help of
@@ -17,7 +16,6 @@ have a working web site that can already be accessed using HTTP on port 80.
 
 Basically, Certbot is set up with the help of a CRON-job in the system that runs
 when it is time to renew the certificate(s).
-
 
 ## If you need to renew Certificates manually - or a Certbot challange failed
 
@@ -62,9 +60,11 @@ Congratulations, all renewals succeeded. The following certs have been renewed:
 
 Do have in mind that the output above is a simulated output achieved with the
 help of the command
+
 ```zsh
 $ sudo certbot renew --dry-run
 ```
+
 The `--dry-run` flag tells certbot to simulate the renewal.
 
 Reason for this is that there is a limit as to how many requests that is allowed
@@ -75,6 +75,7 @@ If all goes well, test by going to any nationskollen route and make sure that
 the browser accepts a connectiion with the protocol `HTTPS`.
 
 ### If things dont go well...
+
 Try to understand what is wrong, ask team-members or someone that also knows
 about the server before making changes!
 
@@ -83,48 +84,58 @@ old (expired) certificate and create a new one.
 
 Do it in this order:
 
-- Comment out line 25-30 in file `/etc/nginx/sites-enabled/default`
-- Turn of the Nginx server:
+-   Comment out line 25-30 in file `/etc/nginx/sites-enabled/default`
+-   Turn of the Nginx server:
+
 ```zsh
 $ sudo systemctl stop nginx
 ```
-- Delete the old certificate
+
+-   Delete the old certificate
+
 ```zsh
 $ sudo certbot delete nationskollen-stagin.engstrand.nu
 ```
-- Make sure that either port 80 and 443 is allowed in `ufw` or Nginx
-  Full/HTTP/HTTPS, see below output for reference:
+
+-   Make sure that either port 80 and 443 is allowed in `ufw` or Nginx
+    Full/HTTP/HTTPS, see below output for reference:
+
 ```zsh
 $ sudo ufw status numbered
 Status: active
 
      To                         Action      From
      --                         ------      ----
-[ 1] Nginx HTTPS                ALLOW IN    Anywhere                  
-[ 2] 22/tcp                     ALLOW IN    Anywhere                  
-[ 3] 80/tcp                     ALLOW IN    Anywhere                  
-[ 4] 443/tcp                    ALLOW IN    Anywhere                  
-[ 5] Nginx Full                 ALLOW IN    Anywhere                  
-[ 6] Nginx HTTPS (v6)           ALLOW IN    Anywhere (v6)             
-[ 7] 22/tcp (v6)                ALLOW IN    Anywhere (v6)             
-[ 8] 80/tcp (v6)                ALLOW IN    Anywhere (v6)             
-[ 9] 443/tcp (v6)               ALLOW IN    Anywhere (v6)             
+[ 1] Nginx HTTPS                ALLOW IN    Anywhere
+[ 2] 22/tcp                     ALLOW IN    Anywhere
+[ 3] 80/tcp                     ALLOW IN    Anywhere
+[ 4] 443/tcp                    ALLOW IN    Anywhere
+[ 5] Nginx Full                 ALLOW IN    Anywhere
+[ 6] Nginx HTTPS (v6)           ALLOW IN    Anywhere (v6)
+[ 7] 22/tcp (v6)                ALLOW IN    Anywhere (v6)
+[ 8] 80/tcp (v6)                ALLOW IN    Anywhere (v6)
+[ 9] 443/tcp (v6)               ALLOW IN    Anywhere (v6)
 [10] Nginx Full (v6)            ALLOW IN    Anywhere (v6)
 ```
-- Start nginx server
+
+-   Start nginx server
+
 ```zsh
 $ sudo systemctl start nginx
 ```
-- If the server started and nothing interuppts the startup, run the setup
-  command of certificate:
+
+-   If the server started and nothing interuppts the startup, run the setup
+    command of certificate:
+
 ```zsh
 $ sudo certbot --nginx # this command will provide configuration for the rows that were commented out earlier
 ```
-- Follow the wizard and set up the new certificate for the website
-  `nationskollen-staging.engstrand.nu`.
 
-- Make sure that in `/etc/nginx/sites-enabled/default`, the following rows are
-  supplied by the certbot command earlier:
+-   Follow the wizard and set up the new certificate for the website
+    `nationskollen-staging.engstrand.nu`.
+
+-   Make sure that in `/etc/nginx/sites-enabled/default`, the following rows are
+    supplied by the certbot command earlier:
 
 ```zsh
     listen 443 ssl; # managed by Certbot
@@ -140,5 +151,5 @@ HTTPS connection.
 Run the command `sudo certbot renew --dry-run` to simulate the renewal and make
 sure this passes.
 
-Congratulations, hopefully the server is not certified and all is well! 
+Congratulations, hopefully the server is not certified and all is well!
 Run the regular setup for starting nationskollen api.
