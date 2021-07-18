@@ -17,17 +17,17 @@ have a working web site that can already be accessed using HTTP on port 80.
 Basically, Certbot is set up with the help of a CRON-job in the system that runs
 when it is time to renew the certificate(s).
 
-## If you need to renew Certificates manually - or a Certbot challange failed
+## If you need to renew Certificates manually - or a Certbot challenge failed
 
 Try to run at first the following command as root:
 
-```zsh
+```
 $ sudo certbot renew
 ```
 
 The following output is the expected output:
 
-```zsh
+```
 root@nationskollen-staging:~# sudo certbot renew --dry-run
 Saving debug log to /var/log/letsencrypt/letsencrypt.log
 
@@ -61,7 +61,7 @@ Congratulations, all renewals succeeded. The following certs have been renewed:
 Do have in mind that the output above is a simulated output achieved with the
 help of the command
 
-```zsh
+```
 $ sudo certbot renew --dry-run
 ```
 
@@ -84,23 +84,27 @@ old (expired) certificate and create a new one.
 
 Do it in this order:
 
--   Comment out line 25-30 in file `/etc/nginx/sites-enabled/default`
--   Turn of the Nginx server:
+- Comment out lines that look similar to this:
+```
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/nationskollen-staging.engstrand.nu/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/nationskollen-staging.engstrand.nu/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+```
+in file `/etc/nginx/sites-enabled/default`
 
-```zsh
+- Turn off the Nginx server:
+```
 $ sudo systemctl stop nginx
 ```
-
--   Delete the old certificate
-
-```zsh
-$ sudo certbot delete nationskollen-stagin.engstrand.nu
+- Delete the old certificate
 ```
-
--   Make sure that either port 80 and 443 is allowed in `ufw` or Nginx
-    Full/HTTP/HTTPS, see below output for reference:
-
-```zsh
+$ sudo certbot delete nationskollen-staging.engstrand.nu
+```
+- Make sure that either port 80 and 443 is allowed in `ufw` or Nginx
+  Full/HTTP/HTTPS, see below output for reference:
+```
 $ sudo ufw status numbered
 Status: active
 
@@ -117,17 +121,13 @@ Status: active
 [ 9] 443/tcp (v6)               ALLOW IN    Anywhere (v6)
 [10] Nginx Full (v6)            ALLOW IN    Anywhere (v6)
 ```
-
--   Start nginx server
-
-```zsh
+- Start nginx server
+```
 $ sudo systemctl start nginx
 ```
-
--   If the server started and nothing interuppts the startup, run the setup
-    command of certificate:
-
-```zsh
+- If the server started and nothing interuppts the startup, run the setup
+  command of certificate:
+```
 $ sudo certbot --nginx # this command will provide configuration for the rows that were commented out earlier
 ```
 
@@ -137,7 +137,7 @@ $ sudo certbot --nginx # this command will provide configuration for the rows th
 -   Make sure that in `/etc/nginx/sites-enabled/default`, the following rows are
     supplied by the certbot command earlier:
 
-```zsh
+```
     listen 443 ssl; # managed by Certbot
     ssl_certificate /etc/letsencrypt/live/nationskollen-staging.engstrand.nu/fullchain.pem; # managed by Certbot
     ssl_certificate_key /etc/letsencrypt/live/nationskollen-staging.engstrand.nu/privkey.pem; # managed by Certbot
