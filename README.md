@@ -1,4 +1,8 @@
 [![Environment Tests](https://github.com/dsp-krabby/server/actions/workflows/CI-Tests.yml/badge.svg?branch=main)](https://github.com/dsp-krabby/server/actions/workflows/CI-Tests.yml)
+[![Staging deployment](https://github.com/nationskollen/server/actions/workflows/staging.yml/badge.svg)](https://github.com/nationskollen/server/actions/workflows/staging.yml)
+[![Formatting Code](https://github.com/nationskollen/server/actions/workflows/formatting.yml/badge.svg)](https://github.com/nationskollen/server/actions/workflows/formatting.yml)
+[![Typecheck](https://github.com/nationskollen/server/actions/workflows/typecheck.yml/badge.svg)](https://github.com/nationskollen/server/actions/workflows/typecheck.yml)
+
 
 # Nationskollen API
 This repository contains the API, database and other core infrastructure needed
