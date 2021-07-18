@@ -63,7 +63,7 @@ Congratulations, all renewals succeeded. The following certs have been renewed:
 Do have in mind that the output above is a simulated output achieved with the
 help of the command
 ```zsh
-$ sudo certbot renew **--dry-run**
+$ sudo certbot renew --dry-run
 ```
 The `--dry-run` flag tells certbot to simulate the renewal.
 
