@@ -60,7 +60,6 @@ Congratulations, all renewals succeeded. The following certs have been renewed:
 
 Do have in mind that the output above is a simulated output achieved with the
 help of the command
-
 ```
 $ sudo certbot renew --dry-run
 ```
@@ -85,7 +84,6 @@ old (expired) certificate and create a new one.
 Do it in this order:
 
 -   Comment out lines that look similar to this:
-
 ```
     listen 443 ssl; # managed by Certbot
     ssl_certificate /etc/letsencrypt/live/nationskollen-staging.engstrand.nu/fullchain.pem; # managed by Certbot
@@ -93,24 +91,18 @@ Do it in this order:
     include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
     ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
 ```
-
 in file `/etc/nginx/sites-enabled/default`
 
--   Turn off the Nginx server:
-
+- Turn off the Nginx server:
 ```
 $ sudo systemctl stop nginx
 ```
-
--   Delete the old certificate
-
+- Delete the old certificate
 ```
 $ sudo certbot delete nationskollen-staging.engstrand.nu
 ```
-
--   Make sure that either port 80 and 443 is allowed in `ufw` or Nginx
-    Full/HTTP/HTTPS, see below output for reference:
-
+- Make sure that either port 80 and 443 is allowed in `ufw` or Nginx
+  Full/HTTP/HTTPS, see below output for reference:
 ```
 $ sudo ufw status numbered
 Status: active
@@ -128,7 +120,6 @@ Status: active
 [ 9] 443/tcp (v6)               ALLOW IN    Anywhere (v6)
 [10] Nginx Full (v6)            ALLOW IN    Anywhere (v6)
 ```
-
 -   Start nginx server
 
 ```
@@ -137,7 +128,6 @@ $ sudo systemctl start nginx
 
 -   If the server started and nothing interuppts the startup, run the setup
     command of certificate:
-
 ```
 $ sudo certbot --nginx # this command will provide configuration for the rows that were commented out earlier
 ```
