@@ -67,7 +67,7 @@ $ sudo certbot renew --dry-run
 ```
 The `--dry-run` flag tells certbot to simulate the renewal.
 
-Reasonf or this is that there is a limit as to how many requests that is allowed
+Reason for this is that there is a limit as to how many requests that is allowed
 to renew or create a certificate and apply it. The amount is ~7 as to how many
 'attempts' that is allowed.
 
@@ -75,10 +75,10 @@ If all goes well, test by going to any nationskollen route and make sure that
 the browser accepts a connectiion with the protocol `HTTPS`.
 
 ### If things dont go well...
-Try to understand what is wrong, look if you can resolve the problem, ask
-team-members.
+Try to understand what is wrong, ask team-members or someone that also knows
+about the server before making changes!
 
-If its not helping you can probably achieve a new certificate by deleting the
+If its not helping, you can probably achieve a new certificate by deleting the
 old (expired) certificate and create a new one.
 
 Do it in this order:
